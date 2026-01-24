@@ -1,0 +1,1386 @@
+[
+  {
+    "id": "task-001",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "MWT Report",
+    "code": "1.1",
+    "category": "Management",
+    "status": "Completed",
+    "attachments": []
+  },
+  {
+    "id": "task-002",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "HSE Committee Meeting",
+    "code": "1.2",
+    "category": "Management",
+    "status": "Completed",
+    "attachments": []
+  },
+  {
+    "id": "task-003",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Poster IOGP CLSR",
+    "code": "1.3",
+    "category": "Management",
+    "status": "Completed",
+    "attachments": []
+  },
+  {
+    "id": "task-004",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Rambu K3 (Rambu Titik Jepit, Chemical, No Smoking, Electricity)",
+    "code": "2.1",
+    "category": "Safety Signs",
+    "status": "Completed",
+    "attachments": []
+  },
+  {
+    "id": "task-005",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Pemasangan Poster Live Saving Rules",
+    "code": "2.2",
+    "category": "Safety Signs",
+    "status": "Completed",
+    "attachments": []
+  },
+  {
+    "id": "task-006",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Meeting dilokasi (HSE Weekly, PJSM, Tailgate)",
+    "code": "2.3",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-007",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto saat menyampaikan safety moment dilokasi",
+    "code": "2.4",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-008",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto training dilokasi (H2S, SIKA, JSA, etc)",
+    "code": "3.1",
+    "category": "Training",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-009",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto HSE Campaign (Reward, Safety Moment, Marshal)",
+    "code": "3.2",
+    "category": "Training",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-010",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto TRA Dilokasi",
+    "code": "4.1",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-011",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto saat Pemeriksaan Fit to task dilokasi",
+    "code": "4.2",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-012",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Observation Card / PEKA",
+    "code": "4.3",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-013",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Lakukan Hazard Hunt Dilokasi",
+    "code": "4.4",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-014",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Pelaporan Near miss",
+    "code": "4.5",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-015",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Saat Housekeeping",
+    "code": "4.6",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-016",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Manajemen Chemical",
+    "code": "4.7",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-017",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto PTW & JSA Dilokasi",
+    "code": "4.8",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-018",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto PJSM (Foto dan Absen)",
+    "code": "4.9",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-019",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Inspeksi Lapangan HSE",
+    "code": "4.9a",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-020",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Inspeksi P3K",
+    "code": "4.10",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-021",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Inspeksi APAR",
+    "code": "4.11",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-022",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Inspeksi APD",
+    "code": "4.12",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-023",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Inspeksi Lingkungan kerja",
+    "code": "4.13",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-024",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "SIML Dan HSE Passport",
+    "code": "4.14",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-025",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Upload List Peralatan (COID)",
+    "code": "5.1",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-026",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Upload Sertifikat Lifting gear",
+    "code": "5.2",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-027",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Upload Sertifikat Peralatan",
+    "code": "5.3",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-028",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Inspeksi Lifting Gear",
+    "code": "5.4",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-029",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Foto Checklist Inspeksi Peralatan Harian",
+    "code": "5.5",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-030",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "HSE Drill Dilokasi",
+    "code": "5.6",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-031",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "MOC Report",
+    "code": "5.7",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-032",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Pelaporan Incident",
+    "code": "6.1",
+    "category": "Incident",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-033",
+    "project_id": "ed875669-bc6c-4b47-9e86-0921898916fb",
+    "title": "Safety Stand Down dilokasi",
+    "code": "6.2",
+    "category": "Incident",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-034",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "MWT Report",
+    "code": "1.1",
+    "category": "Management",
+    "status": "Completed",
+    "attachments": []
+  },
+  {
+    "id": "task-035",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "HSE Committee Meeting",
+    "code": "1.2",
+    "category": "Management",
+    "status": "Completed",
+    "attachments": []
+  },
+  {
+    "id": "task-036",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Poster IOGP CLSR",
+    "code": "1.3",
+    "category": "Management",
+    "status": "Completed",
+    "attachments": []
+  },
+  {
+    "id": "task-037",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Rambu K3 (Rambu Titik Jepit, Chemical, No Smoking, Electricity)",
+    "code": "2.1",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-038",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Pemasangan Poster Live Saving Rules",
+    "code": "2.2",
+    "category": "Safety Signs",
+    "status": "Completed",
+    "attachments": []
+  },
+  {
+    "id": "task-039",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Meeting dilokasi (HSE Weekly, PJSM, Tailgate)",
+    "code": "2.3",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-040",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto saat menyampaikan safety moment dilokasi",
+    "code": "2.4",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-041",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto training dilokasi (H2S, SIKA, JSA, etc)",
+    "code": "3.1",
+    "category": "Training",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-042",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto HSE Campaign (Reward, Safety Moment, Marshal)",
+    "code": "3.2",
+    "category": "Training",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-043",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto TRA Dilokasi",
+    "code": "4.1",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-044",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto saat Pemeriksaan Fit to task dilokasi",
+    "code": "4.2",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-045",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Observation Card / PEKA",
+    "code": "4.3",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-046",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Lakukan Hazard Hunt Dilokasi",
+    "code": "4.4",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-047",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Pelaporan Near miss",
+    "code": "4.5",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-048",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Saat Housekeeping",
+    "code": "4.6",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-049",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Manajemen Chemical",
+    "code": "4.7",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-050",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto PTW & JSA Dilokasi",
+    "code": "4.8",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-051",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto PJSM (Foto dan Absen)",
+    "code": "4.9",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-052",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Inspeksi Lapangan HSE",
+    "code": "4.9a",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-053",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Inspeksi P3K",
+    "code": "4.10",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-054",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Inspeksi APAR",
+    "code": "4.11",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-055",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Inspeksi APD",
+    "code": "4.12",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-056",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Inspeksi Lingkungan kerja",
+    "code": "4.13",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-057",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "SIML Dan HSE Passport",
+    "code": "4.14",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-058",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Upload List Peralatan (COID)",
+    "code": "5.1",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-059",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Upload Sertifikat Lifting gear",
+    "code": "5.2",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-060",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Upload Sertifikat Peralatan",
+    "code": "5.3",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-061",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Inspeksi Lifting Gear",
+    "code": "5.4",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-062",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Foto Checklist Inspeksi Peralatan Harian",
+    "code": "5.5",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-063",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "HSE Drill Dilokasi",
+    "code": "5.6",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-064",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "MOC Report",
+    "code": "5.7",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-065",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Pelaporan Incident",
+    "code": "6.1",
+    "category": "Incident",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-066",
+    "project_id": "375570d9-21a9-442b-bcc9-dac89944cd70",
+    "title": "Safety Stand Down dilokasi",
+    "code": "6.2",
+    "category": "Incident",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-067",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "MWT Report",
+    "code": "1.1",
+    "category": "Management",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-068",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "HSE Committee Meeting",
+    "code": "1.2",
+    "category": "Management",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "1.2 - Tailgate meeting Form.jpg",
+        "drive_filename": "1.2 - Tailgate meeting Form.jpg",
+        "file_id": "1uw0QBjpJ_6mJ4UW9Z6OGhlT1P1jsXVIU"
+      }
+    ]
+  },
+  {
+    "id": "task-069",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Poster IOGP CLSR",
+    "code": "1.3",
+    "category": "Management",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "1.3 - IMG20251218094609.jpg",
+        "drive_filename": "1.3 - IMG20251218094609.jpg",
+        "file_id": "1G7NjWwT8fiHZlSEUBE36bHSvKRsywBH_"
+      }
+    ]
+  },
+  {
+    "id": "task-070",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Rambu K3 (Rambu Titik Jepit, Chemical, No Smoking, Electricity)",
+    "code": "2.1",
+    "category": "Safety Signs",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "2.1 - Foto Rambu-Rambu-2 (1).jpeg",
+        "drive_filename": "2.1 - Foto Rambu-Rambu-2 (1).jpeg",
+        "file_id": "1ZUtreUBAbYGMZDKkQCx5369N3kUywR-6"
+      },
+      {
+        "filename": "2.1 - Foto Rambu-Rambu-3 (1).jpeg",
+        "drive_filename": "2.1 - Foto Rambu-Rambu-3 (1).jpeg",
+        "file_id": "1Caouw7R0rnr-4uhlvCZGiTfSNM5_haSd"
+      },
+      {
+        "filename": "2.1 - Foto Rambu Rambu-1 (1).jpeg",
+        "drive_filename": "2.1 - Foto Rambu Rambu-1 (1).jpeg",
+        "file_id": "1iQzAyBDJZlGJ3BWsZO0cgQE2hD4jkxN1"
+      }
+    ]
+  },
+  {
+    "id": "task-071",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Pemasangan Poster Live Saving Rules",
+    "code": "2.2",
+    "category": "Safety Signs",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "2.2 - IMG20251218094609.jpg",
+        "drive_filename": "2.2 - IMG20251218094609.jpg",
+        "file_id": "1HbNbfv50YBdb_5ytaZnd1zYIl-cdbqst"
+      }
+    ]
+  },
+  {
+    "id": "task-072",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Meeting dilokasi (HSE Weekly, PJSM, Tailgate)",
+    "code": "2.3",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-073",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto saat menyampaikan safety moment dilokasi",
+    "code": "2.4",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-074",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto training dilokasi (H2S, SIKA, JSA, etc)",
+    "code": "3.1",
+    "category": "Training",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-075",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto HSE Campaign (Reward, Safety Moment, Marshal)",
+    "code": "3.2",
+    "category": "Training",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-076",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto TRA Dilokasi",
+    "code": "4.1",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.1 - TRA, PTW, & JSA.pdf",
+        "drive_filename": "4.1 - TRA, PTW, & JSA.pdf",
+        "file_id": "1wi7jzy_kCvg3tFk2Amg2cpW888KXGDY_"
+      }
+    ]
+  },
+  {
+    "id": "task-077",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto saat Pemeriksaan Fit to task dilokasi",
+    "code": "4.2",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.2 - IMG20251219195230.jpg",
+        "drive_filename": "4.2 - IMG20251219195230.jpg",
+        "file_id": "1e_uSnj3L8Wk_oNu_lr9IpplzSCkp5r6r"
+      },
+      {
+        "filename": "4.2 - IMG20251218194735.jpg",
+        "drive_filename": "4.2 - IMG20251218194735.jpg",
+        "file_id": "1W-ZWd9uPfaibeQWOVCUFCxjtw7VW_QSB"
+      }
+    ]
+  },
+  {
+    "id": "task-078",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Observation Card / PEKA",
+    "code": "4.3",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.3 - PEKA PT WEATHERFORD RCD 19-Dec_2025.xlsx",
+        "drive_filename": "4.3 - PEKA PT WEATHERFORD RCD 19-Dec_2025.xlsx",
+        "file_id": "1-zBX-ece1ajczs1Frd87wSEU5vpBqGrV"
+      }
+    ]
+  },
+  {
+    "id": "task-079",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Lakukan Hazard Hunt Dilokasi",
+    "code": "4.4",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-080",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Pelaporan Near miss",
+    "code": "4.5",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-081",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Saat Housekeeping",
+    "code": "4.6",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.6 - Foto Housekeeping (1).jpeg",
+        "drive_filename": "4.6 - Foto Housekeeping (1).jpeg",
+        "file_id": "14sp8K6Ky3VgltFQ86uowjws49zvVTgnb"
+      }
+    ]
+  },
+  {
+    "id": "task-082",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Manajemen Chemical",
+    "code": "4.7",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.7 - MSDS.jpeg",
+        "drive_filename": "4.7 - MSDS.jpeg",
+        "file_id": "11gdo59C38ii3psGEHSo15hIqJ7M0z0eD"
+      },
+      {
+        "filename": "4.7 - GSAP_msds_02389451.PDF",
+        "drive_filename": "4.7 - GSAP_msds_02389451.PDF",
+        "file_id": "1FLDbTtEAN__-yV1HKPALB0QSuvTbhMd4"
+      }
+    ]
+  },
+  {
+    "id": "task-083",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto PTW & JSA Dilokasi",
+    "code": "4.8",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.8 - PTW Rig Up RCD KMBR-001.pdf",
+        "drive_filename": "4.8 - PTW Rig Up RCD KMBR-001.pdf",
+        "file_id": "1NUUotYV8xgGLkqu1dgJAOrXQg4bjdJru"
+      }
+    ]
+  },
+  {
+    "id": "task-084",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto PJSM (Foto dan Absen)",
+    "code": "4.9",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.9 - Foto PJSM Rig Up RCD.jpeg",
+        "drive_filename": "4.9 - Foto PJSM Rig Up RCD.jpeg",
+        "file_id": "13LenGLGWAB5qSbXYJxM_tjpoFn9cWX4n"
+      }
+    ]
+  },
+  {
+    "id": "task-085",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Inspeksi Lapangan HSE",
+    "code": "4.9a",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.9a - Lembar Inspeksi Lapangan KMBR-001.pdf",
+        "drive_filename": "4.9a - Lembar Inspeksi Lapangan KMBR-001.pdf",
+        "file_id": "1lhVTrat8tO3kIC27ETLYrwCOtEI6T7Zc"
+      }
+    ]
+  },
+  {
+    "id": "task-086",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Inspeksi P3K",
+    "code": "4.10",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.10 - Foto Inspeksi P3K.jpeg",
+        "drive_filename": "4.10 - Foto Inspeksi P3K.jpeg",
+        "file_id": "1dmqv6GZV6QqY4k45_pa3JXOQuy5hm0ua"
+      }
+    ]
+  },
+  {
+    "id": "task-087",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Inspeksi APAR",
+    "code": "4.11",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.11 - Checklist APAR KMBR-001.pdf",
+        "drive_filename": "4.11 - Checklist APAR KMBR-001.pdf",
+        "file_id": "1XNGRdo1eoLEfvQmx7b4qEeIo5IYuXUdE"
+      },
+      {
+        "filename": "4.11 - IMG20251219180607.jpg",
+        "drive_filename": "4.11 - IMG20251219180607.jpg",
+        "file_id": "10qLPqgZSrSlLz8MDZhQq8j7JOBKgAVxp"
+      }
+    ]
+  },
+  {
+    "id": "task-088",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Inspeksi APD",
+    "code": "4.12",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.12 - PPE Checklist KMBR-001.pdf",
+        "drive_filename": "4.12 - PPE Checklist KMBR-001.pdf",
+        "file_id": "1lO0LptS38Ao4DGf7yWSzfoaHoWE6eMc7"
+      },
+      {
+        "filename": "4.12 - Foto Pengecekan PPE (1).jpeg",
+        "drive_filename": "4.12 - Foto Pengecekan PPE (1).jpeg",
+        "file_id": "1js4I5UWsEVk7NEt5SppU9iJOnfw0EgsT"
+      }
+    ]
+  },
+  {
+    "id": "task-089",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Inspeksi Lingkungan kerja",
+    "code": "4.13",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.13 - MSDS.jpeg",
+        "drive_filename": "4.13 - MSDS.jpeg",
+        "file_id": "1Z-XIbrXYwiSkMjEplgTrpoDtokKhDnsj"
+      },
+      {
+        "filename": "4.13 - Foto Rambu-Rambu-2 (1).jpeg",
+        "drive_filename": "4.13 - Foto Rambu-Rambu-2 (1).jpeg",
+        "file_id": "1cJe5I541xTflgaHOc2cy8jKaCfWFkFoe"
+      },
+      {
+        "filename": "4.13 - Foto Rambu-Rambu-3 (1).jpeg",
+        "drive_filename": "4.13 - Foto Rambu-Rambu-3 (1).jpeg",
+        "file_id": "1KcACBv9K8fW9M9v2sQwPkFw6Qr49rhV-"
+      },
+      {
+        "filename": "4.13 - Foto Rambu Rambu-1 (1).jpeg",
+        "drive_filename": "4.13 - Foto Rambu Rambu-1 (1).jpeg",
+        "file_id": "1CJG72SwckK1WDj8GMllxxgqjvR9sq0V3"
+      },
+      {
+        "filename": "4.13 - Foto Inspeksi P3K.jpeg",
+        "drive_filename": "4.13 - Foto Inspeksi P3K.jpeg",
+        "file_id": "1zUeVFsRQmumfVBqID-DQJ2r9fimMsjn-"
+      },
+      {
+        "filename": "4.13 - Foto Housekeeping (1).jpeg",
+        "drive_filename": "4.13 - Foto Housekeeping (1).jpeg",
+        "file_id": "1DltZkqW2kAd7gbfyGROzz-88BTcXvauu"
+      }
+    ]
+  },
+  {
+    "id": "task-090",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "SIML Dan HSE Passport",
+    "code": "4.14",
+    "category": "Inspection",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "4.14 - 432. Template SIML - Weatherford RBOP - KMBR-001 (Batch 2)_Signed.pdf",
+        "drive_filename": "4.14 - 432. Template SIML - Weatherford RBOP - KMBR-001 (Batch 2)_Signed.pdf",
+        "file_id": "1NTsEW77iQ4oPQBkKjkDsfA_7k9u-MQcb"
+      },
+      {
+        "filename": "4.14 - 373. SIML - Weatherford RBOP - KMBR-001 (Batch 1)_Signed.pdf",
+        "drive_filename": "4.14 - 373. SIML - Weatherford RBOP - KMBR-001 (Batch 1)_Signed.pdf",
+        "file_id": "1yh1HsnZY-uAdhWL0Pz4GYqcXjYzIGoKC"
+      },
+      {
+        "filename": "4.14 - Passport_07102025_K00168455.pdf",
+        "drive_filename": "4.14 - Passport_07102025_K00168455.pdf",
+        "file_id": "1o4areEZa8GmAvdCMVhtHWJhzuvGGCnyj"
+      }
+    ]
+  },
+  {
+    "id": "task-091",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Upload List Peralatan (COID)",
+    "code": "5.1",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-092",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Upload Sertifikat Lifting gear",
+    "code": "5.2",
+    "category": "Equipment",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "5.2 - MPI Certificate - Lifting.zip",
+        "drive_filename": "5.2 - MPI Certificate - Lifting.zip",
+        "file_id": "163W77SbAnytfzz_3-V_mBEqSMe1Q44fX"
+      }
+    ]
+  },
+  {
+    "id": "task-093",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Upload Sertifikat Peralatan",
+    "code": "5.3",
+    "category": "Equipment",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "5.3 - MPI Certificate - Non Lifting.zip",
+        "drive_filename": "5.3 - MPI Certificate - Non Lifting.zip",
+        "file_id": "1tVhkWVNB-TcB9E4BN-1qCcqBNFGrjf2l"
+      },
+      {
+        "filename": "5.3 - MPI Certificate - Lifting.zip",
+        "drive_filename": "5.3 - MPI Certificate - Lifting.zip",
+        "file_id": "1jLvJ4hfJbGlM7B7mfZn_5t0Rc8s1utGj"
+      }
+    ]
+  },
+  {
+    "id": "task-094",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Inspeksi Lifting Gear",
+    "code": "5.4",
+    "category": "Equipment",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "5.4 - IMG20251219181031.jpg",
+        "drive_filename": "5.4 - IMG20251219181031.jpg",
+        "file_id": "1Wrw3V0vlbsG5xu9EXhUv-S6uyIrtqEkC"
+      }
+    ]
+  },
+  {
+    "id": "task-095",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Foto Checklist Inspeksi Peralatan Harian",
+    "code": "5.5",
+    "category": "Equipment",
+    "status": "Completed",
+    "attachments": [
+      {
+        "filename": "5.5 - IMG20251220101007.jpg",
+        "drive_filename": "5.5 - IMG20251220101007.jpg",
+        "file_id": "1nDW-sOsZO02FPSpxjdoz1y9_zzJcNv4U"
+      }
+    ]
+  },
+  {
+    "id": "task-096",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "HSE Drill Dilokasi",
+    "code": "5.6",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-097",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "MOC Report",
+    "code": "5.7",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-098",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Pelaporan Incident",
+    "code": "6.1",
+    "category": "Incident",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-099",
+    "project_id": "ac093a23-ccbe-4bbd-b903-84c0a353b536",
+    "title": "Safety Stand Down dilokasi",
+    "code": "6.2",
+    "category": "Incident",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-100",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "MWT Report",
+    "code": "1.1",
+    "category": "Management",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-101",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "HSE Committee Meeting",
+    "code": "1.2",
+    "category": "Management",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-102",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Poster IOGP CLSR",
+    "code": "1.3",
+    "category": "Management",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-103",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Rambu K3 (Rambu Titik Jepit, Chemical, No Smoking, Electricity)",
+    "code": "2.1",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-104",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Pemasangan Poster Live Saving Rules",
+    "code": "2.2",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-105",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Meeting dilokasi (HSE Weekly, PJSM, Tailgate)",
+    "code": "2.3",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-106",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto saat menyampaikan safety moment dilokasi",
+    "code": "2.4",
+    "category": "Safety Signs",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-107",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto training dilokasi (H2S, SIKA, JSA, etc)",
+    "code": "3.1",
+    "category": "Training",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-108",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto HSE Campaign (Reward, Safety Moment, Marshal)",
+    "code": "3.2",
+    "category": "Training",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-109",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto TRA Dilokasi",
+    "code": "4.1",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-110",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto saat Pemeriksaan Fit to task dilokasi",
+    "code": "4.2",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-111",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Observation Card / PEKA",
+    "code": "4.3",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-112",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Lakukan Hazard Hunt Dilokasi",
+    "code": "4.4",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-113",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Pelaporan Near miss",
+    "code": "4.5",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-114",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Saat Housekeeping",
+    "code": "4.6",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-115",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Manajemen Chemical",
+    "code": "4.7",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-116",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto PTW & JSA Dilokasi",
+    "code": "4.8",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-117",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto PJSM (Foto dan Absen)",
+    "code": "4.9",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-118",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Inspeksi Lapangan HSE",
+    "code": "4.9a",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-119",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Inspeksi P3K",
+    "code": "4.10",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-120",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Inspeksi APAR",
+    "code": "4.11",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-121",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Inspeksi APD",
+    "code": "4.12",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-122",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Inspeksi Lingkungan kerja",
+    "code": "4.13",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-123",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "SIML Dan HSE Passport",
+    "code": "4.14",
+    "category": "Inspection",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-124",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Upload List Peralatan (COID)",
+    "code": "5.1",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-125",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Upload Sertifikat Lifting gear",
+    "code": "5.2",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-126",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Upload Sertifikat Peralatan",
+    "code": "5.3",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-127",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Inspeksi Lifting Gear",
+    "code": "5.4",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-128",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Foto Checklist Inspeksi Peralatan Harian",
+    "code": "5.5",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-129",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "HSE Drill Dilokasi",
+    "code": "5.6",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-130",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "MOC Report",
+    "code": "5.7",
+    "category": "Equipment",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-131",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Pelaporan Incident",
+    "code": "6.1",
+    "category": "Incident",
+    "status": "Upcoming",
+    "attachments": []
+  },
+  {
+    "id": "task-132",
+    "project_id": "8d891baf-04b0-44fb-b8d5-bf93e19225f6",
+    "title": "Safety Stand Down dilokasi",
+    "code": "6.2",
+    "category": "Incident",
+    "status": "Upcoming",
+    "attachments": []
+  }
+]

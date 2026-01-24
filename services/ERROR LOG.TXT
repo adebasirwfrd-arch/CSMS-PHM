@@ -1,0 +1,745 @@
+===== Application Startup at 2026-01-05 05:31:33 =====
+
+/usr/local/lib/python3.10/site-packages/google/api_core/_python_version_support.py:266: FutureWarning: You are using a Python version (3.10.19) which Google will stop supporting in new releases of google.api_core once it reaches its end of life (2026-10-04). Please upgrade to the latest Python version, or at least Python 3.11, to continue receiving updates for google.api_core past that date.
+  warnings.warn(message, FutureWarning)
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:7860 (Press CTRL+C to quit)
+[SUPABASE] Initializing Supabase Service...
+  [DEBUG] SUPABASE_URL: https://lcjqylqgiizvejbiiufi.s...
+  [DEBUG] SUPABASE_KEY: SET
+[OK] Supabase client initialized!
+[DB] Supabase enabled: True
+[DB] Using Supabase cloud storage
+[INFO] Initializing Google Drive Service...
+  [DEBUG] GOOGLE_DRIVE_FOLDER_ID: 1xrzCZFGlr-E9lgssRYv...
+  [DEBUG] GOOGLE_TOKEN_JSON length: 773 chars
+  [DEBUG] SERVICE_ACCOUNT_JSON length: 2326 chars
+  [DEBUG] GOOGLE_CREDENTIALS_JSON length: 0 chars
+[INFO] Attempting OAuth2 token authentication...
+[INFO] Refreshing expired OAuth token...
+[OK] OAuth token refreshed successfully
+[OK] Google Drive service initialized via OAuth2 (refreshed)!
+INFO:     10.16.15.249:3736 - "GET /?logs=container HTTP/1.1" 200 OK
+INFO:     10.16.30.4:41585 - "GET /projects?t=1767591107498 HTTP/1.1" 200 OK
+INFO:     10.16.15.249:3736 - "GET /tasks?t=1767591107498 HTTP/1.1" 200 OK
+INFO:     10.16.30.4:41585 - "GET /tasks?t=1767591107900 HTTP/1.1" 200 OK
+INFO:     10.16.15.249:3736 - "GET /comments HTTP/1.1" 200 OK
+INFO:     10.16.15.249:42298 - "GET /projects?t=1767591107900 HTTP/1.1" 200 OK
+INFO:     10.16.30.4:44544 - "GET /schedules HTTP/1.1" 200 OK
+INFO:     10.16.15.249:42298 - "GET /comments HTTP/1.1" 200 OK
+INFO:     10.16.30.4:44544 - "GET /schedules HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 74, in create_project
+    result = self.client.table('projects').insert(project_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': "Could not find the 'rig_down' column of 'projects' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_project called, enabled=True
+[SUPABASE] Project data: {'id': '05cfc59c-9502-4765-b454-65642b87972a', 'created_at': '2026-01-05T05:32:07.912234', 'name': 'PEPZ7_AMJ-4T_MPD', 'description': '', 'well_name': 'AMJ-4T', 'kontrak_no': 'TBA', 'start_date': '2026-01-01', 'end_date': None, 'rig_down_date': None, 'rig_down': '2026-01-08', 'pic_email': 'helmi.helmi4@Weatherford.com', 'pic_manager_email': 'andryprasthio2@weatherford.com', 'status': 'Upcoming'}
+[SUPABASE] Inserting into projects table...
+[ERROR] Error creating project: {'message': "Could not find the 'rig_down' column of 'projects' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: MWT Report
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: HSE Committee Meeting
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Poster IOGP CLSR
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Rambu K3 (Rambu Titik Jepit, Chemical, No Smoking, Electricity)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Pemasangan Poster Live Saving Rules
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Meeting dilokasi (HSE Weekly, PJSM, Tailgate)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto saat menyampaikan safety moment dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto training dilokasi (H2S, SIKA, JSA, etc)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto HSE Campaign (Reward, Safety Moment, Marshal)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto TRA Dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto saat Pemeriksaan Fit to task dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Observation Card / PEKA
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Lakukan Hazard Hunt Dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Pelaporan Near miss
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Saat Housekeeping
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Manajemen Chemical
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto PTW & JSA Dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto PJSM (Foto dan Absen)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Inspeksi Lapangan HSE
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Inspeksi P3K
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+  File "/app/services/supabase_service.py", line 74, in create_project
+    result = self.client.table('projects').insert(project_data).execute()
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': "Could not find the 'rig_down' column of 'projects' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Inspeksi APAR
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Inspeksi APD
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Inspeksi Lingkungan kerja
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: SIML Dan HSE Passport
+Traceback (most recent call last):
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Upload List Peralatan (COID)
+[SUPABASE] create_project called, enabled=True
+[SUPABASE] Project data: {'id': '1bdc14ef-3918-4f25-ad41-bb338686d131', 'created_at': '2026-01-05T05:32:12.920005', 'name': 'PEPZ7_AMJ-4T_MPD', 'description': '', 'well_name': 'AMJ-4T', 'kontrak_no': 'TBA', 'start_date': '2026-01-01', 'end_date': None, 'rig_down_date': None, 'rig_down': '2026-01-08', 'pic_email': 'helmi.helmi4@Weatherford.com', 'pic_manager_email': 'andryprasthio2@weatherford.com', 'status': 'Upcoming'}
+[SUPABASE] Inserting into projects table...
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[ERROR] Error creating project: {'message': "Could not find the 'rig_down' column of 'projects' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Upload Sertifikat Lifting gear
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: MWT Report
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Upload Sertifikat Peralatan
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: HSE Committee Meeting
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Poster IOGP CLSR
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Inspeksi Lifting Gear
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Rambu K3 (Rambu Titik Jepit, Chemical, No Smoking, Electricity)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Checklist Inspeksi Peralatan Harian
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Pemasangan Poster Live Saving Rules
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Meeting dilokasi (HSE Weekly, PJSM, Tailgate)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: HSE Drill Dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto saat menyampaikan safety moment dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: MOC Report
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Pelaporan Incident
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto training dilokasi (H2S, SIKA, JSA, etc)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] Inserting task: Safety Stand Down dilokasi
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto HSE Campaign (Reward, Safety Moment, Marshal)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto TRA Dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(05cfc59c-9502-4765-b454-65642b87972a) is not present in table "projects".'}
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto saat Pemeriksaan Fit to task dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Observation Card / PEKA
+INFO:     10.16.30.4:55756 - "POST /projects HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Lakukan Hazard Hunt Dilokasi
+[FOUND] Existing folder: PEPZ7_AMJ-4T_MPD
+[INFO] Generating Excel report...
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Pelaporan Near miss
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Saat Housekeeping
+[FOUND] Existing folder: CSMS_REPORTS
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Manajemen Chemical
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto PTW & JSA Dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto PJSM (Foto dan Absen)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Inspeksi Lapangan HSE
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Inspeksi P3K
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Inspeksi APAR
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Inspeksi APD
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Inspeksi Lingkungan kerja
+[OK] File uploaded to Google Drive: CSMS_REPORTS/CSMS_Track_Report_2026-01-05.xlsx (ID: 1WPlDOetzFCmkkUyEBe365TfgIusgT7Rx)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+INFO:     10.16.30.4:55756 - "GET /tasks?t=1767591135530 HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: SIML Dan HSE Passport
+INFO:     10.16.15.249:11976 - "GET /projects?t=1767591135530 HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Upload List Peralatan (COID)
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Upload Sertifikat Lifting gear
+INFO:     10.16.15.249:11976 - "GET /comments HTTP/1.1" 200 OK
+INFO:     10.16.30.4:55756 - "GET /schedules HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Upload Sertifikat Peralatan
+[ERROR] Error creating task: Server disconnected
+[ERROR] Error fetching schedules: Server disconnected
+INFO:     10.16.30.4:21792 - "GET /statistics HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/connection.py", line 103, in handle_request
+    return self._connection.handle_request(request)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 187, in handle_request
+    raise exc
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 150, in handle_request
+    status, headers = self._receive_response(
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 294, in _receive_response
+    event = self._receive_stream_event(request, stream_id)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 336, in _receive_stream_event
+    self._receive_events(request, stream_id)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 364, in _receive_events
+    events = self._read_incoming_data(request)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 438, in _read_incoming_data
+    raise self._read_exception  # pragma: nocover
+  File "/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/connection.py", line 103, in handle_request
+    return self._connection.handle_request(request)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 187, in handle_request
+    raise exc
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 150, in handle_request
+    status, headers = self._receive_response(
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 294, in _receive_response
+    event = self._receive_stream_event(request, stream_id)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 336, in _receive_stream_event
+    self._receive_events(request, stream_id)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 364, in _receive_events
+    events = self._read_incoming_data(request)
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 455, in _read_incoming_data
+    raise exc
+  File "/usr/local/lib/python3.10/site-packages/httpcore/_sync/http2.py", line 443, in _read_incoming_data
+    raise RemoteProtocolError("Server disconnected")
+httpcore.RemoteProtocolError: Server disconnected
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 47, in execute
+    r = self.request.send()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/base_request_builder.py", line 81, in send
+    return self.session.request(
+  File "/usr/local/lib/python3.10/site-packages/httpx/_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+  File "/usr/local/lib/python3.10/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+  File "/usr/local/lib/python3.10/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+  File "/usr/local/lib/python3.10/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "/usr/local/lib/python3.10/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+  File "/usr/local/lib/python3.10/contextlib.py", line 153, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.RemoteProtocolError: Server disconnected
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Inspeksi Lifting Gear
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Foto Checklist Inspeksi Peralatan Harian
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: HSE Drill Dilokasi
+INFO:     10.16.30.4:21792 - "GET /schedules?t=1767591138926 HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: MOC Report
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+INFO:     10.16.30.4:21792 - "GET /csms-pb HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+INFO:     10.16.15.249:11976 - "GET /csms-pb?t=1767591139387 HTTP/1.1" 200 OK
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+Traceback (most recent call last):
+  File "/app/services/supabase_service.py", line 140, in create_task
+    result = self.client.table('tasks').insert(task_data).execute()
+  File "/usr/local/lib/python3.10/site-packages/postgrest/_sync/request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Pelaporan Incident
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+[SUPABASE] create_task called, enabled=True
+[SUPABASE] Inserting task: Safety Stand Down dilokasi
+[ERROR] Error creating task: {'message': 'insert or update on table "tasks" violates foreign key constraint "tasks_project_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (project_id)=(1bdc14ef-3918-4f25-ad41-bb338686d131) is not present in table "projects".'}
+INFO:     10.16.15.249:11976 - "GET /csms-pb HTTP/1.1" 200 OK
+INFO:     10.16.15.249:38621 - "POST /projects HTTP/1.1" 200 OK
+[CACHE] Using cached folder: PEPZ7_AMJ-4T_MPD
+[INFO] Generating Excel report...
+[CACHE] Using cached folder: CSMS_REPORTS
+[OK] File uploaded to Google Drive: CSMS_REPORTS/CSMS_Track_Report_2026-01-05.xlsx (ID: 1gE7ak1AghlDn-6LKcqlRtPMtuot3FbNE)
+INFO:     10.16.30.4:21792 - "GET /tasks?t=1767591140624 HTTP/1.1" 200 OK
+INFO:     10.16.15.249:38621 - "GET /projects?t=1767591140624 HTTP/1.1" 200 OK
+INFO:     10.16.15.249:38621 - "GET /comments HTTP/1.1" 200 OK
+INFO:     10.16.30.4:21792 - "GET /schedules HTTP/1.1" 200 OK
+INFO:     10.16.30.4:49889 - "GET /statistics HTTP/1.1" 200 OK
+INFO:     10.16.30.4:49889 - "GET /schedules?t=1767591142800 HTTP/1.1" 200 OK
+INFO:     10.16.30.4:49889 - "GET /csms-pb HTTP/1.1" 200 OK
+INFO:     10.16.15.249:38621 - "GET /csms-pb?t=1767591143270 HTTP/1.1" 200 OK
+INFO:     10.16.30.4:49889 - "GET /csms-pb HTTP/1.1" 200 OK
+ 

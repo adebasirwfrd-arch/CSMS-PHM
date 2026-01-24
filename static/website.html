@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSMS - Project Management System</title>
+    <meta name="description"
+        content="CSMS Project Management System by Weatherford - Manage projects, tasks, and schedules efficiently.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #141414 0%, #1a1a2e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #C41E3A;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #C41E3A;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #C41E3A, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #b3b3b3;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #C41E3A;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(196, 30, 58, 0.4);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 60px 0;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #C41E3A;
+        }
+
+        .feature p {
+            color: #888;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid #333;
+            color: #666;
+        }
+
+        footer a {
+            color: #C41E3A;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">CSMS</div>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="/static/privacy-policy.html">Privacy Policy</a>
+                <a href="#contact">Contact</a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <h1>CSMS Project Management</h1>
+            <p>Streamline your project management with CSMS - the comprehensive solution for tracking projects, tasks,
+                and schedules in the oil & gas industry.</p>
+            <a href="https://play.google.com/store/apps/details?id=com.adewfrd.csmsapp" class="btn">
+                Download on Play Store
+            </a>
+        </section>
+
+        <section class="features" id="features">
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>Project Tracking</h3>
+                <p>Monitor all your projects with real-time status updates, progress tracking, and detailed statistics.
+                </p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✅</div>
+                <h3>Task Management</h3>
+                <p>Create, assign, and track tasks with status filters and completion monitoring.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📅</div>
+                <h3>Schedule Calendar</h3>
+                <p>Visual calendar with MWT, HSE Committee, and CSMS PB Audit scheduling.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📧</div>
+                <h3>Email Notifications</h3>
+                <p>Automatic email reminders for schedules and project deadlines.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📄</div>
+                <h3>PDF Reports</h3>
+                <p>Generate comprehensive PDF reports for projects and documentation.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure Storage</h3>
+                <p>All data securely stored with Google Drive integration.</p>
+            </div>
+        </section>
+
+        <footer id="contact">
+            <p>© 2024 CSMS by Weatherford. All rights reserved.</p>
+            <p style="margin-top: 10px;">
+                <a href="/static/privacy-policy.html">Privacy Policy</a> |
+                <a href="mailto:support@weatherford.com">Contact Support</a>
+            </p>
+        </footer>
+    </div>
+</body>
+
+</html>

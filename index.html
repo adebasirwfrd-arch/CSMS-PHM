@@ -1,0 +1,3917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CSMS Project Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --netflix-red: #C41E3A;
+            --netflix-red-dark: #9A1830;
+            --weatherford-red: #C41E3A;
+            --bg-primary: #141414;
+            --bg-secondary: #1F1F1F;
+            --bg-tertiary: #2A2A2A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B3B3B3;
+            --text-muted: #757575;
+            --success: #46D369;
+            --warning: #F5A623;
+            --border: #333333;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--netflix-red);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .create-btn {
+            background: var(--netflix-red);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .create-btn:hover {
+            background: var(--netflix-red-dark);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--netflix-red);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* ===== SIDE DRAWER ===== */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100%;
+            background: var(--bg-secondary);
+            z-index: 201;
+            transition: left 0.3s ease, visibility 0.3s;
+            display: flex;
+            flex-direction: column;
+            visibility: hidden;
+            transform: translateX(-100%);
+        }
+
+        .drawer.active {
+            left: 0;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .weatherford-logo {
+            background: var(--netflix-red);
+            padding: 10px 15px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .weatherford-logo span {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .drawer-close {
+            background: none;
+            border: none;
+            color: var(--netflix-red);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .drawer-profile {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .drawer-avatar {
+            width: 70px;
+            height: 70px;
+            background: var(--netflix-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 10px;
+        }
+
+        .drawer-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .drawer-email {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .drawer-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .drawer-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .drawer-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .drawer-item.active {
+            color: var(--netflix-red);
+        }
+
+        .drawer-item svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .drawer-footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .drawer-footer p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== BOTTOM NAVIGATION ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: var(--netflix-red);
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            padding-top: 60px;
+            padding-bottom: 80px;
+            min-height: 100vh;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px 16px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* ===== HOME SCREEN ===== */
+        .home-logo {
+            width: 80px;
+            height: 80px;
+            background: var(--netflix-red);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+        }
+
+        .home-logo svg {
+            width: 30px;
+            height: 30px;
+            margin-bottom: 4px;
+        }
+
+        .home-logo span {
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .home-greeting {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--netflix-red);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ===== PROJECTS/TASKS SCREEN ===== */
+        .screen-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .screen-tab {
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-weight: 500;
+        }
+
+        .screen-tab.active {
+            color: var(--netflix-red);
+            border-bottom-color: var(--netflix-red);
+        }
+
+        .status-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .status-dot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .status-dot::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-dot.active::before {
+            background: var(--netflix-red);
+        }
+
+        .status-dot.active {
+            background: var(--netflix-red);
+            color: white;
+        }
+
+        .status-section {
+            background: var(--netflix-red);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .status-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .project-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .project-card:hover {
+            transform: translateX(4px);
+        }
+
+        .project-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .project-card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .project-card-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-upcoming {
+            background: var(--warning);
+            color: #000;
+        }
+
+        .badge-inprogress {
+            background: var(--success);
+        }
+
+        .badge-completed {
+            background: #4A90D9;
+        }
+
+        .badge-onhold {
+            background: #9B59B6;
+        }
+
+        .badge-canceled {
+            background: var(--text-muted);
+        }
+
+        .project-card-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== FORM MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            z-index: 300;
+            display: none;
+            flex-direction: column;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-header {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-back {
+            background: none;
+            border: none;
+            color: var(--netflix-red);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 16px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-label span {
+            color: var(--netflix-red);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--netflix-red);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .status-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .status-chip {
+            padding: 10px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .status-chip.active {
+            background: var(--netflix-red);
+            border-color: var(--netflix-red);
+            color: white;
+        }
+
+        .date-input-wrap {
+            position: relative;
+        }
+
+        .date-input-wrap input {
+            padding-right: 40px;
+        }
+
+        .date-input-wrap svg {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--netflix-red);
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 2px solid var(--netflix-red);
+            color: var(--netflix-red);
+        }
+
+        .btn-save {
+            background: var(--netflix-red);
+            border: 2px solid var(--netflix-red);
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: var(--netflix-red-dark);
+        }
+
+        /* ===== STATISTICS SCREEN ===== */
+        .chart-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            height: 24px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 12px;
+        }
+
+        .progress-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ===== TASK DETAIL MODAL ===== */
+        .task-detail-content {
+            padding: 20px;
+        }
+
+        .task-code {
+            color: var(--netflix-red);
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .task-title-detail {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .task-category {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--netflix-red);
+        }
+
+        .upload-area svg {
+            width: 40px;
+            height: 40px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Hidden file input */
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 767px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modal-content,
+            .drawer {
+                width: 100%;
+            }
+
+            .status-filters {
+                overflow-x: auto;
+                padding-bottom: 8px;
+                /* Hide scrollbar */
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .status-filters::-webkit-scrollbar {
+                display: none;
+            }
+
+            .screen {
+                padding-bottom: 80px;
+                /* Space for bottom nav if we had one, or just padding */
+            }
+        }
+
+        @media (min-width: 768px) {
+            .main {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .modal-body {
+                max-height: 70vh;
+            }
+        }
+
+        /* Schedule Type Chips */
+        .schedule-type-chip {
+            padding: 10px 16px;
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .schedule-type-chip:hover {
+            background: var(--bg-hover);
+        }
+
+        .schedule-type-chip.active {
+            background: rgba(196, 30, 58, 0.2);
+            border-color: var(--netflix-red);
+            color: var(--netflix-red);
+        }
+    </style>
+</head>
+
+<!-- Header -->
+<header class="header">
+    <button class="menu-btn" onclick="toggleDrawer()">☰</button>
+    <div style="font-weight: 600; font-size: 16px;">CSMS</div>
+    <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--weatherford-red); display: flex; align-items: center; justify-content: center; cursor: pointer;"
+        onclick="toggleDrawer()">
+        <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
+            <path
+                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+        </svg>
+    </div>
+</header>
+
+<!-- Side Drawer -->
+<div class="drawer-overlay" onclick="toggleDrawer()"></div>
+<nav class="drawer">
+    <div class="drawer-header">
+        <div class="weatherford-logo">
+            <img src="/static/weatherford_logo.png" alt="Logo" style="height: 32px; width: auto;">
+        </div>
+        <button class="drawer-close" onclick="toggleDrawer()">✕</button>
+    </div>
+
+    <div class="drawer-profile">
+        <div class="drawer-avatar" style="background: linear-gradient(135deg, #C41E3A, #9A1830);">
+            <svg viewBox="0 0 24 24" fill="white" width="24" height="24">
+                <path
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            </svg>
+        </div>
+        <div class="drawer-name">User</div>
+        <div class="drawer-email">user@weatherford.com</div>
+    </div>
+
+    <div class="drawer-nav">
+        <div class="drawer-item active" onclick="navigateTo('home')">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+            Home
+        </div>
+        <div class="drawer-item" onclick="navigateTo('projects')">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+            </svg>
+            Projects
+        </div>
+        <div class="drawer-item" onclick="navigateTo('tasks')">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+            </svg>
+            Tasks
+        </div>
+        <div class="drawer-item" onclick="navigateTo('statistics')">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
+            </svg>
+            Statistics
+        </div>
+        <div class="drawer-item" onclick="navigateTo('schedule')">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z" />
+            </svg>
+            Schedule
+        </div>
+        <div class="drawer-item" onclick="navigateTo('csms-pb')">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z" />
+            </svg>
+            CSMS PB
+        </div>
+        <div class="drawer-item" onclick="navigateTo('related-docs')">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+            </svg>
+            Related Docs
+        </div>
+        <div class="drawer-item" onclick="downloadReport()">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+            </svg>
+            Download
+        </div>
+    </div>
+
+    <div class="drawer-footer">
+        <p>CSMS App v1.0</p>
+        <p>Weatherford © 2025</p>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main">
+    <!-- Home Screen - Modern Dashboard -->
+    <section class="screen active" id="screen-home" style="overflow-y: auto; height: calc(100vh - 130px);">
+        <!-- Hero Banner with Logo -->
+        <div
+            style="background: linear-gradient(135deg, #C41E3A 0%, #9A1830 100%); border-radius: 16px; padding: 24px; margin-bottom: 20px; text-align: center;">
+            <img src="/static/weatherford_logo.png" alt="Weatherford"
+                style="width: 180px; height: auto; margin-bottom: 12px;">
+            <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">Welcome!</h1>
+            <p style="color: rgba(255,255,255,0.8); font-size: 14px;">CSMS Project Management System</p>
+        </div>
+
+        <!-- Quick Stats Row - Clickable Navigation -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+            <div onclick="navigateToProjectsFiltered('all')"
+                style="background: var(--bg-tertiary); border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.transform='scale(1.02)'; this.style.background='var(--bg-hover)';"
+                onmouseout="this.style.transform='scale(1)'; this.style.background='var(--bg-tertiary)';">
+                <div id="home-total-projects" style="font-size: 28px; font-weight: 700; color: var(--weatherford-red);">
+                    0</div>
+                <div style="font-size: 11px; color: var(--text-secondary);">Projects</div>
+            </div>
+            <div onclick="navigateToProjectsFiltered('InProgress')"
+                style="background: var(--bg-tertiary); border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.transform='scale(1.02)'; this.style.background='var(--bg-hover)';"
+                onmouseout="this.style.transform='scale(1)'; this.style.background='var(--bg-tertiary)';">
+                <div id="home-ongoing" style="font-size: 28px; font-weight: 700; color: var(--success);">0</div>
+                <div style="font-size: 11px; color: var(--text-secondary);">In Progress</div>
+            </div>
+            <div onclick="navigateToProjectsFiltered('Upcoming')"
+                style="background: var(--bg-tertiary); border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.transform='scale(1.02)'; this.style.background='var(--bg-hover)';"
+                onmouseout="this.style.transform='scale(1)'; this.style.background='var(--bg-tertiary)';">
+                <div id="home-upcoming" style="font-size: 28px; font-weight: 700; color: var(--warning);">0</div>
+                <div style="font-size: 11px; color: var(--text-secondary);">Upcoming</div>
+            </div>
+            <div onclick="navigateToProjectsFiltered('Completed')"
+                style="background: var(--bg-tertiary); border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.transform='scale(1.02)'; this.style.background='var(--bg-hover)';"
+                onmouseout="this.style.transform='scale(1)'; this.style.background='var(--bg-tertiary)';">
+                <div id="home-completed" style="font-size: 28px; font-weight: 700; color: #888;">0</div>
+                <div style="font-size: 11px; color: var(--text-secondary);">Completed</div>
+            </div>
+        </div>
+
+        <!-- Create Post Section -->
+        <div
+            style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border);">
+            <h4 style="font-size: 14px; margin-bottom: 12px; color: var(--text-secondary);">💬 Share a Comment</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                <input type="text" id="post-name" placeholder="Your Name"
+                    style="background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text-primary); font-size: 13px; width: 100%; box-sizing: border-box;">
+                <input type="text" id="post-pl" placeholder="Project Lead"
+                    style="background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text-primary); font-size: 13px; width: 100%; box-sizing: border-box;">
+            </div>
+            <textarea id="post-input" placeholder="Write your comment or update..."
+                style="width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text-primary); font-size: 14px; min-height: 60px; resize: vertical; margin-bottom: 12px; box-sizing: border-box;"></textarea>
+
+            <!-- Attachment Preview -->
+            <div id="post-attachment-preview"
+                style="display: none; margin-bottom: 12px; padding: 10px; background: var(--bg-tertiary); border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="post-attachment-name" style="font-size: 12px; color: var(--success);">📎 Attachment
+                        added</span>
+                    <button onclick="removePostAttachment()"
+                        style="background: none; border: none; color: var(--netflix-red); cursor: pointer; font-size: 16px;">✕</button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; gap: 16px;">
+                    <span onclick="pickPostPhoto()"
+                        style="color: var(--text-muted); font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 6px; transition: all 0.2s;"
+                        onmouseover="this.style.background='var(--bg-tertiary)'"
+                        onmouseout="this.style.background='transparent'">📷 Photo</span>
+                    <span onclick="pickPostFile()"
+                        style="color: var(--text-muted); font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 6px; transition: all 0.2s;"
+                        onmouseover="this.style.background='var(--bg-tertiary)'"
+                        onmouseout="this.style.background='transparent'">📎 File</span>
+                </div>
+                <button onclick="createPost()"
+                    style="background: var(--weatherford-red); color: white; border: none; padding: 8px 24px; border-radius: 20px; font-weight: 600; font-size: 13px; cursor: pointer;">Post</button>
+            </div>
+
+            <!-- Hidden file inputs -->
+            <input type="file" id="post-photo-input" accept="image/*" onchange="handlePostPhotoSelect(event)"
+                style="display: none;">
+            <input type="file" id="post-file-input" onchange="handlePostFileSelect(event)" style="display: none;">
+        </div>
+
+        <!-- Posts Feed -->
+        <div id="posts-container" style="margin-bottom: 20px;">
+            <!-- Sample Post 1 -->
+            <div class="post-card"
+                style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                    <div
+                        style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #C41E3A, #9A1830); display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                        📢</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600;">CSMS Admin</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">System Announcement • Just now</div>
+                    </div>
+                </div>
+                <p style="font-size: 14px; line-height: 1.5; margin-bottom: 12px;">Welcome to the new CSMS
+                    Dashboard! We've added new features including project reports, email reminders, and an improved
+                    statistics view. Let us know your feedback!</p>
+                <div style="display: flex; gap: 24px; padding-top: 12px; border-top: 1px solid var(--border);">
+                    <span onclick="toggleLike(this)" data-liked="false"
+                        style="color: var(--text-secondary); font-size: 13px; cursor: pointer; transition: all 0.2s;">👍
+                        Like</span>
+                    <span onclick="toggleReplyForm(this.parentElement.parentElement)"
+                        style="color: var(--text-secondary); font-size: 13px; cursor: pointer;">💬 Comment</span>
+                </div>
+                <!-- Reply Form (hidden by default) -->
+                <div class="reply-form"
+                    style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+                    <div style="display: flex; gap: 10px; align-items: flex-start;">
+                        <input type="text" class="reply-input" placeholder="Write a reply..."
+                            style="flex: 1; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 20px; padding: 10px 16px; color: var(--text-primary); font-size: 13px;">
+                        <span onclick="pickReplyPhoto(this.parentElement)"
+                            style="cursor: pointer; font-size: 18px; padding: 8px;">📷</span>
+                        <button onclick="submitReply(this.parentElement.parentElement)"
+                            style="background: var(--netflix-red); color: white; border: none; padding: 10px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;">Reply</button>
+                    </div>
+                    <div class="reply-photo-preview"
+                        style="display: none; margin-top: 8px; font-size: 12px; color: var(--success);"></div>
+                    <div class="replies-container" style="margin-top: 12px;"></div>
+                </div>
+            </div>
+
+            <!-- Sample Post 2 - Project Update -->
+            <div class="post-card"
+                style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                    <div
+                        style="width: 44px; height: 44px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                        ✓</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600;">Project Update</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Auto-generated • Today</div>
+                    </div>
+                </div>
+                <p style="font-size: 14px; line-height: 1.5; margin-bottom: 8px;">🎉 <strong>Great
+                        Progress!</strong> Project tasks are moving forward smoothly. Check the Statistics dashboard
+                    for detailed completion rates.</p>
+                <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span style="font-size: 13px;">Overall Completion</span>
+                        <span style="font-size: 13px; font-weight: 600;" id="home-completion-rate">0%</span>
+                    </div>
+                    <div style="background: var(--border); border-radius: 4px; height: 8px; overflow: hidden;">
+                        <div id="home-progress-bar"
+                            style="height: 100%; background: var(--success); width: 0%; transition: width 0.5s;">
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 24px; padding-top: 12px; border-top: 1px solid var(--border);">
+                    <span onclick="toggleLike(this)" data-liked="false"
+                        style="color: var(--text-secondary); font-size: 13px; cursor: pointer; transition: all 0.2s;">👍
+                        Like</span>
+                    <span onclick="toggleReplyForm(this.parentElement.parentElement)"
+                        style="color: var(--text-secondary); font-size: 13px; cursor: pointer;">💬 Comment</span>
+                </div>
+                <!-- Reply Form (hidden by default) -->
+                <div class="reply-form"
+                    style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+                    <div style="display: flex; gap: 10px; align-items: flex-start;">
+                        <input type="text" class="reply-input" placeholder="Write a reply..."
+                            style="flex: 1; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 20px; padding: 10px 16px; color: var(--text-primary); font-size: 13px;">
+                        <span onclick="pickReplyPhoto(this.parentElement)"
+                            style="cursor: pointer; font-size: 18px; padding: 8px;">📷</span>
+                        <button onclick="submitReply(this.parentElement.parentElement)"
+                            style="background: var(--netflix-red); color: white; border: none; padding: 10px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;">Reply</button>
+                    </div>
+                    <div class="reply-photo-preview"
+                        style="display: none; margin-top: 8px; font-size: 12px; color: var(--success);"></div>
+                    <div class="replies-container" style="margin-top: 12px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div
+            style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border);">
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px;">Quick Actions</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <button onclick="showCreateModal()"
+                    style="background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 10px; padding: 16px 8px; text-align: center; cursor: pointer; color: var(--text-primary);">
+                    <div style="font-size: 24px; margin-bottom: 6px;">➕</div>
+                    <div style="font-size: 12px;">New Project</div>
+                </button>
+                <button onclick="navigateTo('tasks')"
+                    style="background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 10px; padding: 16px 8px; text-align: center; cursor: pointer; color: var(--text-primary);">
+                    <div style="font-size: 24px; margin-bottom: 6px;">📋</div>
+                    <div style="font-size: 12px;">View Tasks</div>
+                </button>
+                <button onclick="downloadReport()"
+                    style="background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 10px; padding: 16px 8px; text-align: center; cursor: pointer; color: var(--text-primary);">
+                    <div style="font-size: 24px; margin-bottom: 6px;">📥</div>
+                    <div style="font-size: 12px;">Download</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Monthly Calendar -->
+        <div
+            style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <button onclick="changeCalendarMonth(-1)"
+                    style="background: var(--bg-tertiary); border: none; color: var(--text-primary); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 16px;">◀</button>
+                <h3 id="calendar-month-title" style="font-size: 16px; font-weight: 700; margin: 0;"></h3>
+                <button onclick="changeCalendarMonth(1)"
+                    style="background: var(--bg-tertiary); border: none; color: var(--text-primary); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 16px;">▶</button>
+            </div>
+
+            <!-- Calendar Days Header -->
+            <div
+                style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 8px; text-align: center;">
+                <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; padding: 4px;">Sun</div>
+                <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; padding: 4px;">Mon</div>
+                <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; padding: 4px;">Tue</div>
+                <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; padding: 4px;">Wed</div>
+                <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; padding: 4px;">Thu</div>
+                <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; padding: 4px;">Fri</div>
+                <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; padding: 4px;">Sat</div>
+            </div>
+
+            <!-- Calendar Days Grid -->
+            <div id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;"></div>
+
+            <!-- Legend -->
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-size: 11px;">
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span style="width: 8px; height: 8px; background: var(--netflix-red); border-radius: 50%;"></span>
+                    Project
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span style="width: 8px; height: 8px; background: #4A90D9; border-radius: 50%;"></span> MWT
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span style="width: 8px; height: 8px; background: #46D369; border-radius: 50%;"></span> HSE
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span style="width: 8px; height: 8px; background: #F5A623; border-radius: 50%;"></span> CSMS PB
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div
+            style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; border: 1px solid var(--border);">
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px;">📊 Recent Activity</h3>
+            <div id="recent-activity" style="font-size: 13px; color: var(--text-secondary);">
+                <div style="display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                    <span style="color: var(--success);">●</span>
+                    <span>Projects loaded successfully</span>
+                </div>
+                <div style="display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                    <span style="color: var(--warning);">●</span>
+                    <span>Checking for schedule reminders...</span>
+                </div>
+                <div style="display: flex; gap: 10px; padding: 10px 0;">
+                    <span style="color: var(--weatherford-red);">●</span>
+                    <span>Dashboard ready</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Screen -->
+    <section class="screen" id="screen-projects" style="overflow-y: auto; height: calc(100vh - 130px);">
+        <div class="screen-tabs">
+            <div class="screen-tab active">Projects</div>
+            <button onclick="showCreateModal()"
+                style="background: var(--weatherford-red); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">+
+                New</button>
+        </div>
+
+        <div class="status-filters" id="project-status-filters" style="flex-wrap: wrap;">
+            <div class="status-dot active" data-filter="all" onclick="filterProjects('all')">All <span id="count-all"
+                    style="opacity: 0.7;">(0)</span></div>
+            <div class="status-dot" data-filter="Upcoming" onclick="filterProjects('Upcoming')">Upcoming <span
+                    id="count-upcoming" style="opacity: 0.7;">(0)</span></div>
+            <div class="status-dot" data-filter="InProgress" onclick="filterProjects('InProgress')">InProgress <span
+                    id="count-inprogress" style="opacity: 0.7;">(0)</span></div>
+            <div class="status-dot" data-filter="Completed" onclick="filterProjects('Completed')">Completed <span
+                    id="count-completed" style="opacity: 0.7;">(0)</span></div>
+            <div class="status-dot" data-filter="OnHold" onclick="filterProjects('OnHold')">OnHold <span
+                    id="count-onhold" style="opacity: 0.7;">(0)</span></div>
+            <div class="status-dot" data-filter="Canceled" onclick="filterProjects('Canceled')">Canceled <span
+                    id="count-canceled" style="opacity: 0.7;">(0)</span></div>
+        </div>
+
+        <div id="projects-container"></div>
+    </section>
+
+    <!-- Tasks Screen -->
+    <section class="screen" id="screen-tasks" style="overflow-y: auto; height: calc(100vh - 130px);">
+        <div class="screen-tabs">
+            <div class="screen-tab active">Tasks</div>
+            <button onclick="showTaskModal()"
+                style="background: var(--weatherford-red); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">+
+                Create Task</button>
+        </div>
+
+        <div class="status-filters" id="task-status-filters" style="flex-wrap: wrap;">
+            <div class="status-dot active" data-filter="all" onclick="filterTasks('all')">All <span id="task-count-all"
+                    style="opacity: 0.7;">(0)</span></div>
+            <div class="status-dot" data-filter="Upcoming" onclick="filterTasks('Upcoming')">Upcoming <span
+                    id="task-count-upcoming" style="opacity: 0.7;">(0)</span></div>
+            <div class="status-dot" data-filter="In Progress" onclick="filterTasks('In Progress')">In Progress <span
+                    id="task-count-inprogress" style="opacity: 0.7;">(0)</span></div>
+            <div class="status-dot" data-filter="Completed" onclick="filterTasks('Completed')">Completed <span
+                    id="task-count-completed" style="opacity: 0.7;">(0)</span></div>
+        </div>
+
+        <div id="tasks-container"></div>
+    </section>
+
+    <!-- Statistics Screen - Modern Dashboard -->
+    <section class="screen" id="screen-statistics" style="overflow-y: auto; height: calc(100vh - 130px);">
+        <!-- Dashboard Header -->
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <svg viewBox="0 0 24 24" fill="var(--netflix-red)" width="28" height="28">
+                <path
+                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
+            </svg>
+            <h2 style="font-size: 24px; font-weight: 700;">Dashboard</h2>
+        </div>
+
+        <!-- KPI Cards Row -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+            <div
+                style="background: linear-gradient(135deg, #E50914 0%, #B20710 100%); border-radius: 12px; padding: 16px;">
+                <div style="font-size: 12px; opacity: 0.8;">Total Projects</div>
+                <div id="stat-total-projects" style="font-size: 32px; font-weight: 700;">0</div>
+            </div>
+            <div
+                style="background: linear-gradient(135deg, #46D369 0%, #2E8B4F 100%); border-radius: 12px; padding: 16px;">
+                <div style="font-size: 12px; opacity: 0.8;">Total Tasks</div>
+                <div id="stat-total-tasks" style="font-size: 32px; font-weight: 700;">0</div>
+            </div>
+            <div
+                style="background: linear-gradient(135deg, #4A90D9 0%, #2E5A8C 100%); border-radius: 12px; padding: 16px;">
+                <div style="font-size: 12px; opacity: 0.8;">Completion Rate</div>
+                <div id="stat-completion-rate" style="font-size: 32px; font-weight: 700;">0%</div>
+            </div>
+            <div
+                style="background: linear-gradient(135deg, #F5A623 0%, #C88820 100%); border-radius: 12px; padding: 16px;">
+                <div style="font-size: 12px; opacity: 0.8;">Upcoming MWT</div>
+                <div id="stat-upcoming-mwt" style="font-size: 32px; font-weight: 700;">0</div>
+            </div>
+        </div>
+
+        <!-- Project Status Donut Chart -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Project Status Distribution</div>
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <div id="project-donut-chart" style="width: 120px; height: 120px; position: relative;">
+                    <!-- SVG donut chart will be inserted here -->
+                </div>
+                <div id="project-legend-new" style="flex: 1;">
+                    <!-- Legend items -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Status Donut Chart -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Task Status Distribution</div>
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <div id="task-donut-chart" style="width: 120px; height: 120px; position: relative;">
+                    <!-- SVG donut chart will be inserted here -->
+                </div>
+                <div id="task-legend-new" style="flex: 1;">
+                    <!-- Legend items -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Completion Progress -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Project Task Completion</div>
+            <div id="project-completion-bars" style="max-height: 300px; overflow-y: auto;">
+                <!-- Progress bars will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Schedule Quick Stats -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Schedule Overview</div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center;">
+                <div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--netflix-red);"
+                        id="stat-total-schedules">0</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Total Schedules</div>
+                </div>
+                <div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="stat-upcoming-hse">0
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Upcoming HSE</div>
+                </div>
+                <div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--warning);" id="stat-this-month">0
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted);">This Month</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Quick Actions</div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button onclick="checkReminders()" class="btn btn-save" style="flex: 1; min-width: 120px;">
+                    📧 Check Reminders
+                </button>
+                <button onclick="loadDashboardStats()" class="btn btn-cancel" style="flex: 1; min-width: 120px;">
+                    🔄 Refresh Stats
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Schedule Screen -->
+    <section class="screen" id="screen-schedule" style="overflow-y: auto; height: calc(100vh - 130px);">
+        <!-- Header with icon -->
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <svg viewBox="0 0 24 24" fill="var(--netflix-red)" width="28" height="28">
+                <path
+                    d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z" />
+            </svg>
+            <h2 style="font-size: 24px; font-weight: 700;">Schedule</h2>
+        </div>
+
+        <!-- Create New Schedule Form -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+            <h3 style="font-size: 18px; margin-bottom: 20px;">Create New Schedule</h3>
+
+            <form id="schedule-form">
+                <!-- Schedule Type Selector -->
+                <div class="form-group">
+                    <label class="form-label">Schedule Type <span>*</span></label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <div class="schedule-type-chip active" data-type="mwt" onclick="selectScheduleType('mwt')">
+                            📅 MWT Plan
+                        </div>
+                        <div class="schedule-type-chip" data-type="hse" onclick="selectScheduleType('hse')">
+                            🏢 HSE Committee
+                        </div>
+                        <div class="schedule-type-chip" data-type="csms" onclick="selectScheduleType('csms')">
+                            ✅ CSMS PB Audit
+                        </div>
+                    </div>
+                    <input type="hidden" name="schedule_type" id="schedule-type-input" value="mwt">
+                </div>
+
+                <!-- Project Name - Dropdown -->
+                <div class="form-group">
+                    <label class="form-label">Project Name <span>*</span></label>
+                    <select class="form-input" name="project_id" id="schedule-project-select" required
+                        style="cursor: pointer;">
+                        <option value="">Select a project</option>
+                    </select>
+                </div>
+
+                <!-- Well Name -->
+                <div class="form-group">
+                    <label class="form-label">Well Name <span>*</span></label>
+                    <input type="text" class="form-input" name="well_name" placeholder="Enter well name" required>
+                </div>
+
+                <!-- MWT Plan Date -->
+                <div class="form-group schedule-date-field" id="mwt-date-group">
+                    <label class="form-label">MWT Plan Date <span>*</span></label>
+                    <div class="date-input-wrap">
+                        <input type="date" class="form-input" name="mwt_plan_date" id="mwt-date-input">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- HSE Committee Meeting Plan -->
+                <div class="form-group schedule-date-field" id="hse-date-group" style="display: none;">
+                    <label class="form-label">HSE Committee Meeting Date <span>*</span></label>
+                    <div class="date-input-wrap">
+                        <input type="date" class="form-input" name="hse_meeting_date" id="hse-date-input">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- CSMS PB Audit Date -->
+                <div class="form-group schedule-date-field" id="csms-date-group" style="display: none;">
+                    <label class="form-label">CSMS PB Audit Date <span>*</span></label>
+                    <div class="date-input-wrap">
+                        <input type="date" class="form-input" name="csms_pb_date" id="csms-date-input">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- PIC Section -->
+                <div class="form-group">
+                    <label class="form-label"
+                        style="font-weight: 600; font-size: 16px; margin-bottom: 16px;">PIC</label>
+
+                    <!-- PIC Name -->
+                    <div style="margin-bottom: 12px;">
+                        <input type="text" class="form-input" name="pic_name" placeholder="Name" value="ADE" required>
+                    </div>
+
+                    <!-- Assigned To Email -->
+                    <div>
+                        <input type="email" class="form-input" name="assigned_to_email"
+                            placeholder="Email (e.g. john@weatherford.com)" required>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+                            An email notification will be sent to this address
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Create Schedule Button -->
+                <button type="button" class="btn btn-save" style="width: 100%; margin-top: 8px;"
+                    onclick="createSchedule()">
+                    Create Schedule
+                </button>
+            </form>
+        </div>
+
+        <!-- MWT Plan Schedule Calendar -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--netflix-red);">
+                MWT Plan Schedule
+            </h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Showing upcoming 3 months</p>
+            <!-- Month Filter -->
+            <div id="mwt-month-filter" style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                <!-- Populated by JS -->
+            </div>
+            <div id="mwt-calendar" style="min-height: 60px;">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- HSE Committee Meeting Schedule -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--netflix-red);">
+                HSE Committee Meeting Schedule
+            </h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Showing upcoming 3 months</p>
+            <!-- Month Filter -->
+            <div id="hse-month-filter" style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                <!-- Populated by JS -->
+            </div>
+            <div id="hse-calendar" style="min-height: 60px;">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CSMS PB Status Screen -->
+    <section class="screen" id="screen-csms-pb" style="overflow-y: auto; height: calc(100vh - 130px);">
+        <!-- Header -->
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <svg viewBox="0 0 24 24" fill="var(--netflix-red)" width="28" height="28">
+                <path
+                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z" />
+            </svg>
+            <h2 style="font-size: 24px; font-weight: 700;">CSMS PB Status</h2>
+        </div>
+
+        <!-- CSMS PB Form -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+            <h3 style="font-size: 18px; margin-bottom: 20px;">Add CSMS PB Record</h3>
+
+            <form id="csms-pb-form">
+                <div class="form-group">
+                    <label class="form-label">Project Name <span>*</span></label>
+                    <select class="form-input" name="project_id" id="pb-project-select" required>
+                        <option value="">Select Project</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Well Name</label>
+                    <input type="text" class="form-input" name="well_name" id="pb-well-name"
+                        placeholder="Enter well name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">CSMS PB Date <span>*</span></label>
+                    <input type="date" class="form-input" name="pb_date" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label class="form-label">PIC Name <span>*</span></label>
+                        <input type="text" class="form-input" name="pic_name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">PIC WhatsApp</label>
+                        <input type="text" class="form-input" name="pic_whatsapp" placeholder="+62812xxx">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">CSMS PB Score (%) <span>*</span></label>
+                    <input type="number" class="form-input" name="score" required min="0" max="100" placeholder="0-100">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Attachment</label>
+                    <input type="file" id="pb-attachment">
+                </div>
+
+                <button type="button" class="btn btn-save" onclick="submitPBRecord()" style="width: 100%;">
+                    Submit PB Record
+                </button>
+            </form>
+        </div>
+
+        <!-- CSMS PB Status Chart -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--netflix-red);">
+                PB Score by Project
+            </h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
+                🔴 &lt;60% Critical | 🟡 60-80% Warning | 🟢 &gt;80% Good
+            </p>
+            <div id="pb-chart-container" style="min-height: 100px;">
+                <!-- Filled by JS -->
+                <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                    No PB records yet
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent PB Records -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Recent Records</h3>
+            <div id="pb-records-list" style="min-height: 60px;">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Documents Screen -->
+    <section class="screen" id="screen-related-docs" style="overflow-y: auto; height: calc(100vh - 130px);">
+        <!-- Header -->
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <svg viewBox="0 0 24 24" fill="var(--netflix-red)" width="28" height="28">
+                <path
+                    d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+            </svg>
+            <h2 style="font-size: 24px; font-weight: 700;">Related Documents</h2>
+        </div>
+
+        <!-- Add Document Form -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+            <h3 style="font-size: 18px; margin-bottom: 20px;">Upload Document</h3>
+
+            <form id="related-doc-form">
+                <div class="form-group">
+                    <label class="form-label">Project Name <span>*</span></label>
+                    <select class="form-input" name="project_id" id="doc-project-select" required>
+                        <option value="">Select Project</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Well Name</label>
+                    <input type="text" class="form-input" name="well_name" id="doc-well-name"
+                        placeholder="Enter well name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Document Name <span>*</span></label>
+                    <input type="text" class="form-input" name="doc_name" required
+                        placeholder="e.g. Safety Certificate">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Attachment <span>*</span></label>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <button type="button" onclick="document.getElementById('doc-file').click()"
+                                style="background: var(--netflix-red); color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600;">
+                                <svg viewBox="0 0 24 24" fill="white" width="18" height="18">
+                                    <path
+                                        d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z" />
+                                </svg>
+                                Select File
+                            </button>
+                            <span id="doc-file-name"
+                                style="font-size: 13px; color: var(--text-muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                No file selected
+                            </span>
+                        </div>
+                        <input type="file" id="doc-file" required style="display: none;"
+                            onchange="updateDocFileName(this)">
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-save" onclick="submitRelatedDoc()" style="width: 100%;">
+                    Upload Document
+                </button>
+            </form>
+        </div>
+
+        <!-- Document List -->
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Uploaded Documents</h3>
+            <div id="related-docs-list" style="min-height: 60px;">
+                <!-- Filled by JS -->
+                <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                    No documents uploaded yet
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+    <div class="nav-item active" onclick="navigateTo('home')">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+        <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('projects')">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+        </svg>
+        <span>Projects</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('tasks')">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+        </svg>
+        <span>Tasks</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('statistics')">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
+        </svg>
+        <span>Statistics</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('schedule')">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z" />
+        </svg>
+        <span>Schedule</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('csms-pb')">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z" />
+        </svg>
+        <span>PB</span>
+    </div>
+    <div class="nav-item" onclick="navigateTo('related-docs')">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+        </svg>
+        <span>Docs</span>
+    </div>
+</nav>
+
+<!-- Create Project Modal -->
+<div class="modal-overlay" id="create-modal">
+    <div class="modal-header">
+        <button class="modal-back" onclick="closeCreateModal()">←</button>
+        <span class="modal-title">CSMS PB</span>
+    </div>
+    <div class="modal-body">
+        <form id="project-form">
+            <div class="form-group">
+                <label class="form-label">Project Name <span>*</span></label>
+                <input type="text" class="form-input" name="name" placeholder="Enter project name" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Title <span>*</span></label>
+                <input type="text" class="form-input" name="title" placeholder="Enter title">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Well</label>
+                <input type="text" class="form-input" name="well" placeholder="Enter well">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kontrak No</label>
+                <input type="text" class="form-input" name="kontrak_no" placeholder="Enter kontrak number">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Project Status</label>
+                <div class="status-chips">
+                    <div class="status-chip active" data-status="Upcoming" onclick="selectStatus(this)">Upcoming
+                    </div>
+                    <div class="status-chip" data-status="InProgress" onclick="selectStatus(this)">InProgress</div>
+                    <div class="status-chip" data-status="Completed" onclick="selectStatus(this)">Completed</div>
+                    <div class="status-chip" data-status="OnHold" onclick="selectStatus(this)">OnHold</div>
+                    <div class="status-chip" data-status="Canceled" onclick="selectStatus(this)">Canceled</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Start Date <span>*</span></label>
+                <div class="date-input-wrap">
+                    <input type="date" class="form-input" name="start_date">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Estimasi Rig Down</label>
+                <div class="date-input-wrap">
+                    <input type="date" class="form-input" name="rig_down">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">End Date <span>*</span></label>
+                <div class="date-input-wrap">
+                    <input type="date" class="form-input" name="end_date">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Assigned To</label>
+                <input type="text" class="form-input" name="assigned_to" value="ADE" placeholder="Assigned to">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">PIC Email <span>*</span></label>
+                <input type="email" class="form-input" name="pic_email" id="project-pic-email"
+                    placeholder="PIC email for reminders" autocomplete="off" required>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+                    Email will receive reminder 2 days before Rig Down if tasks &lt; 80% complete
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">PIC Manager Email (CC)</label>
+                <input type="email" class="form-input" name="pic_manager_email" id="project-manager-email"
+                    placeholder="Manager email for CC (optional)" autocomplete="new-password">
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+                    Will be CC'd on all reminder emails
+                </p>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-cancel" onclick="closeCreateModal()">Cancel</button>
+        <button class="btn btn-save" onclick="saveProject()">Save</button>
+    </div>
+</div>
+
+<!-- Create Task Modal -->
+<div class="modal-overlay" id="create-task-modal">
+    <div class="modal-header">
+        <button class="modal-back" onclick="closeCreateTaskModal()">←</button>
+        <span class="modal-title">Create New Task</span>
+    </div>
+    <div class="modal-body">
+        <form id="create-task-form">
+            <div class="form-group">
+                <label class="form-label">Project <span>*</span></label>
+                <select class="form-input" id="task-project-select" name="project_id"
+                    onchange="onTaskProjectChange(this.value)" required>
+                    <option value="">Select Project</option>
+                    <!-- Filled by JS -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Well Name</label>
+                <input type="text" class="form-input" id="task-well-name" name="well_name"
+                    placeholder="Auto-filled from Project" readonly
+                    style="background: var(--bg-tertiary); color: var(--text-muted);">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Task ID/Code <span>*</span></label>
+                <input type="text" class="form-input" name="code" placeholder="e.g. T-001" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Task Description <span>*</span></label>
+                <textarea class="form-input" name="title" placeholder="Describe the task..." rows="3"
+                    required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <input type="text" class="form-input" name="category" placeholder="e.g. Engineering, Procurement">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <div class="status-chips">
+                    <div class="status-chip active" data-status="Upcoming" onclick="selectTaskStatus(this)">Upcoming
+                    </div>
+                    <div class="status-chip" data-status="In Progress" onclick="selectTaskStatus(this)">In Progress
+                    </div>
+                    <div class="status-chip" data-status="Completed" onclick="selectTaskStatus(this)">Completed</div>
+                </div>
+                <input type="hidden" name="status" value="Upcoming" id="new-task-status">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Dates</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="font-size: 11px; color: var(--text-secondary);">Start</label>
+                        <input type="date" class="form-input" name="start_date">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: var(--text-secondary);">End</label>
+                        <input type="date" class="form-input" name="end_date">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Attachment</label>
+                <input type="file" name="attachment" id="new-task-attachment">
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-cancel" onclick="closeCreateTaskModal()">Cancel</button>
+        <button class="btn btn-save" onclick="createNewTask()">Create Task</button>
+    </div>
+</div>
+
+<!-- Task Detail Modal -->
+<div class="modal-overlay" id="task-modal">
+    <div class="modal-header">
+        <button class="modal-back" onclick="closeTaskModal()">←</button>
+        <span class="modal-title">Task Detail</span>
+    </div>
+    <div class="modal-body">
+        <div class="task-detail-content" id="task-detail-content">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-cancel" onclick="closeTaskModal()">Close</button>
+        <button class="btn btn-save" onclick="saveTaskChanges()">Save</button>
+    </div>
+</div>
+
+<!-- Project Detail Modal -->
+<div class="modal-overlay" id="project-detail-modal">
+    <div class="modal-header">
+        <button class="modal-back" onclick="closeProjectDetailModal()">←</button>
+        <span class="modal-title" id="project-detail-title">Project Detail</span>
+    </div>
+    <div class="modal-body" id="project-detail-content">
+        <!-- Filled by JS -->
+    </div>
+</div>
+
+<!-- Download Report Modal -->
+<div class="modal-overlay" id="download-modal">
+    <div class="modal-header">
+        <button class="modal-back" onclick="closeDownloadModal()">←</button>
+        <span class="modal-title">Download Report</span>
+    </div>
+    <div class="modal-body" style="padding: 16px;">
+        <p style="color: var(--text-secondary); margin-bottom: 16px;">
+            Select a project to download compiled PDF report with all attachments.
+        </p>
+
+        <!-- Search -->
+        <input type="text" class="form-input" id="download-search" placeholder="Search projects..."
+            oninput="filterDownloadProjects()" style="margin-bottom: 16px;">
+
+        <!-- Project List -->
+        <div id="download-project-list" style="max-height: 400px; overflow-y: auto;">
+            <!-- Filled by JS -->
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="download-loading" style="display: none; text-align: center; padding: 40px;">
+            <div style="font-size: 24px; margin-bottom: 10px;">📄</div>
+            <p style="color: var(--netflix-red);">Generating PDF Report...</p>
+            <p style="font-size: 12px; color: var(--text-muted);">This may take a moment</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== CONFIG =====
+    // API is on same origin since we're served from the backend
+    const API_BASE = '';
+
+    // ===== STATE =====
+    let allProjects = [];
+    let allTasks = [];
+    let currentProjectFilter = 'all';
+    let currentTaskFilter = 'all';
+    let selectedStatus = 'Upcoming';
+    let currentTaskId = null;
+    let postAttachment = null; // For comment attachments
+
+    // ===== MODERN TOAST SYSTEM =====
+    function showToast(message, type = 'info', duration = 3000) {
+        // Remove existing toast
+        const existing = document.getElementById('modern-toast');
+        if (existing) existing.remove();
+
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.id = 'modern-toast';
+        toast.innerHTML = message;
+
+        // Style based on type
+        const bgColor = type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--netflix-red)' : 'var(--bg-tertiary)';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            right: 20px;
+            background: ${bgColor};
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        `;
+
+        document.body.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+        });
+
+        // Auto remove
+        setTimeout(() => {
+            toast.style.transform = 'translateY(100px)';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+
+    // ===== POST ATTACHMENT FUNCTIONS =====
+    function pickPostPhoto() {
+        // Try to use native picker if in WebView
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'pickImage' }));
+        } else {
+            document.getElementById('post-photo-input').click();
+        }
+    }
+
+    function pickPostFile() {
+        // Try to use native picker if in WebView
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'pickFile' }));
+        } else {
+            document.getElementById('post-file-input').click();
+        }
+    }
+
+    function handlePostPhotoSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+            postAttachment = { type: 'photo', file: file, name: file.name };
+            showAttachmentPreview('📷 ' + file.name);
+            showToast('Photo attached!', 'success');
+        }
+    }
+
+    function handlePostFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+            postAttachment = { type: 'file', file: file, name: file.name };
+            showAttachmentPreview('📎 ' + file.name);
+            showToast('File attached!', 'success');
+        }
+    }
+
+    function showAttachmentPreview(text) {
+        const preview = document.getElementById('post-attachment-preview');
+        const nameSpan = document.getElementById('post-attachment-name');
+        if (preview && nameSpan) {
+            nameSpan.textContent = text;
+            preview.style.display = 'block';
+        }
+    }
+
+    function removePostAttachment() {
+        postAttachment = null;
+        const preview = document.getElementById('post-attachment-preview');
+        if (preview) preview.style.display = 'none';
+        document.getElementById('post-photo-input').value = '';
+        document.getElementById('post-file-input').value = '';
+        showToast('Attachment removed', 'info');
+    }
+
+    // Listen for messages from React Native WebView
+    window.addEventListener('message', function (event) {
+        try {
+            const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+            if (data.type === 'imageSelected' || data.type === 'photoTaken') {
+                postAttachment = { type: 'photo', uri: data.uri, name: 'Photo' };
+                showAttachmentPreview('📷 Photo attached');
+                showToast('Photo attached!', 'success');
+            } else if (data.type === 'fileSelected') {
+                postAttachment = { type: 'file', uri: data.uri, name: data.name };
+                showAttachmentPreview('📎 ' + data.name);
+                showToast('File attached!', 'success');
+            }
+        } catch (e) { }
+    });
+
+    // ===== CREATE POST FUNCTION =====
+    function createPost() {
+        console.log('[CSMS] createPost called - version 2.0');
+
+        const nameInput = document.getElementById('post-name');
+        const plInput = document.getElementById('post-pl');
+        const contentInput = document.getElementById('post-input');
+
+        const name = nameInput.value.trim();
+        const pl = plInput.value.trim();
+        const content = contentInput.value.trim();
+
+        if (!name) {
+            showToast('Please enter your name', 'error');
+            nameInput.focus();
+            return;
+        }
+
+        if (!content) {
+            showToast('Please enter a comment', 'error');
+            contentInput.focus();
+            return;
+        }
+
+        // Create post HTML
+        const postsContainer = document.getElementById('posts-container');
+        const timeAgo = 'Just now';
+        const hasAttachment = postAttachment !== null;
+
+        console.log('[CSMS] postAttachment:', postAttachment);
+        console.log('[CSMS] hasAttachment:', hasAttachment);
+
+        // Generate attachment HTML
+        let attachmentHTML = '';
+        if (hasAttachment) {
+            const isImage = postAttachment.type === 'photo' ||
+                (postAttachment.name && /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(postAttachment.name));
+
+            if (isImage && postAttachment.file) {
+                // Create object URL for image preview
+                const imageUrl = URL.createObjectURL(postAttachment.file);
+                attachmentHTML = `
+                    <div style="margin-bottom: 12px; border-radius: 8px; overflow: hidden;">
+                        <img src="${imageUrl}" alt="Attached image" style="width: 100%; height: auto; display: block; border-radius: 8px;">
+                    </div>
+                `;
+            } else {
+                // File attachment - clickable download link
+                let downloadUrl = '#';
+                if (postAttachment.file) {
+                    downloadUrl = URL.createObjectURL(postAttachment.file);
+                }
+                attachmentHTML = `
+                    <div style="padding: 12px; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 12px;">
+                        <a href="${downloadUrl}" download="${postAttachment.name}" style="color: var(--info); text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                            📎 <span style="text-decoration: underline;">${postAttachment.name}</span>
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        const postHTML = `
+            <div class="post-card" style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #C41E3A, #9A1830); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px;">
+                        ${name.charAt(0).toUpperCase()}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600;">${name}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">${pl ? 'PL: ' + pl + ' • ' : ''}${timeAgo}</div>
+                    </div>
+                </div>
+                <p style="font-size: 14px; line-height: 1.5; margin-bottom: 12px;">${content}</p>
+                ${attachmentHTML}
+                <div style="display: flex; gap: 24px; padding-top: 12px; border-top: 1px solid var(--border);">
+                    <span onclick="toggleLike(this)" data-liked="false" style="color: var(--text-secondary); font-size: 13px; cursor: pointer; transition: all 0.2s;">👍 Like</span>
+                    <span onclick="toggleReplyForm(this.parentElement.parentElement)" style="color: var(--text-secondary); font-size: 13px; cursor: pointer;">💬 Comment</span>
+                </div>
+                <!-- Reply Form (hidden by default) -->
+                <div class="reply-form" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+                    <div style="display: flex; gap: 10px; align-items: flex-start;">
+                        <input type="text" class="reply-input" placeholder="Write a reply..."
+                            style="flex: 1; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 20px; padding: 10px 16px; color: var(--text-primary); font-size: 13px;">
+                        <span onclick="pickReplyPhoto(this.parentElement)" style="cursor: pointer; font-size: 18px; padding: 8px;">📷</span>
+                        <button onclick="submitReply(this.parentElement.parentElement)" style="background: var(--netflix-red); color: white; border: none; padding: 10px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;">Reply</button>
+                    </div>
+                    <div class="reply-photo-preview" style="display: none; margin-top: 8px; font-size: 12px; color: var(--success);"></div>
+                    <div class="replies-container" style="margin-top: 12px;"></div>
+                </div>
+            </div>
+        `;
+
+        // Insert at top
+        postsContainer.insertAdjacentHTML('afterbegin', postHTML);
+
+        // Clear form
+        nameInput.value = '';
+        plInput.value = '';
+        contentInput.value = '';
+        removePostAttachment();
+
+        showToast('Post created successfully!', 'success');
+    }
+
+    // ===== LIKE/COMMENT FUNCTIONS =====
+    function toggleLike(button) {
+        const isLiked = button.dataset.liked === 'true';
+        if (isLiked) {
+            button.dataset.liked = 'false';
+            button.style.color = 'var(--text-secondary)';
+            button.textContent = '👍 Like';
+            showToast('Like removed', 'info');
+        } else {
+            button.dataset.liked = 'true';
+            button.style.color = 'var(--netflix-red)';
+            button.textContent = '❤️ Liked';
+            showToast('Post liked!', 'success');
+        }
+    }
+
+    // Toggle reply form visibility
+    function toggleReplyForm(postCard) {
+        const replyForm = postCard.querySelector('.reply-form');
+        if (replyForm) {
+            if (replyForm.style.display === 'none') {
+                replyForm.style.display = 'block';
+                replyForm.querySelector('.reply-input').focus();
+            } else {
+                replyForm.style.display = 'none';
+            }
+        } else {
+            showToast('Reply form not available', 'info');
+        }
+    }
+
+    // Reply photo attachment state
+    let replyPhotoData = null;
+
+    // Pick photo for reply
+    function pickReplyPhoto(inputContainer) {
+        // Create hidden file input
+        let fileInput = inputContainer.querySelector('.reply-file-input');
+        if (!fileInput) {
+            fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.className = 'reply-file-input';
+            fileInput.style.display = 'none';
+            fileInput.onchange = function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    replyPhotoData = { name: file.name, file: file };
+                    const preview = inputContainer.parentElement.querySelector('.reply-photo-preview');
+                    if (preview) {
+                        preview.textContent = '📷 ' + file.name;
+                        preview.style.display = 'block';
+                    }
+                    showToast('Photo attached!', 'success');
+                }
+            };
+            inputContainer.appendChild(fileInput);
+        }
+        fileInput.click();
+    }
+
+    // Submit reply
+    function submitReply(replyFormContainer) {
+        const input = replyFormContainer.querySelector('.reply-input');
+        const repliesContainer = replyFormContainer.querySelector('.replies-container');
+        const preview = replyFormContainer.querySelector('.reply-photo-preview');
+
+        const replyText = input.value.trim();
+
+        if (!replyText) {
+            showToast('Please enter a reply', 'error');
+            input.focus();
+            return;
+        }
+
+        const hasAttachment = replyPhotoData !== null;
+
+        // Generate attachment HTML for reply
+        let replyAttachmentHTML = '';
+        if (hasAttachment) {
+            const isImage = replyPhotoData.name && /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(replyPhotoData.name);
+
+            if (isImage && replyPhotoData.file) {
+                // Create object URL for image preview
+                const imageUrl = URL.createObjectURL(replyPhotoData.file);
+                replyAttachmentHTML = `
+                    <div style="margin-top: 8px; border-radius: 6px; overflow: hidden;">
+                        <img src="${imageUrl}" alt="Reply image" style="width: 100%; height: auto; display: block; border-radius: 6px;">
+                    </div>
+                `;
+            } else if (replyPhotoData.file) {
+                // File attachment - clickable download link
+                const downloadUrl = URL.createObjectURL(replyPhotoData.file);
+                replyAttachmentHTML = `
+                    <div style="margin-top: 8px; padding: 8px; background: var(--bg-secondary); border-radius: 6px;">
+                        <a href="${downloadUrl}" download="${replyPhotoData.name}" style="color: var(--info); text-decoration: none; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                            📎 <span style="text-decoration: underline;">${replyPhotoData.name}</span>
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        // Create reply HTML
+        const replyHTML = `
+            <div style="padding: 10px; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 8px;">
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--netflix-red); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">U</div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 13px; font-weight: 600;">User</div>
+                        <p style="font-size: 13px; margin: 4px 0;">${replyText}</p>
+                        ${replyAttachmentHTML}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        repliesContainer.insertAdjacentHTML('beforeend', replyHTML);
+
+        // Clear form
+        input.value = '';
+        if (preview) {
+            preview.style.display = 'none';
+            preview.textContent = '';
+        }
+        replyPhotoData = null;
+
+        showToast('Reply posted!', 'success');
+    }
+
+    // ===== CHECK REMINDERS FUNCTION =====
+    async function checkReminders() {
+        showToast('Checking projects with upcoming rig down...', 'info');
+
+        try {
+            const response = await fetch(`${API_BASE}/api/send-reminders`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.count > 0) {
+                    // Show project details
+                    let message = `📧 ${data.count} reminder(s) sent!`;
+                    if (data.projects && data.projects.length > 0) {
+                        message += '\n• ' + data.projects.join('\n• ');
+                    }
+                    alert(message);
+                    showToast(`${data.count} reminder email(s) sent!`, 'success');
+                } else {
+                    showToast('No projects need reminders (all on track or no upcoming rig down)', 'info');
+                }
+            } else {
+                const errorData = await response.json();
+                showToast(errorData.message || 'Failed to send reminders', 'error');
+            }
+        } catch (error) {
+            console.error('Reminder error:', error);
+            showToast('Error: Could not send reminders', 'error');
+        }
+    }
+
+    // ===== LOAD DASHBOARD STATS =====
+    function loadDashboardStats() {
+        loadData();
+        showToast('Stats refreshed!', 'success');
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+        loadData();
+    });
+
+    // ===== NAVIGATION =====
+    function navigateTo(screen) {
+        // Update screens
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(`screen-${screen}`).classList.add('active');
+
+        // Update nav
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.drawer-item').forEach(n => n.classList.remove('active'));
+
+        document.querySelectorAll('.nav-item')[['home', 'projects', 'tasks', 'statistics', 'schedule'].indexOf(screen)]?.classList.add('active');
+
+        // Close drawer
+        document.querySelector('.drawer').classList.remove('active');
+        document.querySelector('.drawer-overlay').classList.remove('active');
+
+        // Load specific screen data
+        if (screen === 'statistics') updateStatistics();
+    }
+
+    function toggleDrawer() {
+        document.querySelector('.drawer').classList.toggle('active');
+        document.querySelector('.drawer-overlay').classList.toggle('active');
+    }
+
+    // Navigate to Projects screen with specific filter
+    function navigateToProjectsFiltered(filter) {
+        navigateTo('projects');
+        filterProjects(filter);
+    }
+
+    // ===== DATA LOADING =====
+    async function loadData() {
+        try {
+            const [projectsRes, tasksRes] = await Promise.all([
+                fetch(`${API_BASE}/projects`),
+                fetch(`${API_BASE}/tasks`)
+            ]);
+
+            if (projectsRes.ok && tasksRes.ok) {
+                allProjects = await projectsRes.json();
+                allTasks = await tasksRes.json();
+                updateHomeStats();
+                updateCounts(); // Update filter counts
+                renderProjects();
+                renderTasks();
+                loadSchedules(); // Load schedules for calendar
+                renderCalendar(); // Render home calendar
+            }
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+    }
+
+    function updateCounts() {
+        // Project Counts
+        document.getElementById('count-all').textContent = `(${allProjects.length})`;
+        ['Upcoming', 'InProgress', 'Completed', 'OnHold', 'Canceled'].forEach(status => {
+            const count = allProjects.filter(p => p.status === status).length;
+            const el = document.getElementById(`count-${status.toLowerCase()}`);
+            if (el) el.textContent = `(${count})`;
+        });
+
+        // Task Counts
+        document.getElementById('task-count-all').textContent = `(${allTasks.length})`;
+        ['Upcoming', 'In Progress', 'Completed'].forEach(status => {
+            const count = allTasks.filter(t => t.status === status).length;
+            const el = document.getElementById(`task-count-${status.toLowerCase().replace(' ', '')}`);
+            if (el) el.textContent = `(${count})`;
+        });
+    }
+
+    function updateHomeStats() {
+        document.getElementById('home-total-projects').textContent = allProjects.length;
+        document.getElementById('home-ongoing').textContent = allProjects.filter(p => p.status === 'InProgress' || p.status === 'Ongoing').length;
+        document.getElementById('home-upcoming').textContent = allProjects.filter(p => p.status === 'Upcoming').length;
+        document.getElementById('home-completed').textContent = allProjects.filter(p => p.status === 'Completed').length;
+
+        // Update completion rate on home screen
+        const completedTasks = allTasks.filter(t => t.status === 'Completed').length;
+        const totalTasks = allTasks.length;
+        const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+        const rateEl = document.getElementById('home-completion-rate');
+        const barEl = document.getElementById('home-progress-bar');
+        if (rateEl) rateEl.textContent = completionRate + '%';
+        if (barEl) barEl.style.width = completionRate + '%';
+    }
+
+    // Note: createPost function is defined earlier with full attachment support
+
+    // ===== PROJECTS =====
+    function filterProjects(status) {
+        currentProjectFilter = status;
+        document.querySelectorAll('#project-status-filters .status-dot').forEach(d => {
+            d.classList.toggle('active', d.dataset.filter === status);
+        });
+        renderProjects();
+    }
+
+    function renderProjects() {
+        const filtered = currentProjectFilter === 'all'
+            ? allProjects
+            : allProjects.filter(p => p.status === currentProjectFilter);
+
+        const container = document.getElementById('projects-container');
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                    <div class="status-section">
+                        <div class="status-section-title">${currentProjectFilter === 'all' ? 'All Projects' : currentProjectFilter}</div>
+                        <div class="empty-message">No projects in ${currentProjectFilter === 'all' ? 'database' : currentProjectFilter}</div>
+                    </div>
+                `;
+            return;
+        }
+
+        container.innerHTML = `
+                <div class="status-section">
+                    ${filtered.map(p => {
+            // Calculate progress
+            const pTasks = allTasks.filter(t => t.project_id === p.id);
+            const completed = pTasks.filter(t => t.status === 'Completed').length;
+            const progress = pTasks.length > 0 ? Math.round((completed / pTasks.length) * 100) : 0;
+
+            return `
+                    <div class="project-card" onclick="showProjectDetail('${p.id}')">
+                        <div class="project-card-header">
+                            <span class="project-card-title">${p.name}</span>
+                            <span class="project-card-badge badge-${p.status.toLowerCase()}">${p.status}</span>
+                        </div>
+                        <div class="project-card-meta">${p.well_name || p.well || ''} ${p.kontrak_no ? '• ' + p.kontrak_no : ''}</div>
+                        <div style="margin-top: 12px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; color: var(--text-secondary);">
+                                <span>Progress</span>
+                                <span>${progress}%</span>
+                            </div>
+                            <div style="height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;">
+                                <div style="height: 100%; width: ${progress}%; background: var(--success); transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `}).join('')}
+                </div>
+            `;
+    }
+
+    // ===== TASKS =====
+    function filterTasks(status) {
+        currentTaskFilter = status;
+        document.querySelectorAll('#task-status-filters .status-dot').forEach(d => {
+            d.classList.toggle('active', d.dataset.filter === status);
+        });
+        renderTasks();
+    }
+
+    // Helper to get project info for a task
+    function getProjectForTask(task) {
+        return allProjects.find(p => p.id === task.project_id) || {};
+    }
+
+    function renderTasks() {
+        const filtered = currentTaskFilter === 'all'
+            ? allTasks
+            : allTasks.filter(t => t.status === currentTaskFilter);
+
+        const container = document.getElementById('tasks-container');
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="status-section">
+                    <div class="status-section-title">${currentTaskFilter === 'all' ? 'All Tasks' : currentTaskFilter}</div>
+                    <div class="empty-message">No tasks found</div>
+                </div>
+            `;
+            return;
+        }
+
+        // Lightweight rendering - only show essential info
+        container.innerHTML = filtered.map(t => {
+            const project = getProjectForTask(t);
+            const hasAttachments = t.attachments && t.attachments.length > 0;
+            const attachmentCount = t.attachments ? t.attachments.length : 0;
+            const latestAttachment = hasAttachments ? t.attachments[t.attachments.length - 1].filename : null;
+
+            return `
+                    <div class="project-card" onclick="showTaskDetail('${t.id}')" style="position: relative;">
+                        <div class="project-card-header">
+                            <span>
+                                <span style="color: var(--weatherford-red); font-weight: 600; font-size: 12px;">${t.code || ''}</span>
+                                <span class="project-card-title" style="margin-left: 8px;">${t.title}</span>
+                            </span>
+                            <span class="project-card-badge badge-${t.status?.toLowerCase().replace(' ', '') || 'upcoming'}">${t.status}</span>
+                        </div>
+                        <div class="project-card-meta" style="margin-bottom: 4px; display: flex; flex-direction: column; gap: 2px;">
+                            <strong style="color: var(--text-primary); font-size: 13px;">${project.name || 'Unknown Project'}</strong>
+                            ${(project.well_name || project.well) ? `<span style="color: var(--weatherford-red); font-size: 12px;">Well: ${project.well_name || project.well}</span>` : ''}
+                        </div>
+                        <div class="project-card-meta" style="font-size: 11px;">${t.category || ''}</div>
+                        ${hasAttachments ? `
+                            <div style="margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                                <span style="color: var(--success); font-size: 12px;">📎 ${attachmentCount} file${attachmentCount > 1 ? 's' : ''}</span>
+                                <span style="color: var(--text-muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${latestAttachment}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+        }).join('');
+    }
+
+    // ===== MODALS =====
+    function showCreateModal() {
+        document.getElementById('create-modal').classList.add('active');
+    }
+
+    function closeCreateModal() {
+        document.getElementById('create-modal').classList.remove('active');
+        document.getElementById('project-form').reset();
+    }
+
+    function selectStatus(el) {
+        document.querySelectorAll('.status-chips .status-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        selectedStatus = el.dataset.status;
+    }
+
+    // ===== TASK MODAL =====
+    function showTaskModal() {
+        const modal = document.getElementById('create-task-modal');
+        const select = document.getElementById('task-project-select');
+
+        // Populate projects
+        select.innerHTML = '<option value="">Select Project</option>' +
+            allProjects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+
+        modal.classList.add('active');
+    }
+
+    function closeCreateTaskModal() {
+        document.getElementById('create-task-modal').classList.remove('active');
+        document.getElementById('create-task-form').reset();
+        document.getElementById('task-well-name').value = '';
+    }
+
+    function onTaskProjectChange(projectId) {
+        const project = allProjects.find(p => p.id == projectId);
+        document.getElementById('task-well-name').value = project ? (project.well_name || project.well || '') : '';
+    }
+
+    function selectTaskStatus(el) {
+        el.parentElement.querySelectorAll('.status-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('new-task-status').value = el.dataset.status;
+    }
+
+    async function createNewTask() {
+        const form = document.getElementById('create-task-form');
+        const projectId = form.project_id.value;
+        if (!projectId) { alert('Please select a project'); return; }
+
+        const attachInput = document.getElementById('new-task-attachment');
+
+        // Base task data
+        const taskData = {
+            project_id: projectId,
+            code: form.code.value,
+            title: form.title.value,
+            category: form.category.value,
+            status: form.status.value || 'Upcoming',
+            start_date: form.start_date.value || null,
+            end_date: form.end_date.value || null
+        };
+
+        try {
+            // First create the task
+            const res = await fetch(`${API_BASE}/tasks`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(taskData)
+            });
+
+            if (res.ok) {
+                const newTask = await res.json();
+
+                // Upload attachment if exists
+                if (attachInput.files.length > 0) {
+                    const formData = new FormData();
+                    formData.append('file', attachInput.files[0]);
+
+                    await fetch(`${API_BASE}/tasks/${newTask.id}/attachments`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+
+                alert('Task created successfully!');
+                closeCreateTaskModal();
+                loadData();
+            } else {
+                alert('Error creating task');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error connecting to server');
+        }
+    }
+
+
+    async function saveProject() {
+        const form = document.getElementById('project-form');
+        const data = {
+            name: form.name.value,
+            title: form.title.value,
+            well: form.well.value,
+            kontrak_no: form.kontrak_no.value,
+            status: selectedStatus,
+            start_date: form.start_date.value || null,
+            end_date: form.end_date.value || null,
+            rig_down: form.rig_down.value || null,
+            assigned_to: form.assigned_to.value,
+            pic_email: form.pic_email.value,
+            pic_manager_email: form.pic_manager_email.value || null
+        };
+
+        try {
+            const res = await fetch(`${API_BASE}/projects`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                alert('Project created successfully!');
+                closeCreateModal();
+                loadData();
+            } else {
+                alert('Error creating project');
+            }
+        } catch (error) {
+            alert('Error connecting to server');
+        }
+    }
+
+    async function showProjectDetail(projectId) {
+        try {
+            const res = await fetch(`${API_BASE}/projects/${projectId}`);
+            if (res.ok) {
+                const data = await res.json();
+                const project = data.project;
+                const tasks = data.tasks;
+
+                document.getElementById('project-detail-title').textContent = project.name;
+                
+                // Color mapping for selector
+                const getStatusColor = (s) => {
+                    s = s?.toLowerCase() || '';
+                    if (s === 'completed') return 'var(--success)';
+                    if (s === 'in progress') return 'var(--info)';
+                    return 'var(--warning)';
+                };
+
+                document.getElementById('project-detail-content').innerHTML = `
+                        <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <strong style="color: var(--text-secondary);">Status:</strong>
+                            <select onchange="updateProjectStatus('${project.id}', this.value)" 
+                                    style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-tertiary); color: white; font-size: 14px; font-weight: 600; cursor: pointer; outline: none;">
+                                <option value="Upcoming" ${project.status === 'Upcoming' ? 'selected' : ''}>Upcoming</option>
+                                <option value="In Progress" ${project.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="Completed" ${project.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </div>
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">${project.description || project.title || 'No description'}</p>
+                        <p style="margin-bottom: 8px;"><strong>Well:</strong> ${project.well || 'N/A'}</p>
+                        <p style="margin-bottom: 8px;"><strong>Kontrak No:</strong> ${project.kontrak_no || 'N/A'}</p>
+                        <p style="margin-bottom: 8px;"><strong>Start:</strong> ${project.start_date || 'N/A'}</p>
+                        <p style="margin-bottom: 20px;"><strong>End:</strong> ${project.end_date || 'N/A'}</p>
+                        
+                        <h3 style="margin-bottom: 16px;">Tasks (${tasks.length})</h3>
+                        ${tasks.map(t => `
+                            <div class="project-card" onclick="showTaskDetail('${t.id}'); closeProjectDetailModal();">
+                                <div class="project-card-header">
+                                    <span style="color: var(--netflix-red); font-weight: 600;">${t.code}</span>
+                                    <span class="project-card-badge badge-${t.status?.toLowerCase().replace(' ', '') || 'upcoming'}" style="font-size: 10px;">${t.status}</span>
+                                </div>
+                                <div class="project-card-title">${t.title}</div>
+                            </div>
+                        `).join('')}
+                    `;
+                document.getElementById('project-detail-modal').classList.add('active');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function updateProjectStatus(projectId, newStatus) {
+        try {
+            showToast(`Updating to ${newStatus}...`, 'info');
+            const res = await fetch(`${API_BASE}/projects/${projectId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            
+            if (res.ok) {
+                showToast('Project status updated!', 'success');
+                // Refresh data to update dashboard/lists
+                loadData();
+            } else {
+                showToast('Failed to update status', 'error');
+            }
+        } catch (e) {
+            console.error(e);
+            showToast('Error updating status', 'error');
+        }
+    }
+
+    function closeProjectDetailModal() {
+        document.getElementById('project-detail-modal').classList.remove('active');
+    }
+
+    function showTaskDetail(taskId) {
+        const task = allTasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        currentTaskId = taskId;
+        const project = getProjectForTask(task);
+
+        document.getElementById('task-detail-content').innerHTML = `
+                <!-- Project Info -->
+                <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">PROJECT</div>
+                    <div style="font-weight: 600; font-size: 16px;">${project.name || 'Unknown Project'}</div>
+                    ${project.well ? `<div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Well: ${project.well}</div>` : ''}
+                </div>
+                
+                <div class="task-code">${task.code || ''}</div>
+                <div class="task-title-detail">${task.title}</div>
+                <div class="task-category">${task.category || ''}</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <div class="status-chips" id="task-status-chips">
+                        <div class="status-chip ${task.status === 'Upcoming' ? 'active' : ''}" data-status="Upcoming" onclick="selectTaskStatus(this)">Upcoming</div>
+                        <div class="status-chip ${task.status === 'In Progress' ? 'active' : ''}" data-status="In Progress" onclick="selectTaskStatus(this)">In Progress</div>
+                        <div class="status-chip ${task.status === 'Completed' ? 'active' : ''}" data-status="Completed" onclick="selectTaskStatus(this)">Completed</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Upload Attachment (Unlimited)</label>
+                    <div class="upload-area" onclick="document.getElementById('file-input').click()" id="upload-area">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        <p>Click to upload file to Google Drive</p>
+                        <p style="font-size: 11px; color: var(--text-muted);">Files are stored in Drive only, not in app</p>
+                    </div>
+                    <input type="file" id="file-input" onchange="uploadFile()" multiple>
+                </div>
+                
+                ${task.attachments && task.attachments.length > 0 ? `
+                    <div class="form-group">
+                        <label class="form-label">Uploaded Files (${task.attachments.length})</label>
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            ${task.attachments.map((a, i) => `
+                                <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--bg-tertiary); border-radius: 6px; margin-bottom: 6px;">
+                                    <span style="color: var(--success);">📎</span>
+                                    <span style="flex: 1; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${a.filename}</span>
+                                    <span style="font-size: 10px; color: var(--text-muted);">${formatDate(a.uploaded_at)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+
+        document.getElementById('task-modal').classList.add('active');
+    }
+
+    function closeTaskModal() {
+        document.getElementById('task-modal').classList.remove('active');
+        currentTaskId = null;
+    }
+
+    function selectTaskStatus(el) {
+        document.querySelectorAll('#task-status-chips .status-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    async function saveTaskChanges() {
+        if (!currentTaskId) return;
+
+        const activeChip = document.querySelector('#task-status-chips .status-chip.active');
+        const status = activeChip ? activeChip.dataset.status : 'Upcoming';
+
+        try {
+            const res = await fetch(`${API_BASE}/tasks/${currentTaskId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+
+            if (res.ok) {
+                closeTaskModal();
+                loadData();
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function uploadFile() {
+        if (!currentTaskId) return;
+
+        const fileInput = document.getElementById('file-input');
+        if (!fileInput.files || fileInput.files.length === 0) return;
+
+        const uploadArea = document.getElementById('upload-area');
+        const files = Array.from(fileInput.files);
+        let successCount = 0;
+        let failCount = 0;
+
+        // Show uploading indicator
+        if (uploadArea) {
+            uploadArea.innerHTML = `
+                    <div style="color: var(--netflix-red);">
+                        <p>Uploading ${files.length} file(s)...</p>
+                        <p style="font-size: 11px;">Please wait</p>
+                    </div>
+                `;
+        }
+
+        // Upload each file
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch(`${API_BASE}/tasks/${currentTaskId}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    successCount++;
+                } else {
+                    failCount++;
+                }
+            } catch (error) {
+                failCount++;
+            }
+        }
+
+        // Reset file input
+        fileInput.value = '';
+
+        // Show result and refresh
+        if (successCount > 0) {
+            alert(`${successCount} file(s) uploaded to Google Drive successfully!${failCount > 0 ? `\n${failCount} file(s) failed.` : ''}`);
+        } else {
+            alert('Error uploading files');
+        }
+
+        // Refresh data and reopen task detail
+        await loadData();
+        showTaskDetail(currentTaskId);
+    }
+
+    // ===== MODERN DASHBOARD =====
+    async function loadDashboardStats() {
+        try {
+            const res = await fetch(`${API_BASE}/statistics`);
+            if (!res.ok) return;
+
+            const stats = await res.json();
+
+            // Update KPI cards
+            document.getElementById('stat-total-projects').textContent = stats.projects.total;
+            document.getElementById('stat-total-tasks').textContent = stats.tasks.total;
+            document.getElementById('stat-completion-rate').textContent = `${stats.tasks.completion_rate.toFixed(0)}%`;
+            document.getElementById('stat-upcoming-mwt').textContent = stats.schedules.upcoming_mwt;
+
+            // Update schedule stats
+            document.getElementById('stat-total-schedules').textContent = stats.schedules.total;
+            document.getElementById('stat-upcoming-hse').textContent = stats.schedules.upcoming_hse;
+            document.getElementById('stat-this-month').textContent = stats.schedules.this_month;
+
+            // Render Project Donut Chart
+            const projectColors = { 'Upcoming': '#F5A623', 'InProgress': '#46D369', 'Completed': '#4A90D9', 'OnHold': '#9B59B6' };
+            createDonutChart('project-donut-chart', 'project-legend-new', stats.projects.by_status, projectColors, stats.projects.total);
+
+            // Render Task Donut Chart
+            const taskColors = { 'Upcoming': '#F5A623', 'In Progress': '#46D369', 'Completed': '#4A90D9' };
+            createDonutChart('task-donut-chart', 'task-legend-new', stats.tasks.by_status, taskColors, stats.tasks.total);
+
+            // Render Project Completion Bars
+            const barsContainer = document.getElementById('project-completion-bars');
+            if (stats.project_completion.length === 0) {
+                barsContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No projects yet</p>';
+            } else {
+                barsContainer.innerHTML = stats.project_completion.map(p => `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-size: 13px;">${p.name}</span>
+                                <span style="font-size: 12px; color: ${p.percentage >= 95 ? 'var(--success)' : p.percentage >= 50 ? 'var(--warning)' : '#E50914'};">
+                                    ${p.completed}/${p.total} (${p.percentage.toFixed(0)}%)
+                                </span>
+                            </div>
+                            <div style="background: var(--bg-tertiary); border-radius: 4px; height: 8px; overflow: hidden;">
+                                <div style="background: ${p.percentage >= 95 ? '#46D369' : p.percentage >= 50 ? '#F5A623' : '#E50914'}; 
+                                     height: 100%; width: ${p.percentage}%; transition: width 0.5s ease;"></div>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+
+        } catch (error) {
+            console.error('Error loading dashboard stats:', error);
+        }
+    }
+
+    function createDonutChart(chartId, legendId, data, colors, total) {
+        const chartEl = document.getElementById(chartId);
+        const legendEl = document.getElementById(legendId);
+
+        if (!chartEl || !legendEl) return;
+
+        // Create SVG donut chart
+        let offset = 0;
+        const segments = [];
+        const radius = 45;
+        const circumference = 2 * Math.PI * radius;
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (value > 0) {
+                const percentage = (value / Math.max(total, 1)) * 100;
+                const dashLength = (percentage / 100) * circumference;
+                segments.push({
+                    key,
+                    value,
+                    percentage,
+                    dashLength,
+                    dashOffset: offset,
+                    color: colors[key] || '#666'
+                });
+                offset += dashLength;
+            }
+        });
+
+        const svgSegments = segments.map(s => `
+                <circle cx="60" cy="60" r="${radius}" fill="none" stroke="${s.color}" 
+                        stroke-width="15" stroke-dasharray="${s.dashLength} ${circumference}" 
+                        stroke-dashoffset="-${s.dashOffset}" 
+                        style="transition: stroke-dasharray 0.5s, stroke-dashoffset 0.5s;"/>
+            `).join('');
+
+        chartEl.innerHTML = `
+                <svg viewBox="0 0 120 120" style="width: 100%; height: 100%;">
+                    <circle cx="60" cy="60" r="${radius}" fill="none" stroke="var(--bg-tertiary)" stroke-width="15"/>
+                    ${svgSegments}
+                    <text x="60" y="60" text-anchor="middle" dominant-baseline="middle" 
+                          fill="var(--text-primary)" font-size="16" font-weight="bold">${total}</text>
+                    <text x="60" y="75" text-anchor="middle" dominant-baseline="middle" 
+                          fill="var(--text-muted)" font-size="8">TOTAL</text>
+                </svg>
+            `;
+
+        legendEl.innerHTML = segments.map(s => `
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <div style="width: 12px; height: 12px; border-radius: 3px; background: ${s.color};"></div>
+                    <span style="font-size: 13px; flex: 1;">${s.key}</span>
+                    <span style="font-size: 13px; font-weight: 600;">${s.value}</span>
+                </div>
+            `).join('');
+    }
+
+    async function checkReminders() {
+        try {
+            const res = await fetch(`${API_BASE}/check-reminders`);
+            if (res.ok) {
+                const result = await res.json();
+                if (result.reminders_sent > 0) {
+                    alert(`📧 ${result.reminders_sent} reminder(s) sent!\n\n${result.details.map(d => `• ${d.project}: ${d.completion.toFixed(0)}% complete`).join('\n')}`);
+                } else {
+                    alert('✅ No reminders needed - all projects on track or no upcoming rig down deadlines.');
+                }
+            }
+        } catch (error) {
+            alert('Error checking reminders');
+        }
+    }
+
+    // Keep old function for compatibility
+    function updateStatistics() {
+        loadDashboardStats();
+    }
+
+    // ===== DOWNLOAD REPORT =====
+    function downloadReport() {
+        showDownloadModal();
+    }
+
+    function showDownloadModal() {
+        document.getElementById('download-modal').classList.add('active');
+        document.getElementById('download-search').value = '';
+        document.getElementById('download-loading').style.display = 'none';
+        document.getElementById('download-project-list').style.display = 'block';
+        renderDownloadProjects();
+    }
+
+    function closeDownloadModal() {
+        document.getElementById('download-modal').classList.remove('active');
+    }
+
+    function renderDownloadProjects(filter = '') {
+        const container = document.getElementById('download-project-list');
+        const filtered = filter
+            ? allProjects.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()) ||
+                (p.well && p.well.toLowerCase().includes(filter.toLowerCase())))
+            : allProjects;
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">No projects found</p>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(p => {
+            const projectTasks = allTasks.filter(t => t.project_id === p.id);
+            const tasksWithAttachments = projectTasks.filter(t => t.attachments && t.attachments.length > 0);
+            const totalAttachments = projectTasks.reduce((sum, t) => sum + (t.attachments ? t.attachments.length : 0), 0);
+
+            return `
+                    <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 16px; margin-bottom: 12px; 
+                                border-left: 3px solid ${p.status === 'Completed' ? 'var(--success)' : 'var(--netflix-red)'};">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${p.name}</div>
+                                ${p.well ? `<div style="font-size: 13px; color: var(--text-secondary);">Well: ${p.well}</div>` : ''}
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                                    📎 ${totalAttachments} attachment${totalAttachments !== 1 ? 's' : ''} 
+                                    • ${tasksWithAttachments.length}/${projectTasks.length} tasks with files
+                                </div>
+                            </div>
+                            <div>
+                                <span class="project-card-badge badge-${p.status?.toLowerCase() || 'upcoming'}" style="font-size: 10px;">
+                                    ${p.status || 'Upcoming'}
+                                </span>
+                            </div>
+                        </div>
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 10px; margin-top: 12px;">
+                            <button onclick="previewProjectReport('${p.id}')" 
+                                    style="flex: 1; padding: 10px; background: var(--bg-secondary); border: 1px solid var(--border); 
+                                           border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 13px;
+                                           transition: all 0.2s;"
+                                    onmouseover="this.style.borderColor='var(--netflix-red)'"
+                                    onmouseout="this.style.borderColor='var(--border)'">
+                                👁️ Preview
+                            </button>
+                            <button onclick="downloadProjectReport('${p.id}')" 
+                                    style="flex: 1; padding: 10px; background: var(--netflix-red); border: none; 
+                                           border-radius: 6px; color: white; cursor: pointer; font-size: 13px;
+                                           transition: all 0.2s;"
+                                    onmouseover="this.style.background='var(--netflix-red-dark)'"
+                                    onmouseout="this.style.background='var(--netflix-red)'">
+                                📥 Download
+                            </button>
+                        </div>
+                    </div>
+                `;
+        }).join('');
+    }
+
+    function filterDownloadProjects() {
+        const search = document.getElementById('download-search').value;
+        renderDownloadProjects(search);
+    }
+
+    async function downloadProjectReport(projectId) {
+        const project = allProjects.find(p => p.id === projectId);
+        if (!project) return;
+
+        const projectTasks = allTasks.filter(t => t.project_id === projectId);
+        const totalAttachments = projectTasks.reduce((sum, t) => sum + (t.attachments ? t.attachments.length : 0), 0);
+
+        if (totalAttachments === 0) {
+            alert('This project has no attachments to compile into a report.');
+            return;
+        }
+
+        // Show loading
+        document.getElementById('download-project-list').style.display = 'none';
+        document.getElementById('download-loading').style.display = 'block';
+
+        try {
+            const res = await fetch(`${API_BASE}/projects/${projectId}/report?mode=download`, {
+                method: 'GET'
+            });
+
+            if (res.ok) {
+                // Download the PDF
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${project.name.replace(/[^a-zA-Z0-9]/g, '_')}_Report.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                closeDownloadModal();
+                alert('Report downloaded successfully!');
+            } else {
+                const error = await res.json();
+                alert(`Error: ${error.detail || 'Failed to generate report'}`);
+                document.getElementById('download-project-list').style.display = 'block';
+                document.getElementById('download-loading').style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Download error:', error);
+            alert('Error generating report. Please try again.');
+            document.getElementById('download-project-list').style.display = 'block';
+            document.getElementById('download-loading').style.display = 'none';
+        }
+    }
+
+    async function previewProjectReport(projectId) {
+        const project = allProjects.find(p => p.id === projectId);
+        if (!project) return;
+
+        // Show loading
+        document.getElementById('download-project-list').style.display = 'none';
+        document.getElementById('download-loading').style.display = 'block';
+        document.getElementById('download-loading').innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 10px;">👁️</div>
+                <p style="color: var(--netflix-red);">Generating Preview...</p>
+                <p style="font-size: 12px; color: var(--text-muted);">Embedding attachments, please wait</p>
+            `;
+
+        try {
+            const res = await fetch(`${API_BASE}/projects/${projectId}/report?mode=preview`, {
+                method: 'GET'
+            });
+
+            if (res.ok) {
+                // Open PDF in new tab
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+
+                // Reset modal
+                document.getElementById('download-project-list').style.display = 'block';
+                document.getElementById('download-loading').style.display = 'none';
+                document.getElementById('download-loading').innerHTML = `
+                        <div style="font-size: 24px; margin-bottom: 10px;">📄</div>
+                        <p style="color: var(--netflix-red);">Generating PDF Report...</p>
+                        <p style="font-size: 12px; color: var(--text-muted);">This may take a moment</p>
+                    `;
+            } else {
+                const error = await res.json();
+                alert(`Error: ${error.detail || 'Failed to generate preview'}`);
+                document.getElementById('download-project-list').style.display = 'block';
+                document.getElementById('download-loading').style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Preview error:', error);
+            alert('Error generating preview. Please try again.');
+            document.getElementById('download-project-list').style.display = 'block';
+            document.getElementById('download-loading').style.display = 'none';
+        }
+    }
+
+    // ===== SCHEDULES =====
+    let allSchedules = [];
+
+    async function loadSchedules() {
+        try {
+            const res = await fetch(`${API_BASE}/schedules`);
+            if (res.ok) {
+                allSchedules = await res.json();
+                renderScheduleCalendars();
+                renderCalendar(); // Update home calendar
+            }
+        } catch (error) {
+            console.error('Error loading schedules:', error);
+        }
+    }
+
+    function populateProjectDropdown() {
+        const select = document.getElementById('schedule-project-select');
+        if (!select) return;
+
+        // Clear existing options except first
+        select.innerHTML = '<option value="">Select a project</option>';
+
+        // Add projects
+        allProjects.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.textContent = p.name;
+            option.dataset.projectName = p.name;
+            select.appendChild(option);
+        });
+    }
+
+    async function createSchedule() {
+        const form = document.getElementById('schedule-form');
+        const selectEl = document.getElementById('schedule-project-select');
+        const selectedOption = selectEl.options[selectEl.selectedIndex];
+        const scheduleType = document.getElementById('schedule-type-input').value;
+
+        // Validate required fields
+        if (!form.project_id.value) {
+            alert('Please select a project');
+            return;
+        }
+        if (!form.well_name.value) {
+            alert('Please enter well name');
+            return;
+        }
+        if (!form.pic_name.value) {
+            alert('Please enter PIC name');
+            return;
+        }
+        if (!form.assigned_to_email.value) {
+            alert('Please enter email');
+            return;
+        }
+
+        // Validate the selected date field
+        if (scheduleType === 'mwt' && !form.mwt_plan_date.value) {
+            alert('Please select MWT Plan Date');
+            return;
+        }
+        if (scheduleType === 'hse' && !form.hse_meeting_date.value) {
+            alert('Please select HSE Committee Meeting Date');
+            return;
+        }
+        if (scheduleType === 'csms' && !form.csms_pb_date.value) {
+            alert('Please select CSMS PB Audit Date');
+            return;
+        }
+
+        const data = {
+            project_id: form.project_id.value,
+            project_name: selectedOption.dataset.projectName || selectedOption.text,
+            well_name: form.well_name.value,
+            schedule_type: scheduleType,
+            mwt_plan_date: form.mwt_plan_date.value || null,
+            hse_meeting_date: form.hse_meeting_date.value || null,
+            csms_pb_date: form.csms_pb_date.value || null,
+            pic_name: form.pic_name.value,
+            assigned_to_email: form.assigned_to_email.value
+        };
+
+        // Get the schedule type label for the success message
+        const typeLabels = { mwt: 'MWT Plan', hse: 'HSE Committee Meeting', csms: 'CSMS PB Audit' };
+        const typeLabel = typeLabels[scheduleType] || scheduleType;
+
+        try {
+            const res = await fetch(`${API_BASE}/schedules`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                alert(`${typeLabel} schedule created successfully!\n\nAn email notification will be sent to ${data.assigned_to_email}`);
+                form.reset();
+                form.pic_name.value = 'ADE';
+                // Reset to MWT type
+                selectScheduleType('mwt');
+                loadSchedules();
+            } else {
+                alert('Error creating schedule');
+            }
+        } catch (error) {
+            alert('Error connecting to server');
+        }
+    }
+    let mwtMonthFilter = 'all';
+    let hseMonthFilter = 'all';
+
+    function getUpcoming3Months() {
+        const months = [];
+        const today = new Date();
+        for (let i = 0; i < 3; i++) {
+            const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
+            months.push({
+                key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+                label: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+            });
+        }
+        return months;
+    }
+
+    function filterByMonth(schedules, dateField, monthKey) {
+        const today = new Date();
+        const threeMonthsLater = new Date(today.getFullYear(), today.getMonth() + 3, 0);
+
+        // First filter to upcoming 3 months only
+        let filtered = schedules.filter(s => {
+            const date = new Date(s[dateField]);
+            return date >= today && date <= threeMonthsLater;
+        });
+
+        // Then filter by specific month if not 'all'
+        if (monthKey !== 'all') {
+            filtered = filtered.filter(s => {
+                const date = new Date(s[dateField]);
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                return key === monthKey;
+            });
+        }
+
+        return filtered.sort((a, b) => new Date(a[dateField]) - new Date(b[dateField]));
+    }
+
+    function renderMonthFilters() {
+        const months = getUpcoming3Months();
+        const mwtFilterContainer = document.getElementById('mwt-month-filter');
+        const hseFilterContainer = document.getElementById('hse-month-filter');
+
+        if (!mwtFilterContainer || !hseFilterContainer) return;
+
+        const createFilterButtons = (container, type, currentFilter) => {
+            container.innerHTML = `
+                    <div class="status-dot ${currentFilter === 'all' ? 'active' : ''}" 
+                         onclick="${type}MonthFilter = 'all'; renderScheduleCalendars();" 
+                         style="cursor: pointer;">All</div>
+                    ${months.map(m => `
+                        <div class="status-dot ${currentFilter === m.key ? 'active' : ''}" 
+                             onclick="${type}MonthFilter = '${m.key}'; renderScheduleCalendars();"
+                             style="cursor: pointer;">${m.label}</div>
+                    `).join('')}
+                `;
+        };
+
+        createFilterButtons(mwtFilterContainer, 'mwt', mwtMonthFilter);
+        createFilterButtons(hseFilterContainer, 'hse', hseMonthFilter);
+    }
+
+    function renderScheduleCalendars() {
+        const mwtContainer = document.getElementById('mwt-calendar');
+        const hseContainer = document.getElementById('hse-calendar');
+
+        if (!mwtContainer || !hseContainer) return;
+
+        // Render month filters
+        renderMonthFilters();
+
+        // Filter MWT schedules (3 months + month filter)
+        const mwtFiltered = filterByMonth(allSchedules, 'mwt_plan_date', mwtMonthFilter);
+
+        // MWT Calendar
+        if (mwtFiltered.length === 0) {
+            mwtContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No schedules in selected period</p>';
+        } else {
+            mwtContainer.innerHTML = mwtFiltered.map(s => `
+                    <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 3px solid var(--netflix-red);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600;">${s.project_name}</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">${s.well_name}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="background: var(--netflix-red); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                    ${formatDate(s.mwt_plan_date)}
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">PIC: ${s.pic_name}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // Filter HSE schedules (3 months + month filter)
+        const hseFiltered = filterByMonth(allSchedules, 'hse_meeting_date', hseMonthFilter);
+
+        // HSE Calendar
+        if (hseFiltered.length === 0) {
+            hseContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No schedules in selected period</p>';
+        } else {
+            hseContainer.innerHTML = hseFiltered.map(s => `
+                    <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 3px solid var(--success);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600;">${s.project_name}</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">${s.well_name}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="background: var(--success); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                    ${formatDate(s.hse_meeting_date)}
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">PIC: ${s.pic_name}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // Update navigateTo to load schedules
+    const originalNavigateTo = navigateTo;
+    navigateTo = function (screen) {
+        // Update screens
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(`screen-${screen}`).classList.add('active');
+
+        // Update nav
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.drawer-item').forEach(n => n.classList.remove('active'));
+
+        const navScreens = ['home', 'projects', 'tasks', 'statistics', 'schedule', 'csms-pb', 'related-docs'];
+        document.querySelectorAll('.nav-item')[navScreens.indexOf(screen)]?.classList.add('active');
+
+        // Close drawer
+        document.querySelector('.drawer').classList.remove('active');
+        document.querySelector('.drawer-overlay').classList.remove('active');
+
+        // Load specific screen data
+        if (screen === 'statistics') updateStatistics();
+        if (screen === 'schedule') {
+            populateProjectDropdown();
+            loadSchedules();
+        }
+        if (screen === 'csms-pb') {
+            populatePBProjectDropdown();
+            loadPBRecords();
+        }
+        if (screen === 'related-docs') {
+            populateDocProjectDropdown();
+            loadRelatedDocs();
+        }
+    }
+
+    // ===== CSMS PB Functions =====
+    function populatePBProjectDropdown() {
+        const select = document.getElementById('pb-project-select');
+        select.innerHTML = '<option value="">Select Project</option>' +
+            allProjects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    }
+
+    function onPBProjectChange(projectId) {
+        const project = allProjects.find(p => p.id === projectId);
+        document.getElementById('pb-well-name').value = project ? (project.well_name || project.well || '') : '';
+    }
+
+    async function submitPBRecord() {
+        const form = document.getElementById('csms-pb-form');
+        const projectId = form.project_id.value;
+        const pbDate = form.pb_date.value;
+        const picName = form.pic_name.value;
+        const score = parseFloat(form.score.value);
+
+        if (!projectId || !pbDate || !picName || isNaN(score)) {
+            showToast('Please fill all required fields', 'error');
+            return;
+        }
+
+        if (score < 0 || score > 100) {
+            showToast('Score must be between 0 and 100', 'error');
+            return;
+        }
+
+        try {
+            const pbData = {
+                project_id: projectId,
+                well_name: form.well_name.value,
+                pb_date: pbDate,
+                pic_name: picName,
+                pic_whatsapp: form.pic_whatsapp.value,
+                score: score
+            };
+
+            const res = await fetch(`${API_BASE}/csms-pb`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pbData)
+            });
+
+            if (res.ok) {
+                const newRecord = await res.json();
+
+                // Upload attachment if present
+                const fileInput = document.getElementById('pb-attachment');
+                if (fileInput.files.length > 0) {
+                    const formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    await fetch(`${API_BASE}/csms-pb/${newRecord.id}/attachment`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+
+                showToast('PB Record saved successfully!', 'success');
+                form.reset();
+                loadPBRecords();
+            } else {
+                showToast('Failed to save PB record', 'error');
+            }
+        } catch (error) {
+            console.error('Error submitting PB record:', error);
+            showToast('Error submitting record', 'error');
+        }
+    }
+
+    async function loadPBRecords() {
+        try {
+            const [recordsRes, statsRes] = await Promise.all([
+                fetch(`${API_BASE}/csms-pb`),
+                fetch(`${API_BASE}/csms-pb/statistics`)
+            ]);
+
+            if (recordsRes.ok) {
+                const records = await recordsRes.json();
+                renderPBRecords(records);
+            }
+
+            if (statsRes.ok) {
+                const stats = await statsRes.json();
+                renderPBChart(stats);
+            }
+        } catch (error) {
+            console.error('Error loading PB records:', error);
+        }
+    }
+
+    function renderPBRecords(records) {
+        const container = document.getElementById('pb-records-list');
+        if (records.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">No PB records yet</div>';
+            return;
+        }
+
+        container.innerHTML = records.slice(-10).reverse().map(r => {
+            const project = allProjects.find(p => p.id === r.project_id) || {};
+            const scoreColor = r.score < 60 ? 'var(--netflix-red)' : (r.score < 80 ? 'var(--warning)' : 'var(--success)');
+            return `
+                <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: var(--text-primary);">${project.name || 'Unknown'}</strong>
+                        <div style="background: ${scoreColor}; padding: 4px 12px; border-radius: 20px; font-weight: 700;">${r.score}%</div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted);">
+                        ${r.well_name || ''} • ${formatDate(r.pb_date)} • PIC: ${r.pic_name}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderPBChart(stats) {
+        const container = document.getElementById('pb-chart-container');
+        if (stats.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">No PB records yet</div>';
+            return;
+        }
+
+        container.innerHTML = stats.map(s => {
+            const barColor = s.latest_score < 60 ? 'var(--netflix-red)' : (s.latest_score < 80 ? 'var(--warning)' : 'var(--success)');
+            return `
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="font-size: 13px;">${s.project_name}</span>
+                        <span style="font-size: 13px; font-weight: 600; color: ${barColor};">${s.latest_score}%</span>
+                    </div>
+                    <div style="height: 20px; background: var(--bg-tertiary); border-radius: 10px; overflow: hidden;">
+                        <div style="height: 100%; width: ${s.latest_score}%; background: ${barColor}; transition: width 0.5s;"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ===== Related Docs Functions =====
+    function populateDocProjectDropdown() {
+        const select = document.getElementById('doc-project-select');
+        select.innerHTML = '<option value="">Select Project</option>' +
+            allProjects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    }
+
+    function onDocProjectChange(projectId) {
+        const project = allProjects.find(p => p.id === projectId);
+        document.getElementById('doc-well-name').value = project ? (project.well_name || project.well || '') : '';
+    }
+
+    async function submitRelatedDoc() {
+        const form = document.getElementById('related-doc-form');
+        const projectId = form.project_id.value;
+        const docName = form.doc_name.value;
+        const fileInput = document.getElementById('doc-file');
+
+        if (!projectId || !docName || fileInput.files.length === 0) {
+            showToast('Please fill all required fields and select a file', 'error');
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('project_id', projectId);
+            formData.append('well_name', form.well_name.value || '');
+            formData.append('doc_name', docName);
+            formData.append('file', fileInput.files[0]);
+
+            const res = await fetch(`${API_BASE}/related-docs`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                showToast('Document uploaded successfully!', 'success');
+                form.reset();
+                document.getElementById('doc-file-name').textContent = 'No file selected';
+                loadRelatedDocs();
+            } else {
+                showToast('Failed to upload document', 'error');
+            }
+        } catch (error) {
+            console.error('Error uploading document:', error);
+            showToast('Error uploading document', 'error');
+        }
+    }
+
+    async function loadRelatedDocs() {
+        try {
+            const res = await fetch(`${API_BASE}/related-docs`);
+            if (res.ok) {
+                const docs = await res.json();
+                renderRelatedDocs(docs);
+            }
+        } catch (error) {
+            console.error('Error loading related docs:', error);
+        }
+    }
+
+    function renderRelatedDocs(docs) {
+        const container = document.getElementById('related-docs-list');
+        if (docs.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">No documents uploaded yet</div>';
+            return;
+        }
+
+        container.innerHTML = docs.map(d => {
+            const project = allProjects.find(p => p.id === d.project_id) || {};
+            const downloadUrl = `${API_BASE}/download/${d.drive_file_id}`;
+            return `
+                <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">📄 ${d.doc_name}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">
+                            ${project.name || 'Unknown'} • ${d.filename}
+                        </div>
+                    </div>
+                    <button onclick="triggerFileDownload('${downloadUrl}', '${d.filename}')" 
+                       style="background: var(--netflix-red); color: white; padding: 6px 12px; border-radius: 6px; border: none; font-size: 12px; cursor: pointer;">
+                        Download
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Update file name display when file is selected
+    function updateDocFileName(input) {
+        const fileNameSpan = document.getElementById('doc-file-name');
+        if (input.files && input.files.length > 0) {
+            fileNameSpan.textContent = input.files[0].name;
+            fileNameSpan.style.color = 'var(--success)';
+        } else {
+            fileNameSpan.textContent = 'No file selected';
+            fileNameSpan.style.color = 'var(--text-muted)';
+        }
+    }
+
+    // Trigger file download - works on both web and mobile
+    function triggerFileDownload(url, filename) {
+        // Check if running in mobile app WebView (React Native)
+        if (window.ReactNativeWebView) {
+            // Send message to React Native to handle download
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'download',
+                url: url,
+                filename: filename
+            }));
+            showToast('Preparing download...', 'info');
+        } else {
+            // Web browser - open in new tab or trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.download = filename || 'download';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Download started', 'success');
+        }
+    }
+
+    // Schedule type selection
+    function selectScheduleType(type) {
+        // Update hidden input
+        document.getElementById('schedule-type-input').value = type;
+
+        // Update chip styles
+        document.querySelectorAll('.schedule-type-chip').forEach(chip => {
+            chip.classList.remove('active');
+            if (chip.dataset.type === type) {
+                chip.classList.add('active');
+            }
+        });
+
+        // Show/hide date fields
+        document.getElementById('mwt-date-group').style.display = type === 'mwt' ? 'block' : 'none';
+        document.getElementById('hse-date-group').style.display = type === 'hse' ? 'block' : 'none';
+        document.getElementById('csms-date-group').style.display = type === 'csms' ? 'block' : 'none';
+    }
+
+    // ===== CALENDAR =====
+    let calendarDate = new Date();
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendar-grid');
+        const titleEl = document.getElementById('calendar-month-title');
+        if (!grid || !titleEl) return;
+
+        const year = calendarDate.getFullYear();
+        const month = calendarDate.getMonth();
+
+        // Set title
+        titleEl.textContent = calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+        // Get first day and days in month
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+
+        // Build events map for this month
+        const eventsMap = {};
+
+        // Add projects (rig_down date)
+        allProjects.forEach(p => {
+            if (p.rig_down) {
+                const d = new Date(p.rig_down);
+                if (d.getMonth() === month && d.getFullYear() === year) {
+                    const key = d.getDate();
+                    if (!eventsMap[key]) eventsMap[key] = [];
+                    eventsMap[key].push({ type: 'project', id: p.id, name: p.name, color: 'var(--netflix-red)' });
+                }
+            }
+        });
+
+        // Add schedules
+        allSchedules.forEach(s => {
+            // MWT
+            if (s.mwt_plan_date) {
+                const d = new Date(s.mwt_plan_date);
+                if (d.getMonth() === month && d.getFullYear() === year) {
+                    const key = d.getDate();
+                    if (!eventsMap[key]) eventsMap[key] = [];
+                    eventsMap[key].push({ type: 'mwt', id: s.id, name: s.project_name + ' (MWT)', color: '#4A90D9' });
+                }
+            }
+            // HSE
+            if (s.hse_meeting_date) {
+                const d = new Date(s.hse_meeting_date);
+                if (d.getMonth() === month && d.getFullYear() === year) {
+                    const key = d.getDate();
+                    if (!eventsMap[key]) eventsMap[key] = [];
+                    eventsMap[key].push({ type: 'hse', id: s.id, name: s.project_name + ' (HSE)', color: '#46D369' });
+                }
+            }
+            // CSMS PB
+            if (s.csms_pb_date) {
+                const d = new Date(s.csms_pb_date);
+                if (d.getMonth() === month && d.getFullYear() === year) {
+                    const key = d.getDate();
+                    if (!eventsMap[key]) eventsMap[key] = [];
+                    eventsMap[key].push({ type: 'csms', id: s.id, name: s.project_name + ' (CSMS PB)', color: '#F5A623' });
+                }
+            }
+        });
+
+        // Render grid
+        let html = '';
+
+        // Empty cells for days before first of month
+        for (let i = 0; i < firstDay; i++) {
+            html += '<div style="padding: 8px; text-align: center;"></div>';
+        }
+
+        // Days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const events = eventsMap[day] || [];
+            const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+            const hasEvents = events.length > 0;
+
+            let dayStyle = `
+                padding: 6px 2px;
+                text-align: center;
+                border-radius: 8px;
+                font-size: 13px;
+                cursor: ${hasEvents ? 'pointer' : 'default'};
+                position: relative;
+                background: ${isToday ? 'var(--netflix-red)' : hasEvents ? 'var(--bg-tertiary)' : 'transparent'};
+                color: ${isToday ? 'white' : 'var(--text-primary)'};
+                transition: all 0.2s;
+            `;
+
+            // Event dots
+            let dotsHtml = '';
+            if (events.length > 0) {
+                dotsHtml = '<div style="display: flex; justify-content: center; gap: 2px; margin-top: 2px;">';
+                events.slice(0, 4).forEach(e => {
+                    dotsHtml += `<span style="width: 5px; height: 5px; background: ${e.color}; border-radius: 50%;"></span>`;
+                });
+                dotsHtml += '</div>';
+            }
+
+            const eventsJson = JSON.stringify(events).replace(/"/g, '&quot;');
+            html += `
+                <div style="${dayStyle}" 
+                     ${hasEvents ? `onclick="showCalendarEvents(${day}, '${eventsJson}')"` : ''}
+                     ${hasEvents ? `onmouseover="this.style.transform='scale(1.1)'"` : ''}
+                     ${hasEvents ? `onmouseout="this.style.transform='scale(1)'"` : ''}>
+                    ${day}
+                    ${dotsHtml}
+                </div>
+            `;
+        }
+
+        grid.innerHTML = html;
+    }
+
+    function changeCalendarMonth(delta) {
+        calendarDate.setMonth(calendarDate.getMonth() + delta);
+        renderCalendar();
+    }
+
+    function showCalendarEvents(day, eventsJson) {
+        const events = JSON.parse(eventsJson.replace(/&quot;/g, '"'));
+
+        if (events.length === 1) {
+            // Navigate directly
+            navigateToCalendarEvent(events[0]);
+        } else {
+            // Show selection
+            const eventsList = events.map((e, i) => `${i + 1}. ${e.name}`).join('\n');
+            const choice = prompt(`Events on day ${day}:\n\n${eventsList}\n\nEnter number to navigate:`);
+
+            if (choice && events[parseInt(choice) - 1]) {
+                navigateToCalendarEvent(events[parseInt(choice) - 1]);
+            }
+        }
+    }
+
+    function navigateToCalendarEvent(event) {
+        if (event.type === 'project') {
+            navigateTo('projects');
+            setTimeout(() => showProjectDetail(event.id), 300);
+        } else if (event.type === 'mwt' || event.type === 'hse' || event.type === 'csms') {
+            navigateTo('schedule');
+        }
+    }
+</script>
+</body>
+
+</html>

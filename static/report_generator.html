@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Generator | CSMS</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #141414;
+            color: #e5e5e5;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .weatherford-red {
+            color: #C41E3A;
+        }
+
+        .bg-weatherford-red {
+            background-color: #C41E3A;
+        }
+
+        .card {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+        }
+
+        .btn-primary {
+            background-color: #C41E3A;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #a01830;
+        }
+
+        .input-dark {
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+        }
+
+        .input-dark:focus {
+            border-color: #C41E3A;
+            outline: none;
+            ring: 2px solid #C41E3A;
+        }
+
+        /* Custom file upload */
+        .file-drop-area {
+            border: 2px dashed #444;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .file-drop-area:hover {
+            border-color: #C41E3A;
+            background-color: #2a2a2a;
+        }
+
+        .file-drop-area.active {
+            border-color: #C41E3A;
+            background-color: rgba(196, 30, 58, 0.1);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-black border-b border-gray-800 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-bold tracking-tight"><span class="weatherford-red">CSMS</span> Report Generator</h1>
+        </div>
+        <a href="/" class="text-gray-400 hover:text-white transition"><i class="fas fa-home mr-2"></i>Back to
+            Dashboard</a>
+    </nav>
+
+    <!-- Protocol Warning -->
+    <div id="protocolWarning" class="hidden bg-yellow-900 border-b-4 border-yellow-600 p-4">
+        <div class="container mx-auto flex items-center">
+            <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mr-4"></i>
+            <div>
+                <h3 class="font-bold text-white">Incorrect Access Method Detected</h3>
+                <p class="text-yellow-200 text-sm">You are viewing this file directly from your computer (file://). This
+                    prevents the app from connecting to the server.</p>
+                <p class="text-white font-bold mt-1">Please access this page via your running server: <a
+                        href="http://localhost:8000/static/report_generator.html"
+                        class="underline text-blue-400">http://localhost:8000/static/report_generator.html</a></p>
+            </div>
+        </div>
+    </div>
+
+    <main class="container mx-auto px-4 py-8">
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- Generate Section -->
+            <div class="card rounded-xl p-6 shadow-xl">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-magic text-red-600 mr-3"></i> Generate New Report
+                </h2>
+
+                <form id="generateForm" class="space-y-6">
+
+                    <!-- 1. Template Upload -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">1. Upload Template
+                            (Word/Excel) OR Leave Empty for CSV</label>
+                        <div class="file-drop-area" id="templateDrop">
+                            <i class="fas fa-file-word text-4xl mb-3 text-gray-500"></i>
+                            <p class="text-sm text-gray-300">Drag & drop or Click to Select</p>
+                            <p class="text-xs text-gray-500 mt-1">Supported: .docx, .xlsx, .csv</p>
+                            <input type="file" id="templateFile" name="template_file" class="hidden"
+                                accept=".docx,.xlsx,.csv">
+                            <div id="templateName" class="mt-2 text-sm text-green-500 font-medium hidden"></div>
+                        </div>
+                        <div class="mt-2">
+                            <label class="inline-flex items-center text-gray-400">
+                                <input type="checkbox" id="forceCsv"
+                                    class="form-checkbox text-red-600 bg-gray-800 border-gray-600 rounded">
+                                <span class="ml-2 text-sm">Force Download as CSV (No Template Needed)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 2. Source Upload -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">2. Upload Source Data
+                            (PDF/Excel) - Select Multiple if needed</label>
+                        <div class="file-drop-area" id="sourceDrop">
+                            <i class="fas fa-file-pdf text-4xl mb-3 text-gray-500"></i>
+                            <p class="text-sm text-gray-300">Drag & drop or Click to Select</p>
+                            <p class="text-xs text-gray-500 mt-1">Supported: .pdf, .xlsx (Multiple files allowed)</p>
+                            <input type="file" id="sourceFile" name="source_files" class="hidden"
+                                accept=".pdf,.doc,.docx,.xlsx,.xls" multiple>
+                            <div id="sourceName" class="mt-2 text-sm text-green-500 font-medium hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex space-x-4 pt-4">
+                        <button type="button" id="previewBtn"
+                            class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition">
+                            <i class="fas fa-eye mr-2"></i> Preview Data
+                        </button>
+                        <button type="submit" id="generateBtn"
+                            class="flex-1 btn-primary py-3 rounded-lg font-medium shadow-lg">
+                            <i class="fas fa-cogs mr-2"></i> Generate Report
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Preview/Output Section -->
+            <div class="space-y-8">
+
+                <!-- Instructions -->
+                <div class="card rounded-xl p-6">
+                    <h3 class="font-bold mb-4 text-gray-300">How it works</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i> Upload
+                            a Template file (e.g., Training Matrix.xlsx) with expected headers.</li>
+                        <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i> Upload
+                            a Source file (e.g., Worker Certificate.pdf or Employee List.xlsx).</li>
+                        <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i> The
+                            system extracts data from Source and fills it into Template.</li>
+                        <li class="flex items-start"><i class="fas fa-info-circle text-blue-500 mt-1 mr-2"></i> Word
+                            Templates: Use {{Placeholder}} syntax.</li>
+                        <li class="flex items-start"><i class="fas fa-info-circle text-blue-500 mt-1 mr-2"></i> Excel
+                            Templates: Matches column headers automatically.</li>
+                    </ul>
+                </div>
+
+                <!-- Preview Area -->
+                <div id="previewArea" class="hidden card rounded-xl p-6 border-l-4 border-blue-500">
+                    <h3 class="font-bold mb-4 text-white flex justify-between">
+                        <span>Data Preview</span>
+                        <span id="recordCount" class="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded">0
+                            records</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <pre id="previewContent"
+                            class="text-xs text-gray-400 bg-black p-4 rounded border border-gray-800 font-mono"></pre>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading" class="hidden text-center py-12">
+                    <i class="fas fa-circle-notch fa-spin text-4xl text-red-600 mb-4"></i>
+                    <p class="text-gray-400">Processing your documents...</p>
+                </div>
+
+                <!-- Success State -->
+                <div id="success"
+                    class="hidden card rounded-xl p-6 border-l-4 border-green-500 bg-green-900 bg-opacity-10 text-center">
+                    <i class="fas fa-check-circle text-4xl text-green-500 mb-2"></i>
+                    <h3 class="text-xl font-bold text-white mb-2">Success!</h3>
+                    <p class="text-gray-400 mb-4">Your report has been generated.</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check for correct usage (localhost vs file://)
+        if (window.location.protocol === 'file:') {
+            document.getElementById('protocolWarning').classList.remove('hidden');
+        }
+
+        // Drag and Drop Logic
+        ['template', 'source'].forEach(type => {
+            const dropZone = document.getElementById(`${type}Drop`);
+            const fileInput = document.getElementById(`${type}File`);
+            const nameDisplay = document.getElementById(`${type}Name`);
+
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('active');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('active');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    updateName(fileInput.files);
+                }
+            });
+
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length) updateName(fileInput.files);
+            });
+
+            function updateName(files) {
+                if (files.length > 1) {
+                    nameDisplay.textContent = `Selected: ${files.length} files`;
+                } else {
+                    nameDisplay.textContent = `Selected: ${files[0].name}`;
+                }
+                nameDisplay.classList.remove('hidden');
+                dropZone.classList.add('border-green-500');
+            }
+        });
+
+        // Preview Logic
+        document.getElementById('previewBtn').addEventListener('click', async () => {
+            const sourceFile = document.getElementById('sourceFile').files[0];
+            if (!sourceFile) {
+                alert("Please select a Source file (PDF/Excel) first.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('source_file', sourceFile);
+
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('previewArea').classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/reports/preview', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) throw new Error(await res.text());
+
+                const data = await res.json();
+
+                document.getElementById('previewContent').textContent = JSON.stringify(data.preview, null, 2);
+                document.getElementById('recordCount').textContent = `${data.record_count} records found`;
+                document.getElementById('previewArea').classList.remove('hidden');
+
+            } catch (e) {
+                alert("Preview failed: " + e.message);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        });
+
+        // Generate Logic
+        document.getElementById('generateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const templateFile = document.getElementById('templateFile').files[0];
+            const sourceFiles = document.getElementById('sourceFile').files;
+
+            const forceCsv = document.getElementById('forceCsv') ? document.getElementById('forceCsv').checked : false;
+
+            // Validation
+            if (sourceFiles.length === 0) {
+                alert("Please select at least one Source file.");
+                return;
+            }
+
+            if (!templateFile && !forceCsv) {
+                alert("Please select a Template file OR check 'Force Download as CSV'.");
+                return;
+            }
+
+            let finalTemplate = templateFile;
+            if (forceCsv && !templateFile) {
+                finalTemplate = new File([""], "report.csv", { type: "text/csv" });
+            }
+
+            const formData = new FormData();
+            if (finalTemplate) {
+                formData.append('template_file', finalTemplate);
+            }
+
+            // Append all source files with the SAME key 'source_files'
+            for (let i = 0; i < sourceFiles.length; i++) {
+                formData.append('source_files', sourceFiles[i]);
+            }
+
+            // Pass the forceCsv flag to backend
+            if (forceCsv) {
+                formData.append('force_csv', 'true');
+            }
+
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('success').classList.add('hidden');
+            document.getElementById('previewArea').classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/reports/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error("Server Error Response:", errorText);
+                    let errorMsg = `Server responded with ${res.status}`;
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        if (errorJson.detail) {
+                            if (Array.isArray(errorJson.detail)) {
+                                errorMsg = errorJson.detail.map(e => `${e.loc[1]}: ${e.msg}`).join('\n');
+                            } else {
+                                errorMsg = errorJson.detail;
+                            }
+                        }
+                    } catch (parseErr) {
+                        errorMsg = errorText.substring(0, 100);
+                    }
+                    throw new Error(errorMsg);
+                }
+
+                // Download
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+
+                // Filename logic
+                let filename = "generated_report.xlsx";
+                const contentDisp = res.headers.get('Content-Disposition');
+                if (contentDisp && contentDisp.includes('filename=')) {
+                    filename = contentDisp.split('filename=')[1].replace(/"/g, '');
+                }
+
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                document.getElementById('success').classList.remove('hidden');
+
+            } catch (error) {
+                alert("Error: " + error.message);
+                console.error(error);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
