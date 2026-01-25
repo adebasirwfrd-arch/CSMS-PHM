@@ -1,4 +1,11 @@
 
+
+from dotenv import load_dotenv
+load_dotenv()
+
+import sys
+sys.setrecursionlimit(2000)
+
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, HTMLResponse
@@ -1087,7 +1094,12 @@ def create_schedule_route(schedule: ScheduleCreate, background_tasks: Background
     print(f"[SCHEDULE] Created schedule: {new_schedule['id']}")
     
     # Send email notification in background
-    background_tasks.add_task(email_service.send_schedule_notification, new_schedule)
+    # Send email notification immediately (Synchronous for Vercel reliability)
+    try:
+        email_service.send_schedule_notification(new_schedule)
+        print(f"[EMAIL] Notification sent for schedule {new_schedule['id']}")
+    except Exception as e:
+        print(f"[EMAIL ERROR] Failed to send notification: {e}")
     
     return new_schedule
 
@@ -1301,8 +1313,7 @@ async def download_drive_file(file_id: str):
 
 def send_rig_down_reminder(project: dict, completion_percentage: float, incomplete_tasks: list):
     """Send reminder email for rig down deadline"""
-    from dotenv import load_dotenv
-    load_dotenv()
+
     
     try:
         smtp_email = os.getenv('SMTP_EMAIL')
