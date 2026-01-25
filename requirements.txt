@@ -9,7 +9,7 @@ openpyxl
 python-dotenv
 reportlab
 pillow
-pymupdf
+
 requests
 supabase
 
