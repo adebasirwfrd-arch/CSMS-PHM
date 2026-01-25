@@ -12,7 +12,7 @@ pillow
 pymupdf
 requests
 supabase
-pandas
+
 python-docx
 pdfplumber
 python-pptx
