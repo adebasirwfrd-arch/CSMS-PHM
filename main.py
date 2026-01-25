@@ -119,229 +119,12 @@ class CommentCreate(BaseModel):
 
 # NOTE: All data functions (get_csms_pb_records, get_related_docs, etc.) are imported from database.py
 
-# Email sending function
-def send_schedule_email(schedule: dict):
-    """Send email notification about schedule via Brevo API"""
-    import requests
-    
-    try:
-        # Get Brevo API key from environment
-        brevo_api_key = os.getenv('BREVO_API_KEY')
-        
-        if not brevo_api_key:
-            print("[EMAIL] Brevo API key not configured (BREVO_API_KEY)")
-            return False
-        
-        recipient = schedule['assigned_to_email']
-        
-        # Determine schedule type and format accordingly
-        schedule_type = schedule.get('schedule_type', 'mwt').lower()
-        
-        # Map schedule type to display name and get the relevant date
-        type_config = {
-            'mwt': {'name': 'MWT Plan', 'date_field': 'mwt_plan_date', 'color': '#3498db'},
-            'hse_committee': {'name': 'HSE Committee Meeting', 'date_field': 'hse_meeting_date', 'color': '#9b59b6'},
-            'csms_pb': {'name': 'CSMS PB Audit', 'date_field': 'csms_pb_date', 'color': '#27ae60'},
-            'hse_plan': {'name': 'HSE Plan', 'date_field': 'hse_plan_date', 'color': '#e67e22'},
-            'spr': {'name': 'SPR Review', 'date_field': 'spr_date', 'color': '#1abc9c'},
-            'hazid_hazop': {'name': 'HAZID/HAZOP', 'date_field': 'hazid_hazop_date', 'color': '#e74c3c'},
-        }
-        
-        config = type_config.get(schedule_type, type_config['mwt'])
-        schedule_name = config['name']
-        schedule_date = schedule.get(config['date_field']) or schedule.get('mwt_plan_date') or 'TBD'
-        schedule_color = config['color']
-        
-        subject = f"Schedule Reminder: {schedule_name} - {schedule['project_name']}"
-        
-        # Create HTML email body - schedule-type specific
-        body_html = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; padding: 20px;">
-            <div style="background: {schedule_color}; color: white; padding: 20px; border-radius: 8px;">
-                <h2 style="margin: 0;">{schedule_name} Reminder</h2>
-            </div>
-            <div style="padding: 20px; background: #f5f5f5; border-radius: 8px; margin-top: 10px;">
-                <p>Dear <strong>{schedule['pic_name']}</strong>,</p>
-                <p>This is a reminder for your upcoming <strong>{schedule_name}</strong> schedule:</p>
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr style="background: #fff;">
-                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Project</strong></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">{schedule['project_name']}</td>
-                    </tr>
-                    <tr style="background: #fff;">
-                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Well</strong></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">{schedule['well_name']}</td>
-                    </tr>
-                    <tr style="background: #fff;">
-                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Schedule Type</strong></td>
-                        <td style="padding: 10px; border: 1px solid #ddd; color: {schedule_color}; font-weight: bold;">{schedule_name}</td>
-                    </tr>
-                    <tr style="background: #fff;">
-                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Date</strong></td>
-                        <td style="padding: 10px; border: 1px solid #ddd; color: {schedule_color}; font-weight: bold;">{schedule_date}</td>
-                    </tr>
-                </table>
-                <p style="margin-top: 20px;">Please mark this date in your calendar and prepare accordingly.</p>
-                <p>Best regards,<br><strong>CSMS Project Management System</strong><br>Weatherford</p>
-            </div>
-        </body>
-        </html>
-        """
-        
-        print(f"[EMAIL] Sending {schedule_name} reminder via Brevo API...")
-        print(f"[EMAIL] To: {recipient}")
-        
-        # Send via Brevo API
-        url = "https://api.brevo.com/v3/smtp/email"
-        headers = {
-            "accept": "application/json",
-            "api-key": brevo_api_key,
-            "content-type": "application/json"
-        }
-        payload = {
-            "sender": {"name": "CSMS Weatherford", "email": "ade.basirwfrd@gmail.com"},
-            "to": [{"email": recipient}],
-            "subject": subject,
-            "htmlContent": body_html
-        }
-        
-        response = requests.post(url, json=payload, headers=headers)
-        
-        if response.status_code == 201:
-            print(f"[EMAIL] Successfully sent! Response: {response.json()}")
-            return True
-        else:
-            print(f"[EMAIL ERROR] Failed: {response.status_code} - {response.text}")
-            return False
-        
-    except Exception as e:
-        print(f"[EMAIL ERROR] Failed to send email: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
 
-# Helper function for auto-sending reminder for a single project
-def auto_send_project_reminder(project_id: str):
-    """Send reminder for a single newly created project - Uses Brevo API"""
-    import requests
-    from datetime import datetime
-    
-    try:
-        # Get Brevo API key
-        brevo_api_key = os.getenv('BREVO_API_KEY')
-        
-        if not brevo_api_key:
-            print("[AUTO-REMINDER] BREVO_API_KEY not configured")
-            return
-        
-        project = db.get_project(project_id)
-        if not project:
-            print(f"[AUTO-REMINDER] Project {project_id} not found")
-            return
-        
-        tasks = db.get_tasks(project_id)
-        
-        # Calculate completion
-        completed = len([t for t in tasks if t.get('status') == 'Completed'])
-        total = len(tasks)
-        completion_pct = (completed / total * 100) if total > 0 else 0
-        
-        # Only send if completion < 80%
-        if completion_pct >= 80:
-            print(f"[AUTO-REMINDER] Project {project['name']}: {completion_pct:.0f}% complete, no reminder needed")
-            return
-        
-        # Get rig down date
-        rig_down_str = project.get('rig_down_date') or project.get('rig_down') or ''
-        if not rig_down_str:
-            print(f"[AUTO-REMINDER] Project {project['name']}: No rig down date")
-            return
-        
-        rig_down_date = datetime.strptime(rig_down_str, '%Y-%m-%d').date()
-        days_until = (rig_down_date - datetime.now().date()).days
-        
-        # Get PIC email (required)
-        pic_email = project.get('pic_email', '').strip()
-        if not pic_email:
-            print(f"[AUTO-REMINDER] Project {project['name']}: No PIC email configured")
-            return
-        
-        # Get PIC Manager email for CC (optional)
-        pic_manager_email = project.get('pic_manager_email', '').strip() if project.get('pic_manager_email') else ''
-        
-        print(f"[AUTO-REMINDER] Sending via Brevo API to: {pic_email}, CC: {pic_manager_email or 'none'}")
-        
-        # Build email
-        subject = f"[ALERT] New Project: {project['name']} - Rig Down in {days_until} Day(s)"
-        body_html = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; padding: 20px;">
-            <div style="background: #E50914; color: white; padding: 20px; border-radius: 8px;">
-                <h2 style="margin: 0;">[ALERT] New Project - Rig Down Alert</h2>
-            </div>
-            <div style="padding: 20px; background: #f5f5f5; border-radius: 8px; margin-top: 10px;">
-                <p>Dear Team,</p>
-                <p>A new project has been created with <strong style="color:#E50914;">rig down in {days_until} day(s)</strong>.</p>
-                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                    <tr style="background: #fff;">
-                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Project</strong></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">{project['name']}</td>
-                    </tr>
-                    <tr style="background: #fff;">
-                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Well</strong></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">{project.get('well_name') or project.get('well', 'N/A')}</td>
-                    </tr>
-                    <tr style="background: #fff;">
-                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Rig Down Date</strong></td>
-                        <td style="padding: 10px; border: 1px solid #ddd; color: #E50914; font-weight: bold;">{rig_down_str}</td>
-                    </tr>
-                    <tr style="background: #fff;">
-                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>Tasks</strong></td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">{total} tasks assigned</td>
-                    </tr>
-                </table>
-                <p style="color: #E50914; font-weight: bold;">Please start completing tasks immediately to meet the deadline.</p>
-                <p>Best regards,<br><strong>CSMS Project Management System</strong><br>Weatherford</p>
-            </div>
-        </body>
-        </html>
-        """
-        
-        # Send via Brevo API
-        url = "https://api.brevo.com/v3/smtp/email"
-        headers = {
-            "accept": "application/json",
-            "api-key": brevo_api_key,
-            "content-type": "application/json"
-        }
-        
-        # Build recipient list
-        to_list = [{"email": pic_email}]
-        
-        payload = {
-            "sender": {"name": "CSMS Weatherford", "email": "ade.basirwfrd@gmail.com"},
-            "to": to_list,
-            "subject": subject,
-            "htmlContent": body_html
-        }
-        
-        # Add CC if pic_manager_email exists
-        if pic_manager_email:
-            payload["cc"] = [{"email": pic_manager_email}]
-        
-        response = requests.post(url, json=payload, headers=headers)
-        
-        if response.status_code == 201:
-            cc_info = f", CC: {pic_manager_email}" if pic_manager_email else ""
-            print(f"[AUTO-REMINDER] SUCCESS! Sent to {pic_email}{cc_info}")
-        else:
-            print(f"[AUTO-REMINDER ERROR] Failed: {response.status_code} - {response.text}")
-        
-    except Exception as e:
-        print(f"[AUTO-REMINDER ERROR] Failed: {e}")
-        import traceback
-        traceback.print_exc()
+# Email Service Import
+from services.email_service import email_service
+
+# NOTE: All data functions (get_csms_pb_records, get_related_docs, etc.) are imported from database.py
+
 
 # Routes
 
@@ -506,75 +289,15 @@ def send_reminders(background_tasks: BackgroundTasks):
             
             print(f"[REMINDER] Sending via Brevo API to: {pic_emails}, CC: {cc_emails}")
             
-            # Send reminder email
-            subject = f"[REMINDER] Project: {project['name']} - {completion_pct:.0f}% Complete"
-            body_html = f"""
-            <html>
-            <body style="font-family: Arial, sans-serif; padding: 20px;">
-                <div style="background: #E50914; color: white; padding: 20px; border-radius: 8px;">
-                    <h2 style="margin: 0;">[REMINDER] Project Completion Alert</h2>
-                </div>
-                <div style="padding: 20px; background: #f5f5f5; border-radius: 8px; margin-top: 10px;">
-                    <p>Dear Team,</p>
-                    <p>This is a reminder that the following project has <strong style="color:#E50914;">rig down in {days_until_rig_down} day(s)</strong> but is only <strong>{completion_pct:.0f}% complete</strong>.</p>
-                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                        <tr style="background: #fff;">
-                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Project</strong></td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">{project['name']}</td>
-                        </tr>
-                        <tr style="background: #fff;">
-                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Rig Down Date</strong></td>
-                            <td style="padding: 10px; border: 1px solid #ddd; color: #E50914; font-weight: bold;">{rig_down_str}</td>
-                        </tr>
-                        <tr style="background: #fff;">
-                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Completion</strong></td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">{completed}/{total} tasks ({completion_pct:.0f}%)</td>
-                        </tr>
-                        <tr style="background: #fff;">
-                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Remaining Tasks</strong></td>
-                            <td style="padding: 10px; border: 1px solid #ddd; color: #E50914;">{total - completed} tasks to complete</td>
-                        </tr>
-                    </table>
-                    <p style="color: #E50914; font-weight: bold;">Please prioritize completing the remaining tasks before rig down.</p>
-                    <p>Best regards,<br><strong>CSMS Project Management System</strong><br>Weatherford</p>
-                </div>
-            </body>
-            </html>
-            """
-            
+            # Send reminder email using EmailService
             try:
-                # Send via Brevo API
-                url = "https://api.brevo.com/v3/smtp/email"
-                headers = {
-                    "accept": "application/json",
-                    "api-key": brevo_api_key,
-                    "content-type": "application/json"
-                }
+                success = email_service.send_completion_reminder(project, days_until_rig_down, completion_pct, completed, total)
                 
-                # Build recipient list
-                to_list = [{"email": email} for email in pic_emails]
-                
-                payload = {
-                    "sender": {"name": "CSMS Weatherford", "email": "ade.basirwfrd@gmail.com"},
-                    "to": to_list,
-                    "subject": subject,
-                    "htmlContent": body_html
-                }
-                
-                # Add CC if exists
-                if cc_emails:
-                    payload["cc"] = [{"email": email} for email in cc_emails]
-                
-                response = requests.post(url, json=payload, headers=headers)
-                
-                if response.status_code == 201:
+                if success:
                     sent_count += 1
-                    cc_info = f", CC: {len(cc_emails)}" if cc_emails else ""
-                    reminders_info.append(f"{project['name']}: {completion_pct:.0f}% complete, sent to {len(pic_emails)} recipient(s){cc_info}")
-                    print(f"[EMAIL] SUCCESS! Sent for {project['name']} to {pic_emails}, CC: {cc_emails}")
+                    reminders_info.append(f"{project['name']}: {completion_pct:.0f}% complete, sent to {len(pic_emails)} recipient(s)")
                 else:
-                    print(f"[EMAIL ERROR] Failed: {response.status_code} - {response.text}")
-                    reminders_info.append(f"{project['name']}: FAILED - {response.text}")
+                    reminders_info.append(f"{project['name']}: FAILED to send email")
                     
             except Exception as e:
                 print(f"[EMAIL ERROR] Failed to send for {project['name']}: {e}")
@@ -637,7 +360,7 @@ def create_project(project: ProjectCreate, background_tasks: BackgroundTasks):
             if 0 <= days_until <= 2:
                 print(f"[AUTO-REMINDER] Project {new_project['name']} has rig down in {days_until} days, sending alert NOW...")
                 # Run reminder check immediately (not background) to ensure tasks are created
-                auto_send_project_reminder(new_project['id'])
+                email_service.send_project_rig_down_alert(new_project, days_until, len(tasks_to_create), is_new_project=True)
         except Exception as e:
             print(f"[AUTO-REMINDER] Error checking rig down date: {e}")
     
@@ -1363,8 +1086,8 @@ def create_schedule_route(schedule: ScheduleCreate, background_tasks: Background
     save_schedule(new_schedule)
     print(f"[SCHEDULE] Created schedule: {new_schedule['id']}")
     
-    # Send email notification in background (this is fine)
-    background_tasks.add_task(send_schedule_email, new_schedule)
+    # Send email notification in background
+    background_tasks.add_task(email_service.send_schedule_notification, new_schedule)
     
     return new_schedule
 
