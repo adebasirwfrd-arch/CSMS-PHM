@@ -1,3 +1,17 @@
+# Credentials
+.env
+.env.*
 services/service_account.json
 services/google_token.json
 services/google_credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# System
+.DS_Store

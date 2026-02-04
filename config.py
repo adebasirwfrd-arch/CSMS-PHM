@@ -1,47 +1,48 @@
 
 STANDARD_TASKS = [
-    # 1. Management
-    {"code": "1.1", "title": "MWT Report", "category": "Management"},
-    {"code": "1.2", "title": "HSE Committee Meeting", "category": "Management"},
-    {"code": "1.3", "title": "Poster IOGP CLSR", "category": "Management"},
-    
-    # 2. Safety Signs & Photos
-    {"code": "2.1", "title": "Foto Rambu K3 (Rambu Titik Jepit, Chemical, No Smoking, Electricity)", "category": "Safety Signs"},
-    {"code": "2.2", "title": "Foto Pemasangan Poster Live Saving Rules", "category": "Safety Signs"},
-    {"code": "2.3", "title": "Foto Meeting dilokasi (HSE Weekly, PJSM, Tailgate)", "category": "Safety Signs"},
-    {"code": "2.4", "title": "Foto saat menyampaikan safety moment dilokasi", "category": "Safety Signs"},
+    # ELEMEN 1 – KEPEMIMPINAN DAN KOMITMEN
+    {"code": "1.1", "title": "KOMITMEN HSSE MELALUI KEPEMIMPINAN", "category": "ELEMEN 1 – KEPEMIMPINAN DAN KOMITMEN"},
 
-    # 3. Training & Campaign
-    {"code": "3.1", "title": "Foto training dilokasi (H2S, SIKA, JSA, etc)", "category": "Training"},
-    {"code": "3.2", "title": "Foto HSE Campaign (Reward, Safety Moment, Marshal)", "category": "Training"},
+    # ELEMEN 2 – TUJUAN KEBIJAKAN HSSE DAN STRATEGI
+    {"code": "2.1", "title": "DOKUMEN KEBIJAKAN HSSE", "category": "ELEMEN 2 – TUJUAN KEBIJAKAN HSSE DAN STRATEGI"},
+    {"code": "2.2", "title": "SASARAN STRATEGIS HSSE BERKALA (TAHUNAN)", "category": "ELEMEN 2 – TUJUAN KEBIJAKAN HSSE DAN STRATEGI"},
 
-    # 4. Inspections & Reports
-    {"code": "4.1", "title": "Foto TRA Dilokasi", "category": "Inspection"},
-    {"code": "4.2", "title": "Foto saat Pemeriksaan Fit to task dilokasi", "category": "Inspection"},
-    {"code": "4.3", "title": "Foto Observation Card / PEKA", "category": "Inspection"},
-    {"code": "4.4", "title": "Lakukan Hazard Hunt Dilokasi", "category": "Inspection"},
-    {"code": "4.5", "title": "Pelaporan Near miss", "category": "Inspection"},
-    {"code": "4.6", "title": "Foto Saat Housekeeping", "category": "Inspection"},
-    {"code": "4.7", "title": "Foto Manajemen Chemical", "category": "Inspection"},
-    {"code": "4.8", "title": "Foto PTW & JSA Dilokasi", "category": "Inspection"},
-    {"code": "4.9", "title": "Foto PJSM (Foto dan Absen)", "category": "Inspection"},
-    {"code": "4.9a", "title": "Inspeksi Lapangan HSE", "category": "Inspection"}, # Duplicate code 4.9 in user list, added suffix
-    {"code": "4.10", "title": "Foto Inspeksi P3K", "category": "Inspection"},
-    {"code": "4.11", "title": "Foto Inspeksi APAR", "category": "Inspection"},
-    {"code": "4.12", "title": "Foto Inspeksi APD", "category": "Inspection"},
-    {"code": "4.13", "title": "Inspeksi Lingkungan kerja", "category": "Inspection"},
-    {"code": "4.14", "title": "SIML Dan HSE Passport", "category": "Inspection"},
+    # ELEMEN 3 – ORGANISASI, TANGGUNG JAWAB, SUMBER DAYA, STANDAR DAN DOKUMENTASI
+    {"code": "3.1", "title": "STRUKTUR ORGANISASI UNTUK PENGELOLAAN HSSE", "category": "ELEMEN 3 – ORGANISASI, TANGGUNG JAWAB, SUMBER DAYA, STANDAR DAN DOKUMENTASI"},
+    {"code": "3.2", "title": "PELATIHAN HSSE UNTUK PARA MANAJER, PENYELIA", "category": "ELEMEN 3 – ORGANISASI, TANGGUNG JAWAB, SUMBER DAYA, STANDAR DAN DOKUMENTASI"},
+    {"code": "3.3", "title": "PELATIHAN HSSE UMUM (PADA SELURUH PEKERJA DAN PIHAK TERKAIT)", "category": "ELEMEN 3 – ORGANISASI, TANGGUNG JAWAB, SUMBER DAYA, STANDAR DAN DOKUMENTASI"},
+    {"code": "3.4", "title": "PEMENUHAN KOMPETENSI HSSE", "category": "ELEMEN 3 – ORGANISASI, TANGGUNG JAWAB, SUMBER DAYA, STANDAR DAN DOKUMENTASI"},
+    {"code": "3.5", "title": "PENGELOLAAN HSSE KONTRAKTOR", "category": "ELEMEN 3 – ORGANISASI, TANGGUNG JAWAB, SUMBER DAYA, STANDAR DAN DOKUMENTASI"},
+    {"code": "3.6", "title": "PERATURAN DAN STANDAR HSSE", "category": "ELEMEN 3 – ORGANISASI, TANGGUNG JAWAB, SUMBER DAYA, STANDAR DAN DOKUMENTASI"},
 
-    # 5. Equipment
-    {"code": "5.1", "title": "Upload List Peralatan (COID)", "category": "Equipment"},
-    {"code": "5.2", "title": "Upload Sertifikat Lifting gear", "category": "Equipment"},
-    {"code": "5.3", "title": "Upload Sertifikat Peralatan", "category": "Equipment"},
-    {"code": "5.4", "title": "Foto Inspeksi Lifting Gear", "category": "Equipment"},
-    {"code": "5.5", "title": "Foto Checklist Inspeksi Peralatan Harian", "category": "Equipment"},
-    {"code": "5.6", "title": "HSE Drill Dilokasi", "category": "Equipment"},
-    {"code": "5.7", "title": "MOC Report", "category": "Equipment"},
+    # ELEMEN 4 – MANAJEMEN RISIKO
+    {"code": "4.1", "title": "PENILAIAN DAN PENGENDALIAN RISIKO", "category": "ELEMEN 4 – MANAJEMEN RISIKO"},
+    {"code": "4.2", "title": "BAHAYA TERHADAP KESEHATAN KERJA", "category": "ELEMEN 4 – MANAJEMEN RISIKO"},
+    {"code": "4.3", "title": "BAHAYA TERHADAP KESELAMATAN KERJA", "category": "ELEMEN 4 – MANAJEMEN RISIKO"},
+    {"code": "4.4", "title": "BAHAYA KEGIATAN LOGISTIK", "category": "ELEMEN 4 – MANAJEMEN RISIKO"},
+    {"code": "4.5", "title": "BAHAYA TERHADAP LINGKUNGAN", "category": "ELEMEN 4 – MANAJEMEN RISIKO"},
+    {"code": "4.6", "title": "BAHAYA TERHADAP KEAMANAN", "category": "ELEMEN 4 – MANAJEMEN RISIKO"},
+    {"code": "4.7", "title": "BAHAYA TERHADAP ASPEK SOSIAL", "category": "ELEMEN 4 – MANAJEMEN RISIKO"},
+    {"code": "4.8", "title": "ALAT PELINDUNG DIRI (APD)", "category": "ELEMEN 4 – MANAJEMEN RISIKO"},
 
-    # 6. Incidents
-    {"code": "6.1", "title": "Pelaporan Incident", "category": "Incident"},
-    {"code": "6.2", "title": "Safety Stand Down dilokasi", "category": "Incident"},
+    # ELEMEN 5 – PERENCANAAN DAN PROSEDUR
+    {"code": "5.1", "title": "MANUAL OPERASI HSSE", "category": "ELEMEN 5 – PERENCANAAN DAN PROSEDUR"},
+    {"code": "5.2", "title": "KEHANDALAN INFRAKSTRUKTUR DAN PERALATAN", "category": "ELEMEN 5 – PERENCANAAN DAN PROSEDUR"},
+    {"code": "5.3", "title": "MANAJEMEN PERUBAHAN", "category": "ELEMEN 5 – PERENCANAAN DAN PROSEDUR"},
+    {"code": "5.4", "title": "RENCANA TANGGAP DARURAT", "category": "ELEMEN 5 – PERENCANAAN DAN PROSEDUR"},
+
+    # ELEMEN 6 – IMPLEMENTASI DAN PEMANTAUAN KINERJA
+    {"code": "6.1", "title": "IMPLEMENTASI SISTEM MANAJEMEN HSSE DAN PEMANTAUAN KINERJA SECARA AKTIF", "category": "ELEMEN 6 – IMPLEMENTASI DAN PEMANTAUAN KINERJA"},
+    {"code": "6.2", "title": "INDIKATOR KINERJA HSSE", "category": "ELEMEN 6 – IMPLEMENTASI DAN PEMANTAUAN KINERJA"},
+    {"code": "6.3", "title": "PEMANTAUAN KINERJA HSSE", "category": "ELEMEN 6 – IMPLEMENTASI DAN PEMANTAUAN KINERJA"},
+    {"code": "6.4", "title": "INVESTIGASI DAN TINDAKLANJUT INSIDEN HSSE", "category": "ELEMEN 6 – IMPLEMENTASI DAN PEMANTAUAN KINERJA"},
+    {"code": "6.5", "title": "INSIDEN YANG HARUS DILAPORKAN SESUAI UNDANG-UNDANG DAN CATATAN KETIDAKPATUHAN", "category": "ELEMEN 6 – IMPLEMENTASI DAN PEMANTAUAN KINERJA"},
+
+    # ELEMEN 7 – AUDIT DAN TINJAUAN
+    {"code": "7.1", "title": "AUDIT", "category": "ELEMEN 7 – AUDIT DAN TINJAUAN"},
+    {"code": "7.2", "title": "TINJAUAN MANAJEMEN DAN TINDAKLANJUT", "category": "ELEMEN 7 – AUDIT DAN TINJAUAN"},
+
+    # ELEMEN 8 – MANAJEMEN K3LL – PENCAPAIAN LAINNYA
+    {"code": "8.1", "title": "SERTIFIKASI SISTEM MANAJEMEN HSSE", "category": "ELEMEN 8 – MANAJEMEN K3LL – PENCAPAIAN LAINNYA"},
+    {"code": "8.2", "title": "KEANGGOTAAN ASOSIASI", "category": "ELEMEN 8 – MANAJEMEN K3LL – PENCAPAIAN LAINNYA"},
 ]

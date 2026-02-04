@@ -1,0 +1,547 @@
+CSMS PHM - DAFTAR ENDPOINT API
+===============================
+
+Catatan:
+- Seluruh endpoint didefinisikan di `main.py` (kecuali modul report di `routers/reports.py`).
+- Format di bawah menyebutkan:
+  - METHOD PATH
+  - Deskripsi singkat
+  - Request (body/query/form/params)
+  - Response (bentuk data utama)
+
+1. ENDPOINT UMUM & STATIS
+-------------------------
+1.1 GET /
+---------
+- Path      : `/`
+- Deskripsi : Mengembalikan halaman frontend utama (index.html) bila tersedia.
+- Request   : Tidak ada.
+- Response  :
+  - 200 HTML:
+    - Jika `static/index.html` ada → isi file tersebut.
+    - Jika tidak → HTML fallback "CSMS Backend".
+
+1.2 GET /api/status
+-------------------
+- Path      : `/api/status`
+- Deskripsi : Health check layanan backend.
+- Request   : Tidak ada.
+- Response  (JSON):
+  - `{ "status": "ok", "service": "CSMS Backend" }`
+
+1.3 GET /api/debug/supabase
+---------------------------
+- Path      : `/api/debug/supabase`
+- Deskripsi : Debug status konfigurasi Supabase & service.
+- Request   : Tidak ada.
+- Response  (JSON, contoh kunci):
+  - `supabase_url_set` (bool)
+  - `supabase_url_preview` (string, prefix URL)
+  - `supabase_key_set` (bool)
+  - `database_enabled` (bool)
+  - `service_enabled` (bool)
+  - `message` (string)
+
+1.4 GET /debug/supabase-status
+------------------------------
+- Path      : `/debug/supabase-status`
+- Deskripsi : Debug detail status Supabase service (internal).
+- Request   : Tidak ada.
+- Response  (JSON):
+  - `enabled` (bool)
+  - `url_configured` (bool)
+  - `key_configured` (bool)
+  - `client_initialized` (bool)
+  - `projects_count` (int atau "N/A")
+
+1.5 GET /debug/drive-status
+---------------------------
+- Path      : `/debug/drive-status`
+- Deskripsi : Debug status Google Drive service.
+- Request   : Tidak ada.
+- Response  (JSON, contoh kunci):
+  - `enabled` (bool)
+  - `auth_method` ("OAuth2" / "Service Account" / None)
+  - `folder_id` (string dipotong)
+  - `token_json_set` (bool)
+  - `token_json_length` (int)
+  - `service_account_set` (bool)
+  - `service_account_length` (int)
+  - `service_initialized` (bool)
+
+
+2. ENDPOINT SINKRONISASI & REMINDER
+-----------------------------------
+2.1 POST /api/force-sync
+------------------------
+- Path      : `/api/force-sync`
+- Deskripsi : Force restore `projects` dan `tasks` dari Supabase ke file JSON lokal.
+- Request   : Tidak ada.
+- Response  (JSON, contoh):
+  - `projects` (int)  -> jumlah project dipulihkan.
+  - `tasks` (int)     -> jumlah task dipulihkan.
+  - `message` (string)
+
+2.2 POST /api/send-reminders
+----------------------------
+- Path      : `/api/send-reminders`
+- Deskripsi : Kirim email reminder completion via Brevo untuk project dengan rig down ≤ 2 hari dan completion < 80%.
+- Request   : Tidak ada.
+- Response  (JSON, contoh):
+  - `message` (string, mis. `"Sent X reminder(s)"` atau keterangan missing API key).
+  - `count` (int)
+  - `projects` (list string ringkasan per project).
+
+2.3 GET /check-reminders
+------------------------
+- Path      : `/check-reminders`
+- Deskripsi : Cek project dengan rig_down ≤ 2 hari dan completion < 95%, lalu kirim rig down reminder via SMTP.
+- Request   : Tidak ada.
+- Response  (JSON, contoh):
+  - `reminders_sent` (int)
+  - `details` (list objek berisi:
+    - `project`, `rig_down`, `completion`, `pic_email`)
+
+
+3. ENDPOINT PROJECTS
+--------------------
+3.1 GET /projects
+-----------------
+- Path      : `/projects`
+- Deskripsi : Mengembalikan semua project terdaftar.
+- Request   : Tidak ada.
+- Response  (JSON):
+  - List objek project dengan field minimal:
+    - `id`, `name`, `description`, `well_name`, `kontrak_no`,
+      `start_date`, `end_date`, `rig_down` / `rig_down_date`,
+      `pic_email`, `pic_manager_email`, `status`, `created_at`, dst.
+
+3.2 POST /projects
+------------------
+- Path      : `/projects`
+- Deskripsi : Membuat project baru dan auto-generate standard tasks + folder Google Drive + sync Excel.
+- Request   (JSON body, model ProjectCreate):
+  - `name` (string, wajib)
+  - `description` (string, optional)
+  - `well_name` (string, optional)
+  - `kontrak_no` (string, optional)
+  - `start_date` (string `YYYY-MM-DD`, optional)
+  - `end_date` (string `YYYY-MM-DD`, optional)
+  - `rig_down_date` / `rig_down` (string `YYYY-MM-DD`, optional)
+  - `pic_email` (string, optional, destinasi email)
+  - `pic_manager_email` (string, optional, CC email)
+  - `status` (string, default `"Ongoing"`)
+- Response  (JSON):
+  - Objek project lengkap yang baru dibuat (sudah termasuk `id`, `created_at`, dsb).
+
+3.3 PATCH /projects/{project_id}
+--------------------------------
+- Path      : `/projects/{project_id}`
+- Deskripsi : Update sebagian field project.
+- Path Param:
+  - `project_id` (string, ID project).
+- Request   (JSON body):
+  - Arbitrary dict, misalnya:
+    - `{"status": "Completed"}`, atau update field lain (dates, emails, dll).
+- Response  (JSON):
+  - Objek project setelah update.
+
+3.4 GET /projects/{project_id}
+------------------------------
+- Path      : `/projects/{project_id}`
+- Deskripsi : Mengambil detail project dan daftar tasks-nya.
+- Path Param:
+  - `project_id` (string).
+- Request   : Tidak ada body.
+- Response  (JSON):
+  - `{ "project": { ... }, "tasks": [ ... ] }`
+
+3.5 DELETE /projects/{project_id}
+---------------------------------
+- Path      : `/projects/{project_id}`
+- Deskripsi : Menghapus satu project dan semua tasks miliknya.
+- Path Param:
+  - `project_id` (string).
+- Request   : Tidak ada body.
+- Response  (JSON):
+  - `{ "status": "success", "deleted_project": "<project_id>" }`
+
+3.6 GET /projects/{project_id}/report
+-------------------------------------
+- Path      : `/projects/{project_id}/report`
+- Deskripsi : Generate laporan PDF lengkap untuk satu project.
+- Path Param:
+  - `project_id` (string).
+- Query Param:
+  - `mode` (string, default `"download"`, nilai: `"download"` atau `"preview"`).
+- Request   : Tidak ada body.
+- Response  :
+  - `StreamingResponse` PDF:
+    - Header: `Content-Disposition: attachment; filename=<Project_Name>_Report.pdf` (mode download).
+    - Atau `inline` untuk mode preview.
+
+
+4. ENDPOINT TASKS
+-----------------
+4.1 POST /tasks
+---------------
+- Path      : `/tasks`
+- Deskripsi : Membuat task baru dan meng-assign ke project tertentu.
+- Request   (JSON body, bebas tapi tipikal):
+  - `project_id` (string, wajib)
+  - `code` (string, optional; mis: "2.1")
+  - `title` (string, optional)
+  - `well_name` (string, optional)
+  - `category` (string, optional)
+  - `status` (string, optional; default `"Upcoming"`)
+  - `description` (string, optional)
+  - `start_date`, `end_date` (string `YYYY-MM-DD`, optional)
+- Response  (JSON):
+  - Objek task baru:
+    - `id` (string, UUID pendek)
+    - `project_id`, `code`, `title`, `category`, `status`,
+      `description`, `well_name`, `attachments` (list kosong),
+      `created_at`, dsb.
+
+4.2 GET /tasks
+--------------
+- Path      : `/tasks`
+- Deskripsi : Mengambil semua task, optional filter by status.
+- Query Param:
+  - `status` (string, optional; `"Upcoming"`, `"In Progress"`, `"Completed"`).
+- Request   : Tidak ada body.
+- Response  (JSON):
+  - List objek task.
+
+4.3 PUT /tasks/{task_id}
+------------------------
+- Path      : `/tasks/{task_id}`
+- Deskripsi : Update penuh (atau sebagian) data task.
+- Path Param:
+  - `task_id` (string).
+- Request   (JSON body):
+  - Dict update (mis. `{"status": "Completed"}` atau update lainnya).
+- Response  (JSON):
+  - Objek task setelah update.
+
+4.4 DELETE /tasks/{task_id}
+---------------------------
+- Path      : `/tasks/{task_id}`
+- Deskripsi : Menghapus satu task.
+- Path Param:
+  - `task_id` (string).
+- Request   : Tidak ada body.
+- Response  (JSON):
+  - `{ "status": "success", "deleted_task": "<task_id>" }`
+
+4.5 GET /debug/task/{task_id}
+-----------------------------
+- Path      : `/debug/task/{task_id}`
+- Deskripsi : Endpoint debug untuk melihat status current task.
+- Path Param:
+  - `task_id` (string).
+- Request   : Tidak ada.
+- Response  (JSON):
+  - Jika ditemukan:
+    - `{ "task_id": ..., "status": ..., "full_task": {...} }`
+  - Jika tidak:
+    - `{ "error": "Task not found", "task_id": ... }`
+
+4.6 POST /tasks/{task_id}/upload
+--------------------------------
+- Path      : `/tasks/{task_id}/upload`
+- Deskripsi : Upload attachment untuk task dan simpan ke Google Drive dengan nested folder.
+- Path Param:
+  - `task_id` (string).
+- Request   (multipart/form-data):
+  - `file`: UploadFile (wajib).
+- Response  (JSON):
+  - `{ "status": "success", "filename": "<nama_file>", "file_id": "<drive_file_id>" }`
+
+
+5. ENDPOINT SCHEDULES
+---------------------
+5.1 GET /schedules
+------------------
+- Path      : `/schedules`
+- Deskripsi : Mengembalikan semua jadwal terdaftar (MWT, HSE, CSMS PB, dll).
+- Request   : Tidak ada.
+- Response  (JSON):
+  - List objek schedule dengan field minimal:
+    - `id`, `project_id`, `project_name`, `well_name`,
+      `schedule_type`, tanggal-tanggal (mwt_plan_date, hse_meeting_date, csms_pb_date, hse_plan_date, spr_date, hazid_date),
+      `pic_name`, `assigned_to_email`, `created_at`.
+
+5.2 POST /schedules
+-------------------
+- Path      : `/schedules`
+- Deskripsi : Membuat jadwal baru dan langsung kirim email notifikasi ke PIC.
+- Request   (JSON body, ScheduleCreate):
+  - `project_id` (string, wajib)
+  - `project_name` (string, wajib)
+  - `well_name` (string, wajib)
+  - `schedule_type` (string: "mwt", "hse_committee", "csms_pb", "hse_plan", "spr", "hazid_hazop")
+  - Tanggal terkait (salah satu atau beberapa):
+    - `mwt_plan_date`, `hse_meeting_date`, `csms_pb_date`, dll (string `YYYY-MM-DD`)
+  - `pic_name` (string)
+  - `assigned_to_email` (string)
+- Response  (JSON):
+  - Objek schedule baru (dengan `id`, `created_at`).
+
+5.3 DELETE /schedules/{schedule_id}
+-----------------------------------
+- Path      : `/schedules/{schedule_id}`
+- Deskripsi : Menghapus satu jadwal (Admin use-case).
+- Path Param:
+  - `schedule_id` (string).
+- Request   : Tidak ada.
+- Response  (JSON):
+  - `{ "status": "success", "deleted_schedule": "<schedule_id>" }`
+
+
+6. ENDPOINT CSMS PB
+-------------------
+6.1 GET /csms-pb
+----------------
+- Path      : `/csms-pb`
+- Deskripsi : Mendapatkan semua record CSMS PB.
+- Request   : Tidak ada.
+- Response  (JSON):
+  - List objek CSMS PB dengan field minimal:
+    - `id`, `project_id`, `well_name`, `pb_date`, `pic_name`,
+      `pic_whatsapp`, `score`, `attachments` (list), `created_at`.
+
+6.2 POST /csms-pb
+-----------------
+- Path      : `/csms-pb`
+- Deskripsi : Membuat record CSMS PB baru.
+- Request   (JSON body, CSMSPBCreate):
+  - `project_id` (string, wajib)
+  - `well_name` (string, optional)
+  - `pb_date` (string, wajib)
+  - `pic_name` (string, wajib)
+  - `pic_whatsapp` (string, optional)
+  - `score` (float, 0–100)
+- Response  (JSON):
+  - Objek CSMS PB baru dengan `id`, `attachments` (kosong), `created_at`.
+
+6.3 DELETE /csms-pb/{pb_id}
+---------------------------
+- Path      : `/csms-pb/{pb_id}`
+- Deskripsi : Menghapus satu record CSMS PB.
+- Path Param:
+  - `pb_id` (string).
+- Request   : Tidak ada.
+- Response  (JSON):
+  - `{ "status": "success", "deleted_pb": "<pb_id>" }`
+
+6.4 POST /csms-pb/{pb_id}/attachment
+------------------------------------
+- Path      : `/csms-pb/{pb_id}/attachment`
+- Deskripsi : Upload attachment ke satu record CSMS PB dan simpan di Google Drive.
+- Path Param:
+  - `pb_id` (string).
+- Request   (multipart/form-data):
+  - `file`: UploadFile (wajib).
+- Response  (JSON):
+  - `{ "status": "success", "attachment": { "filename": ..., "drive_file_id": ..., "uploaded_at": ... } }`
+
+6.5 GET /csms-pb/statistics
+---------------------------
+- Path      : `/csms-pb/statistics`
+- Deskripsi : Mengembalikan statistik score CSMS PB per project.
+- Request   : Tidak ada.
+- Response  (JSON, list objek):
+  - `project_id`
+  - `project_name`
+  - `well_name`
+  - `average_score` (float)
+  - `latest_score` (float)
+  - `record_count` (int)
+  - `status` ("critical" / "warning" / "good")
+
+
+7. ENDPOINT RELATED DOCUMENTS
+-----------------------------
+7.1 GET /related-docs
+---------------------
+- Path      : `/related-docs`
+- Deskripsi : Mendapatkan semua dokumen terkait (related_docs).
+- Request   : Tidak ada.
+- Response  (JSON):
+  - List objek:
+    - `id`, `project_id`, `well_name`, `doc_name`,
+      `filename`, `drive_file_id`, `created_at`.
+
+7.2 POST /related-docs
+----------------------
+- Path      : `/related-docs`
+- Deskripsi : Membuat related doc baru dengan upload file ke Google Drive.
+- Request   (multipart/form-data, Form + File):
+  - `project_id` (Form, string, wajib)
+  - `well_name` (Form, string, optional)
+  - `doc_name` (Form, string, wajib)
+  - `file` (UploadFile, wajib)
+- Response  (JSON):
+  - Objek related doc baru.
+
+7.3 DELETE /related-docs/{doc_id}
+---------------------------------
+- Path      : `/related-docs/{doc_id}`
+- Deskripsi : Menghapus satu related doc.
+- Path Param:
+  - `doc_id` (string).
+- Request   : Tidak ada.
+- Response  (JSON):
+  - `{ "status": "deleted" }`
+
+
+8. ENDPOINT DOWNLOAD FILE DARI GOOGLE DRIVE
+-------------------------------------------
+8.1 GET /download/{file_id}
+---------------------------
+- Path      : `/download/{file_id}`
+- Deskripsi : Download file dari Google Drive berdasarkan ID.
+- Path Param:
+  - `file_id` (string, ID file di Drive).
+- Request   : Tidak ada.
+- Response  :
+  - `StreamingResponse`:
+    - Body: binary file.
+    - Header: `Content-Disposition: attachment; filename=<nama_asli>` dan `Content-Type` sesuai mimeType.
+
+
+9. ENDPOINT COMMENTS & REPLIES
+------------------------------
+9.1 GET /comments
+-----------------
+- Path      : `/comments`
+- Deskripsi : Mendapatkan semua comments (status updates) untuk home screen.
+- Request   : Tidak ada.
+- Response  (JSON):
+  - List comments, disortir terbaru dulu:
+    - `id`, `author_name`, `content`, `attachment_filename`,
+      `attachment_data` (base64 data URL), `created_at`,
+      `likes`, `replies` (list).
+
+9.2 POST /comments
+------------------
+- Path      : `/comments`
+- Deskripsi : Membuat comment/status update baru.
+- Request   (JSON body, CommentCreate):
+  - `author_name` (string, default `"User"`)
+  - `content` (string, wajib)
+  - `attachment_filename` (string, optional)
+  - `attachment_data` (string, optional; base64 data URL)
+- Response  (JSON):
+  - Objek comment baru.
+
+9.3 DELETE /comments/{comment_id}
+---------------------------------
+- Path      : `/comments/{comment_id}`
+- Deskripsi : Menghapus comment (Admin use-case).
+- Path Param:
+  - `comment_id` (string).
+- Request   : Tidak ada.
+- Response  (JSON):
+  - `{ "status": "success", "deleted_comment": "<comment_id>" }`
+
+9.4 POST /comments/{comment_id}/replies
+---------------------------------------
+- Path      : `/comments/{comment_id}/replies`
+- Deskripsi : Menambahkan reply ke suatu comment.
+- Path Param:
+  - `comment_id` (string).
+- Request   (JSON body, ReplyCreate):
+  - `author_name` (string, default `"User"`)
+  - `content` (string, wajib)
+  - `attachment_filename` (string, optional)
+  - `attachment_data` (string, optional; base64 data URL)
+- Response  (JSON):
+  - Objek reply baru yang ditambahkan.
+
+9.5 POST /comments/{comment_id}/like
+------------------------------------
+- Path      : `/comments/{comment_id}/like`
+- Deskripsi : Menambahkan satu like ke comment.
+- Path Param:
+  - `comment_id` (string).
+- Request   : Tidak ada.
+- Response  (JSON):
+  - `{ "status": "success", "likes": <jumlah_likes_baru> }`
+
+
+10. ENDPOINT STATISTIK DASHBOARD
+--------------------------------
+10.1 GET /statistics
+--------------------
+- Path      : `/statistics`
+- Deskripsi : Mengembalikan statistik agregat untuk dashboard utama.
+- Request   : Tidak ada.
+- Response  (JSON, struktur utama):
+  - `projects`:
+    - `total`
+    - `by_status`:
+      - `Upcoming`
+      - `InProgress`
+      - `Completed`
+      - `OnHold`
+  - `tasks`:
+    - `total`
+    - `by_status`:
+      - `Upcoming`
+      - `In Progress`
+      - `Completed`
+    - `completion_rate` (float %)
+    - `with_attachments` (int)
+  - `schedules`:
+    - `total`
+    - `upcoming_mwt`
+    - `upcoming_hse`
+    - `this_month`
+  - `project_completion`: list top 10:
+    - `name`
+    - `completed`
+    - `total`
+    - `percentage`
+
+
+11. ENDPOINT REPORT ENGINE (routers/reports.py)
+-----------------------------------------------
+Seluruh endpoint di bawah ini memiliki prefix `/api/reports`.
+
+11.1 POST /api/reports/generate
+-------------------------------
+- Path      : `/api/reports/generate`
+- Deskripsi : Generate laporan (Excel/CSV/docx*) berdasarkan template dan beberapa source file (Excel/PDF).
+- Request   (multipart/form-data):
+  - `template_file` (UploadFile, optional):
+    - Template laporan (mis. Excel matrix, Excel kosong, CSV, dsb).
+    - Jika tidak disediakan, sistem menggunakan dummy template CSV.
+  - `source_files` (List[UploadFile], wajib, minimal 1):
+    - Sumber data: bisa campuran `.xlsx/.xls` dan `.pdf`.
+  - `force_csv` (string, optional; `"true"` untuk memaksa output CSV).
+- Response  (binary):
+  - Jika template `.xlsx` (dan bukan matrix):
+    - `Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+    - File hasil pengisian template Excel.
+  - Jika template `.xlsx` matrix (deteksi berdasarkan data PDF berisi employee_name):
+    - File matrix terisi.
+  - Jika template `.csv` atau `force_csv=true`:
+    - `Content-Type: text/csv`
+    - `filename: generated_report.csv`
+  - Jika template `.docx`:
+    - Saat ini di-log sebagai "not fully implemented" (stub), potential extension.
+
+11.2 POST /api/reports/preview
+------------------------------
+- Path      : `/api/reports/preview`
+- Deskripsi : Preview data yang diekstrak dari satu source file (Excel/PDF).
+- Request   (multipart/form-data):
+  - `source_file` (UploadFile, wajib; `.xlsx/.xls` atau `.pdf`).
+- Response  (JSON):
+  - `filename` (string)
+  - `record_count` (int)
+  - `preview` (list record pertama, maksimal 5 entri)
+    - Masing-masing record berupa dict field hasil parsing.
+

@@ -8,7 +8,7 @@ class EmailService:
     def __init__(self):
         self.api_key = os.getenv('BREVO_API_KEY')
         self.sender_email = os.getenv('BREVO_SENDER_EMAIL', 'ade.basirwfrd@gmail.com')
-        self.sender_name = os.getenv('BREVO_SENDER_NAME', 'CSMS Weatherford')
+        self.sender_name = os.getenv('BREVO_SENDER_NAME', 'CSMS PHM')
         self.api_url = "https://api.brevo.com/v3/smtp/email"
         
         if not self.api_key:
@@ -107,7 +107,7 @@ class EmailService:
                     </tr>
                 </table>
                 <p style="margin-top: 20px;">Please mark this date in your calendar and prepare accordingly.</p>
-                <p>Best regards,<br><strong>CSMS Project Management System</strong><br>Weatherford</p>
+                <p>Best regards,<br><strong>CSMS Project Management System</strong><br>PHM</p>
             </div>
         </body>
         </html>
@@ -167,7 +167,7 @@ class EmailService:
                     </tr>
                 </table>
                 <p style="color: #E50914; font-weight: bold;">Please prioritize tasks before rig down.</p>
-                <p>Best regards,<br><strong>CSMS Project Management System</strong><br>Weatherford</p>
+                <p>Best regards,<br><strong>CSMS Project Management System</strong><br>PHM</p>
             </div>
         </body>
         </html>
@@ -218,7 +218,7 @@ class EmailService:
                     </tr>
                 </table>
                 <p style="color: #E50914; font-weight: bold;">Please prioritize completing the remaining tasks before rig down.</p>
-                <p>Best regards,<br><strong>CSMS Project Management System</strong><br>Weatherford</p>
+                <p>Best regards,<br><strong>CSMS Project Management System</strong><br>PHM</p>
             </div>
         </body>
         </html>

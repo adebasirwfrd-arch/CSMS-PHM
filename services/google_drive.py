@@ -92,6 +92,11 @@ class GoogleDriveService:
                 print("[INFO] Attempting Service Account authentication...")
                 from google.oauth2 import service_account
                 sa_info = json.loads(self.service_account_json)
+                
+                # FIX: Handle potential newline escaping issues in .env files
+                if 'private_key' in sa_info:
+                     sa_info['private_key'] = sa_info['private_key'].replace('\\n', '\n')
+                     
                 print(f"  [DEBUG] Service Account email: {sa_info.get('client_email', 'N/A')}")
                 creds = service_account.Credentials.from_service_account_info(
                     sa_info, scopes=SCOPES

@@ -1,0 +1,511 @@
+BLUEPRINT APLIKASI CSMS PHM
+============================
+
+Lokasi root proyek:
+- /Users/izzadev/.gemini/antigravity/scratch/CSMS Management/CSMS
+
+Teknologi utama:
+- Backend: FastAPI (Python), Supabase (opsional, single source of truth), fallback JSON lokal.
+- Frontend: Static HTML/CSS/JS yang disajikan oleh FastAPI dari direktori `static`.
+- Integrasi eksternal:
+  - Google Drive API (upload/download file, nested folder untuk setiap task).
+  - Brevo Email API (notifikasi jadwal & reminder completion).
+  - SMTP Gmail (opsi lain untuk rig down reminder).
+
+DEPENDENSI BACKEND (dari requirements.txt)
+-----------------------------------------
+File: requirements.txt
+- fastapi
+- uvicorn
+- python-multipart
+- google-auth, google-auth-oauthlib, google-auth-httplib2, google-api-python-client
+- openpyxl
+- python-dotenv
+- reportlab
+- pillow
+- requests
+- supabase
+- python-docx
+- pdfplumber
+- python-pptx
+
+STRUKTUR FRONTEND
+-----------------
+Direktori: static/
+- index.html
+  - Halaman utama dashboard CSMS (single-page app) yang di-serve oleh endpoint root `/`.
+  - Berisi UI manajemen project, tasks, jadwal, CSMS PB, komentar, statistik, dan akses ke generator report.
+  - Berinteraksi dengan backend via endpoint-endpoint `"/projects"`, `"/tasks"`, `"/schedules"`, `"/csms-pb"`, `"/statistics"`, `"/comments"`, dll (AJAX/fetch).
+
+- website.html
+  - Halaman informasi/landing (marketing/informasi umum) untuk CSMS, biasanya di-link dari `index.html`.
+
+- report_generator.html
+  - UI untuk upload template dan source file guna generate laporan via endpoint `/api/reports/generate`.
+  - Mengirim multipart form: `template_file`, `source_files[]`, dan flag `force_csv`.
+
+- privacy-policy.html
+  - Halaman statis berisi privacy policy aplikasi.
+
+- weatherford_logo.png
+  - Asset logo yang dipakai di tampilan frontend dan laporan.
+
+Catatan:
+- Semua file statis di-mount oleh FastAPI melalui:
+  - Path: /static
+  - Directory: static/
+  - Implementasi: StaticFiles di `main.py`.
+
+STRUKTUR BACKEND
+----------------
+1) Entry Point & Aplikasi FastAPI
+---------------------------------
+File: main.py
+- Inisialisasi:
+  - Memuat environment variables via `python-dotenv`.
+  - Set recursion limit Python.
+  - Membuat instance `FastAPI()` sebagai aplikasi utama.
+  - Setup CORS global (allow all origins, methods, headers).
+  - Mount static files: `static/` ke `/static`.
+  - Include router `reports_router` dari `routers/reports.py` dengan prefix `/api/reports`.
+
+- Dependensi utama yang diinisialisasi:
+  - `db = Database()` dari `database.py` (layer akses data).
+  - `drive_service = GoogleDriveService()` dari `services/google_drive.py`.
+  - `email_service = email_service` dari `services/email_service.py`.
+  - Supabase service (opsional) dari `services/supabase_service.py` melalui `database.py`.
+
+- Model (Pydantic):
+  - `ProjectCreate`
+    - Field: name, description, well_name, kontrak_no, start_date, end_date, rig_down_date/rig_down, pic_email, pic_manager_email, status.
+  - `TaskCreate`
+    - Field: title, project_id, code, category, status, description.
+  - `ScheduleCreate`
+    - Field: project_id, project_name, well_name, schedule_type, mwt_plan_date, hse_meeting_date, csms_pb_date, pic_name, assigned_to_email.
+  - `CSMSPBCreate`
+    - Field: project_id, well_name, pb_date, pic_name, pic_whatsapp, score.
+  - `RelatedDocCreate`
+    - Field: project_id, well_name, doc_name.
+  - `CommentCreate`
+    - Field: author_name, content, attachment_filename, attachment_data.
+  - `ReplyCreate`
+    - Field: author_name, content, attachment_filename, attachment_data.
+
+- Endpoint utama:
+  - `GET /`
+    - Response: HTML (index.html dari `static/` bila ada, fallback HTML simple).
+    - Fungsi: Serve frontend utama CSMS.
+
+  - `GET /api/status`
+    - Fungsi: Health check backend (mengembalikan status ok).
+
+  - `GET /api/debug/supabase`
+    - Fungsi: Mengecek konfigurasi Supabase (URL, KEY, status client).
+
+  - `POST /api/force-sync`
+    - Fungsi: Force sync data `projects` dan `tasks` dari Supabase ke file JSON lokal.
+    - Menggunakan `supabase_service.get_projects()` dan `supabase_service.get_tasks()`.
+
+  - `POST /api/send-reminders`
+    - Fungsi: Kirim email reminder via Brevo API untuk proyek dengan:
+      - rig down date dalam 0–2 hari, dan
+      - completion task < 80%.
+    - Langkah:
+      - Ambil projects & tasks dari `db`.
+      - Hitung completion per project.
+      - Kirim email via `email_service.send_completion_reminder(...)`.
+
+  - Endpoint group: Projects (`/projects`)
+    - `GET /projects`
+      - Fungsi: Ambil semua project dari `db.get_projects()`.
+    - `POST /projects`
+      - Input: `ProjectCreate`.
+      - Fungsi:
+        - Membuat project baru via `db.create_project`.
+        - Background task: buat folder project di Google Drive (`drive_service.find_or_create_folder`).
+        - Generate standard tasks (list `STANDARD_TASKS` dari `config.py`) melalui `db.batch_create_tasks`.
+        - Background task: sync ke Excel & upload ke Google Drive (`ExcelSyncService.sync_to_drive`).
+        - Auto-kirim rig down alert awal menggunakan `email_service.send_project_rig_down_alert` bila rig down <= 2 hari.
+    - `PATCH /projects/{project_id}`
+      - Fungsi: Update field project tertentu via `db.update_project`.
+    - `GET /projects/{project_id}`
+      - Fungsi:
+        - Ambil detail project dan daftar tasks terkait.
+        - Sort tasks berdasarkan `code` numerik (1.1, 1.2, 1.10, dst).
+        - Return struktur: `{project, tasks}`.
+    - `DELETE /projects/{project_id}`
+      - Fungsi:
+        - Hapus semua tasks milik project.
+        - Hapus project di database (`db.delete_project`).
+
+  - Endpoint group: Reports PDF Project (`/projects/{project_id}/report`)
+    - `GET /projects/{project_id}/report`
+      - Query: `mode` (download/preview).
+      - Fungsi: Generate PDF report lengkap untuk project:
+        - Menggunakan `reportlab` dan `PIL` untuk membuat PDF.
+        - Isi:
+          - Cover: judul, informasi project, tanggal generate.
+          - Statistik task (jumlah, completion, jumlah attachments).
+          - Render setiap attachment dari Google Drive (gambar, PDF, dokumen Office yang dikonversi ke PDF dengan `GoogleDriveService`).
+        - Response: `StreamingResponse` PDF.
+
+  - Endpoint group: Tasks (`/tasks`)
+    - `POST /tasks`
+      - Input: dict deskriptif task (project_id, code, title, dll).
+      - Fungsi:
+        - Validasi project eksis.
+        - Buat id unik (UUID pendek).
+        - Simpan via `db.create_task`.
+    - `GET /tasks`
+      - Query opsional: `status`.
+      - Fungsi: Ambil semua tasks, optional filter by status (gallery).
+    - `PUT /tasks/{task_id}`
+      - Fungsi: Update task via `db.update_task`.
+    - `DELETE /tasks/{task_id}`
+      - Fungsi:
+        - Hapus task tunggal dari JSON lokal (fallback) dan Supabase (via `db.delete_task`).
+    - `GET /debug/task/{task_id}`
+      - Fungsi: Endpoint debug untuk melihat status task tertentu.
+
+    - `POST /tasks/{task_id}/upload`
+      - Fungsi:
+        - Upload attachment ke Google Drive memakai nested folder berdasarkan project dan `task_code`.
+        - Menyimpan metadata attachment (filename, file_id, folder_path, uploaded_at) ke field `attachments` milik task.
+        - Menggunakan `drive_service.upload_file_to_drive(...)`.
+
+  - Endpoint group: Schedules (`/schedules`)
+    - `GET /schedules`
+      - Fungsi: Ambil seluruh jadwal (MWT, HSE meeting, CSMS PB, dll) melalui `get_schedules()`.
+    - `POST /schedules`
+      - Input: `ScheduleCreate`.
+      - Fungsi:
+        - Membuat record schedule baru dengan UUID dan timestamp.
+        - Simpan sync melalui `save_schedule`.
+        - Kirim email notifikasi via `email_service.send_schedule_notification`.
+    - `DELETE /schedules/{schedule_id}`
+      - Fungsi: Hapus schedule melalui `delete_schedule`.
+
+  - Endpoint group: CSMS PB (`/csms-pb`)
+    - `GET /csms-pb`
+      - Fungsi: Ambil semua record CSMS PB.
+    - `POST /csms-pb`
+      - Input: `CSMSPBCreate`.
+      - Fungsi: Membuat record CSMS PB baru dengan attachments kosong & timestamp, simpan via `save_csms_pb`.
+    - `DELETE /csms-pb/{pb_id}`
+      - Fungsi: Hapus record CSMS PB via `delete_csms_pb`.
+    - `POST /csms-pb/{pb_id}/attachment`
+      - Fungsi:
+        - Upload attachment (file) ke Google Drive via `drive_service.upload_file`.
+        - Simpan metadata (filename, drive_file_id, uploaded_at) ke record PB lalu `save_csms_pb_records`.
+    - `GET /csms-pb/statistics`
+      - Fungsi:
+        - Hitung statistik score CSMS PB per project:
+          - average_score
+          - latest_score
+          - record_count
+          - status (critical/warning/good)
+        - Menggunakan data PB dan daftar projects.
+
+  - Endpoint group: Related Documents (`/related-docs`)
+    - `GET /related-docs`
+      - Fungsi: Ambil semua related docs dari `get_related_docs()`.
+    - `POST /related-docs`
+      - Input (Form): project_id, well_name, doc_name, file.
+      - Fungsi:
+        - Upload file ke Google Drive di subfolder "RelatedDocs" via `drive_service.upload_file`.
+        - Simpan metadata doc (id, project_id, well_name, doc_name, filename, drive_file_id, created_at) via `save_related_doc`.
+    - `DELETE /related-docs/{doc_id}`
+      - Fungsi: Hapus related doc via `delete_related_doc`.
+
+  - `GET /download/{file_id}`
+    - Fungsi:
+      - Download file dari Google Drive by ID.
+      - Menggunakan `drive_service.service.files().get_media` dan `MediaIoBaseDownload`.
+      - Return `StreamingResponse` dengan content-type asli file.
+
+  - Endpoint group: Rig Down Reminder System
+    - Fungsi helper `send_rig_down_reminder(project, completion_percentage, incomplete_tasks)`:
+      - Kirim email via SMTP Gmail berbasis komposisi HTML yang berisi:
+        - Project info
+        - Rig down date
+        - Daftar incomplete tasks (top 10).
+    - `GET /check-reminders`
+      - Fungsi:
+        - Loop seluruh project.
+        - Jika rig_down dalam 0–2 hari dan completion task < 95%:
+          - Hitung incomplete tasks.
+          - Tambahkan background task `send_rig_down_reminder`.
+
+  - Endpoint group: Comments & Replies (`/comments`)
+    - `GET /comments`
+      - Fungsi:
+        - Ambil semua comments via `get_comments()`.
+        - Sort descending by `created_at`.
+    - `POST /comments`
+      - Input: `CommentCreate`.
+      - Fungsi:
+        - Simpan comment baru (dengan attachment base64 jika ada) via `save_comment`.
+    - `DELETE /comments/{comment_id}`
+      - Fungsi: Hapus comment via `delete_comment`.
+    - `POST /comments/{comment_id}/replies`
+      - Input: `ReplyCreate`.
+      - Fungsi:
+        - Tambah reply ke list `replies` comment terkait.
+        - Update via `update_comment`.
+    - `POST /comments/{comment_id}/like`
+      - Fungsi:
+        - Increment counter `likes` untuk comment.
+        - Update via `update_comment`.
+
+  - Endpoint group: Statistik Dashboard (`/statistics`)
+    - `GET /statistics`
+      - Fungsi:
+        - Kembalikan ringkasan statistik:
+          - projects: total, breakdown by status (Upcoming, InProgress/Ongoing, Completed, OnHold).
+          - tasks: total, breakdown by status (Upcoming, In Progress, Completed), completion_rate, tasks with attachments.
+          - schedules: total, upcoming MWT, upcoming HSE, total jadwal bulan ini.
+          - project_completion: top 10 project completion (completed, total, percentage).
+
+  - Endpoint group: Debug Service Status
+    - `GET /debug/supabase-status`
+      - Fungsi: Info internal status Supabase client (enabled, url/key configured, client_initialized, projects_count).
+    - `GET /debug/drive-status`
+      - Fungsi: Info status Google Drive service (enabled, auth_method, folder_id preview, panjang token, dsb.).
+
+  - `if __name__ == "__main__":`
+    - Menjalankan uvicorn lokal di `0.0.0.0:8000` untuk dev.
+
+
+2) Layer API & Router
+---------------------
+Direktori: api/
+- File: api/index.py
+  - Menambahkan project root ke sys.path.
+  - Import `app` dari `main.py`.
+  - Digunakan sebagai entry point untuk deployment (mis. Vercel/HF Spaces).
+
+Direktori: routers/
+- File: routers/__init__.py
+  - (kosong atau inisialisasi paket router).
+
+- File: routers/reports.py
+  - Router: `APIRouter(prefix="/api/reports", tags=["reports"])`.
+  - Dependensi: `ReportEngine` dari `services/report_engine.py`.
+
+  - Endpoint:
+    - `POST /api/reports/generate`
+      - Input:
+        - `template_file` (UploadFile, optional).
+        - `source_files` (List[UploadFile], required).
+        - Query/field `force_csv` (opsional, string, jika 'true' paksa output CSV).
+      - Fungsi:
+        - Baca template_content & source_contents.
+        - Panggil `report_engine.process_request(...)`.
+        - Menentukan `media_type` berdasarkan extension template (docx/xlsx/csv).
+        - Mengembalikan Response biner file hasil generate.
+
+    - `POST /api/reports/preview`
+      - Input: `source_file` (UploadFile).
+      - Fungsi:
+        - Jika source Excel (`.xlsx/.xls`): pakai `parse_excel_source`.
+        - Jika source PDF: pakai `parse_pdf_source`.
+        - Return JSON: filename, record_count, preview (5 record pertama).
+
+
+3) Services Layer
+-----------------
+Direktori: services/
+
+- File: services/email_service.py
+  - Class: `EmailService`
+    - Konfigurasi:
+      - Mengambil env:
+        - `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`.
+      - Base URL: `https://api.brevo.com/v3/smtp/email`.
+    - Fungsi inti:
+      - `_send_email(to_emails, subject, html_content, cc_emails=None)`
+        - Menyusun payload JSON sesuai Brevo API.
+        - Melakukan HTTP POST dengan `requests`.
+        - Logging success/failure.
+      - `send_schedule_notification(schedule)`
+        - Mengirim email reminder jadwal berdasarkan `schedule_type`:
+          - mwt, hse_committee, csms_pb, hse_plan, spr, hazid_hazop.
+        - Menentukan warna & label jadwal dan men-generate HTML email.
+      - `send_project_rig_down_alert(project, days_until, total_tasks, is_new_project=True)`
+        - Alert project baru atau reminder berdasarkan rig_down.
+      - `send_completion_reminder(project, days_until, completion_pct, completed_tasks, total_tasks)`
+        - Reminder khusus completion percentage.
+  - Instance global: `email_service = EmailService()`.
+
+- File: services/excel_sync.py
+  - Class: `ExcelSyncService`
+    - Dependensi: `openpyxl`, GoogleDriveService.
+    - Tujuan:
+      - Generate file Excel ringkasan projects & tasks.
+      - Upload ke Google Drive (folder `CSMS_REPORTS`).
+    - Fungsi:
+      - `async sync_to_drive(projects, tasks)`
+        - Cek `drive_service.enabled`.
+        - Generate Excel sementara `CSMS_Report.xlsx` lalu upload.
+      - `_generate_excel(projects, tasks)`
+        - Sheet "Projects": ID, Name, Status, Start/End date, Description, Created At.
+        - Sheet "Tasks": Project ID, Task Title, Code, Category, Status, Attachment Info.
+
+- File: services/google_drive.py
+  - Class: `GoogleDriveService`
+    - Inisialisasi:
+      - Membaca env:
+        - `GOOGLE_DRIVE_FOLDER_ID`
+        - `GOOGLE_TOKEN_JSON`
+        - `GOOGLE_CREDENTIALS_JSON`
+        - `SERVICE_ACCOUNT_JSON`
+      - Mencoba autentikasi:
+        - Metode 1: OAuth2 token (GOOGLE_TOKEN_JSON).
+        - Metode 2: Service Account (SERVICE_ACCOUNT_JSON).
+      - Field utama:
+        - `service`, `enabled`, `folders_cache`, `auth_method`.
+    - Fungsi utama:
+      - `_get_drive_service()`
+        - Inisialisasi client Google Drive berdasarkan token/service account.
+      - `find_or_create_folder(folder_name, parent_id=None, prefix_search=False)`
+        - Mencari (atau membuat) folder di Drive di bawah parent tertentu.
+        - Mendukung `prefix_search` untuk cocokkan kode task (mis. "2.1").
+      - `create_nested_task_folder(project_name, task_code, task_title="")`
+        - Membangun struktur nested folder:
+          - Project -> Element N -> (kode sub-level, mis. 3.1, 3.1.1) dengan optional title.
+      - `async upload_file_to_drive(file_data, filename, project_name, task_code=None, task_title="")`
+        - Upload biner file ke folder yang tepat berdasarkan project & task (nested).
+        - Return dict: success, file_id, folder_path.
+      - `upload_file(filename, file_content, folder_name=None)`
+        - Versi sync sederhana, untuk subfolder generik.
+      - `find_file_in_folder(filename, project_name)`
+        - Cari file berdasarkan nama di folder project.
+      - `download_file(file_id)`
+        - Download file biner dari Drive.
+      - `get_files_in_project(project_name)`
+        - Daftar file di folder project.
+      - `export_file_as_pdf(file_id)`
+        - Export Google Docs/Sheets/Slides ke PDF.
+      - `get_file_info(file_id)`
+        - Metadata file (id, name, mimeType).
+      - `convert_office_to_pdf(file_id, filename)`
+        - Copy file office -> convert ke Google format -> export PDF -> delete temp.
+
+- File: services/report_engine.py
+  - Class: `ReportEngine`
+    - Tujuan:
+      - Mengkonsumsi source data (Excel/PDF) dan fill template (Excel/CSV, stub DOCX).
+    - Fungsi:
+      - `parse_excel_source(file_content)`
+        - Menggunakan `openpyxl` untuk membaca workbook & mengembalikan list dict records.
+      - `parse_pdf_source(file_content)`
+        - Menggunakan `pdfplumber` untuk baca tabel training dan kompetensi.
+        - Mengembalikan:
+          - `employee_name`
+          - `records` (list pelatihan dengan Training Name, Start/End Date).
+      - `fill_matrix_template(template_content, source_data_list)`
+        - Khusus training matrix multi-employee di Excel.
+      - `fill_csv_template(data_records)`
+        - Generate CSV dari records dengan modul `csv`.
+      - `fill_excel_template(template_content, data_records)`
+        - Append row ke template Excel berdasarkan headers.
+      - `process_request(template_content, template_filename, source_contents, source_filenames)`
+        - Orkestrator:
+          - Parse semua sumber.
+          - Tentukan tipe template (xlsx/csv/docx).
+          - Panggil filler sesuai jenis (matrix/excel/csv).
+
+- File: services/supabase_service.py
+  - Class: `SupabaseService`
+    - Inisialisasi:
+      - Membaca env:
+        - `SUPABASE_URL`, `SUPABASE_KEY`.
+      - Membuat client Supabase via `create_client` jika paket tersedia.
+      - Menetapkan `enabled` True/False.
+    - Fungsi (semua ke tabel Supabase):
+      - PROJECTS:
+        - `get_projects`, `get_project`, `create_project`, `update_project`, `delete_project`.
+      - TASKS:
+        - `get_tasks`, `create_task`, `update_task`, `batch_create_tasks`, `delete_task`.
+      - SCHEDULES:
+        - `get_schedules`, `save_schedule`, `delete_schedule`.
+      - COMMENTS:
+        - `get_comments`, `save_comment`, `update_comment`, `delete_comment`.
+      - CSMS PB:
+        - `get_csms_pb_records`, `save_csms_pb`, `update_csms_pb`, `delete_csms_pb`.
+      - RELATED DOCS:
+        - `get_related_docs`, `save_related_doc`, `delete_related_doc`.
+  - Instance global: `supabase_service = SupabaseService()`.
+
+
+4) Database Layer & Konfigurasi Tasks
+-------------------------------------
+- File: config.py
+  - Konstanta: `STANDARD_TASKS`
+    - List of dict berisi kode dan nama task standar (1.1–6.2) beserta kategori (Management, Safety Signs, Training, Inspection, Equipment, Incident).
+    - Digunakan saat create project untuk auto-generate tasks.
+
+- File: database.py
+  - Tujuan:
+    - Menyediakan layer database yang konsisten:
+      - Jika Supabase aktif: semua operasi read/write ke Supabase (single source of truth).
+      - Jika tidak: fallback ke file JSON lokal di direktori `data/`.
+  - Konstanta path:
+    - `DATA_DIR` -> `data/`
+    - `PROJECTS_FILE`, `TASKS_FILE`, `SCHEDULES_FILE`, `COMMENTS_FILE`, `CSMS_PB_FILE`, `RELATED_DOCS_FILE`.
+  - Class: `Database`
+    - Konstruktor:
+      - Membuat direktori data dan file dasar jika belum ada.
+    - Fungsi:
+      - PROJECTS:
+        - `get_projects`, `get_project`, `create_project`, `update_project`, `delete_project`.
+      - TASKS:
+        - `get_tasks`, `create_task`, `batch_create_tasks`, `update_task`, `delete_task`.
+  - Fungsi modul (untuk entitas lain):
+    - Schedules:
+      - `get_schedules`, `save_schedule`, `delete_schedule`, `save_schedules`.
+    - Comments:
+      - `get_comments`, `save_comment`, `update_comment`, `delete_comment`, `save_comments`.
+    - CSMS PB:
+      - `get_csms_pb_records`, `save_csms_pb`, `update_csms_pb`, `delete_csms_pb`, `save_csms_pb_records`.
+    - Related Docs:
+      - `get_related_docs`, `save_related_doc`, `delete_related_doc`, `save_related_docs`.
+
+
+5) Data & File Pendukung
+------------------------
+- Direktori: data/
+  - `projects.json`        -> Fallback/seed data project.
+  - `tasks.json`           -> Fallback/seed data task.
+  - `schedules.json`       -> Fallback/seed data jadwal.
+  - `comments.json`        -> Fallback/seed data komentar.
+  - `csms_pb.json`         -> Fallback/seed data CSMS PB.
+  - `related_docs.json`    -> Fallback/seed data dokumen terkait.
+
+- File lain di root:
+  - `Dockerfile`        -> Definisi container deployment backend.
+  - `runtime.txt`       -> Versi runtime Python (untuk platform tertentu).
+  - `vercel.json`       -> Konfigurasi deploy ke Vercel (routing ke /api/index.py, dll).
+  - `test_email.py`     -> Script uji fungsi email.
+  - `.gitattributes`, `.gitignore` -> Konfigurasi Git.
+  - `README.md`         -> Deskripsi singkat proyek.
+
+
+RINGKASAN ARSITEKTUR
+--------------------
+- Frontend:
+  - Static SPA berbasis HTML/JS yang dipush dari `index.html` dan file pendukung di `static/`.
+  - Berkomunikasi dengan backend via API REST JSON.
+
+- Backend:
+  - FastAPI sebagai server utama, dengan satu aplikasi `app` di `main.py`.
+  - Modul `routers/reports.py` menangani fungsi spesifik generator report dokumen.
+  - Modul `services/*` menangani integrasi eksternal (email, Google Drive, Supabase, report engine, Excel sync).
+  - Modul `database.py` mengatur akses data dan fallback JSON.
+  - Modul `config.py` mengatur daftar standar task CSMS.
+
+- Integrasi:
+  - Supabase sebagai primary DB (jika diaktifkan), JSON sebagai backup/fallback.
+  - Google Drive sebagai storage dokumen (evidence CSMS, report, training, dll).
+  - Brevo & SMTP Gmail sebagai engine pengiriman notifikasi email.
+

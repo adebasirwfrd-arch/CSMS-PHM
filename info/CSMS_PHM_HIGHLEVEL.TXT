@@ -1,0 +1,152 @@
+CSMS PHM - HIGH LEVEL BLUEPRINT
+===============================
+
+1. TUJUAN SISTEM
+----------------
+CSMS PHM adalah aplikasi manajemen CSMS (Contractor Safety Management System) untuk:
+- Mencatat dan memonitor proyek (well, kontrak, jadwal, rig down).
+- Mengelola daftar task standar CSMS (evidence, inspeksi, training, dll).
+- Menyimpan evidence/attachment di Google Drive dengan struktur folder rapi per project & task.
+- Menjadwalkan dan memonitor kegiatan MWT, HSE Committee Meeting, CSMS PB, dll.
+- Menghitung statistik dan menampilkan dashboard (progress, completion, jadwal, CSMS PB).
+- Mengirim notifikasi email otomatis (jadwal & completion reminder).
+
+2. TEKNOLOGI UTAMA
+------------------
+- Bahasa & Framework:
+  - Python 3 + FastAPI (REST API).
+  - Static HTML/JS sebagai frontend (tanpa framework SPA berat).
+- Database:
+  - Supabase (Postgres + REST) sebagai single source of truth (jika dikonfigurasi).
+  - Fallback: file JSON lokal di folder `data/` jika Supabase belum aktif.
+- Integrasi eksternal:
+  - Google Drive API (upload, download, konversi Office→PDF, nested folder per task).
+  - Brevo Email API (SMTP API) untuk notifikasi terstruktur.
+  - SMTP Gmail (opsional) untuk rig down reminder.
+- Deployment:
+  - Dapat dijalankan via uvicorn / Docker.
+  - Tersedia konfigurasi Vercel/HuggingFace (file `api/index.py`, `vercel.json`, `runtime.txt`).
+
+3. ARSITEKTUR LOGIS
+-------------------
+- Layer Frontend (static):
+  - `static/index.html`:
+    - Dashboard utama: list project, task, jadwal, CSMS PB, komentar, statistik.
+    - Mengakses backend via endpoint REST `/projects`, `/tasks`, `/schedules`, `/csms-pb`, `/statistics`, `/comments`, dll.
+  - `static/report_generator.html`:
+    - UI untuk upload template + source files → generate dokumen laporan (Excel/CSV) via `/api/reports/generate`.
+  - `static/website.html`, `static/privacy-policy.html`:
+    - Halaman informasi dan kebijakan privasi.
+  - `static/weatherford_logo.png`:
+    - Asset logo untuk UI dan laporan.
+
+- Layer API (FastAPI):
+  - `main.py`:
+    - Satu instance `FastAPI` (`app`) yang:
+      - Mengatur CORS, mount `/static`, dan health check (`/api/status`).
+      - Meng-handle seluruh use case domain:
+        - Manajemen Proyek & Task.
+        - Jadwal (MWT, HSE, CSMS PB, dsb).
+        - CSMS PB dan dokumen terkait.
+        - Komentar & reply (activity feed).
+        - Statistik dashboard.
+        - Reminder email & rig down alert.
+        - Pengelolaan attachments ke Google Drive.
+        - Pembuatan PDF report per project.
+  - `routers/reports.py`:
+    - Router khusus untuk modul Report Engine (generator laporan).
+  - `api/index.py`:
+    - Entry point ringan (import `app` dari `main.py` untuk platform serverless).
+
+- Layer Service:
+  - `services/email_service.py`:
+    - Abstraksi pengiriman email via Brevo API (jadwal, rig down alert, completion reminder).
+  - `services/google_drive.py`:
+    - Abstraksi Google Drive:
+      - Autentikasi (OAuth/token, Service Account).
+      - Manajemen folder project dan nested folder berdasar `task_code`.
+      - Upload, download, konversi, dan pencarian file.
+  - `services/excel_sync.py`:
+    - Sinkronisasi ringkasan projects & tasks ke file Excel (`CSMS_Report.xlsx`) dan upload ke Google Drive.
+  - `services/report_engine.py`:
+    - Mesin parser & filler dokumen:
+      - Parsing Excel/PDF ke struktur data.
+      - Mengisi template Excel/CSV (dan stub DOCX) berdasarkan data.
+  - `services/supabase_service.py`:
+    - Wrapper low-level untuk Supabase:
+      - CRUD project, tasks, schedules, comments, CSMS PB, related_docs.
+
+- Layer Data/Repository:
+  - `database.py`:
+    - Layer akses data yang konsisten:
+      - Jika Supabase aktif → semua operasi ke Supabase.
+      - Jika tidak → baca/tulis ke JSON lokal (`data/*.json`).
+    - Class `Database`:
+      - Domain utama: Projects & Tasks.
+    - Fungsi modul:
+      - Schedules, Comments, CSMS PB, Related Docs.
+  - `config.py`:
+    - `STANDARD_TASKS`: daftar task standar CSMS (kode, nama, kategori) yang di-generate otomatis saat create project.
+  - Folder `data/`:
+    - Menyimpan file JSON (projects, tasks, schedules, comments, csms_pb, related_docs) untuk fallback dan seed.
+
+4. FLOW UTAMA USE CASE
+----------------------
+1) Buat Project Baru
+   - Frontend (index.html) kirim POST `/projects` dengan data project.
+   - Backend:
+     - `db.create_project` → simpan project (Supabase/JSON).
+     - Background:
+       - Buat folder project di Google Drive.
+       - Generate `STANDARD_TASKS` sebagai tasks project via `db.batch_create_tasks`.
+       - Jalankan `ExcelSyncService.sync_to_drive` untuk update laporan Excel ke Drive.
+       - Jika rig down date dekat (≤2 hari) → kirim alert email via `email_service`.
+
+2) Kelola Task & Evidence
+   - Frontend menampilkan tasks per project (GET `/projects/{id}`).
+   - Upload evidence:
+     - POST `/tasks/{task_id}/upload` dengan file.
+     - Backend:
+       - Cari project & task.
+       - Upload file ke Google Drive dengan nested folder (Project → Element N → Kode Task).
+       - Simpan metadata file (file_id, folder_path, uploaded_at) di field `attachments` task.
+
+3) Jadwal & Notifikasi
+   - Buat jadwal:
+     - POST `/schedules` dengan detail jadwal (MWT/HSE/CSMS PB, dsb).
+     - Backend menyimpan via `save_schedule` dan kirim email reminder via `email_service`.
+   - Reminder completion:
+     - Endpoint `/api/send-reminders` dan `/check-reminders` menganalisa:
+       - Rig down date.
+       - Persentase completion tasks.
+       - Kirim email ke PIC jika belum memenuhi threshold.
+
+4) CSMS PB & Dokumen Terkait
+   - CSMS PB:
+     - CRUD via `/csms-pb` (list, create, delete) dan upload attachment ke Drive.
+     - Statistik score per project via `/csms-pb/statistics`.
+   - Related Docs:
+     - Upload dokumen pendukung ke Drive via `/related-docs` dan konsumsi via UI.
+
+5) Laporan & Dashboard
+   - Dashboard:
+     - Frontend memuat data dari `/statistics` untuk:
+       - Summary projects, tasks, schedules, completion per project.
+   - Laporan PDF Project:
+     - Frontend memanggil `/projects/{id}/report?mode=download|preview`.
+     - Backend generate PDF kustom (cover + ringkasan + embed attachments).
+   - Report Engine (Training Matrix & Laporan Lain):
+     - Frontend `report_generator.html` upload template & source files ke `/api/reports/generate`.
+     - Backend memproses file Excel/PDF dan mengembalikan file jadi (Excel/CSV).
+
+5. RINGKASAN PERAN SETIAP FOLDER
+--------------------------------
+- `static/`     : Frontend (HTML/JS/CSS + assets).
+- `api/`        : Entry point serverless (`index.py`).
+- `routers/`    : Modul API spesifik (reports).
+- `services/`   : Integrasi eksternal & utilitas backend.
+- `data/`       : Penyimpanan JSON (fallback/seed).
+- `info/`       : Dokumentasi internal (blueprint, API list, dsb).
+- Root file (main.py, config.py, database.py, Dockerfile, vercel.json, runtime.txt):
+  - Konfigurasi & entry point aplikasi.
+
