@@ -47,11 +47,7 @@ from routers.reports import router as reports_router
 
 app = FastAPI()
 
-print("\n" + "="*50)
-print("[STARTUP] CSMS Backend Initializing...")
-print(f"[STARTUP] Mode: Supabase-Only (Vercel Compatible)")
-print(f"[STARTUP] Supabase Available: {SUPABASE_AVAILABLE}")
-print("="*50 + "\n")
+print("[INFO] Starting CSMS Backend with Google Drive Fix v2 (Force Update)")
 
 # CORS
 app.add_middleware(
@@ -62,18 +58,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-print("[INFO] Initializing Database & Services...")
-try:
-    db = Database()
-    print("[OK] Database abstraction initialized")
-except Exception as e:
-    print(f"[CRITICAL] Database initialization FAILED: {e}")
-
-try:
-    drive_service = GoogleDriveService()
-    print(f"[OK] Google Drive Service status: {'Enabled' if drive_service.enabled else 'Disabled'}")
-except Exception as e:
-    print(f"[CRITICAL] Google Drive initialization FAILED: {e}")
+db = Database()
+drive_service = GoogleDriveService()
 
 # Mount static files for assets (logo, etc.)
 static_dir = Path(__file__).parent / "static"
@@ -195,10 +181,40 @@ def debug_supabase():
         "message": "Check HF Secrets if supabase_url_set or supabase_key_set is False"
     }
 
-@app.get("/api/health")
-def health_check():
-    """Health check endpoint for Vercel/Monitoring"""
-    return {"status": "ok", "database": "supabase" if SUPABASE_AVAILABLE else "not_configured"}
+@app.post("/api/force-sync")
+def force_sync_from_supabase():
+    """Force restore all data from Supabase to local files - USE WITH CAUTION!"""
+    if not supabase_service or not supabase_service.enabled:
+        raise HTTPException(status_code=400, detail="Supabase not enabled")
+    
+    try:
+        from database import PROJECTS_FILE, TASKS_FILE
+        import json
+        
+        results = {"projects": 0, "tasks": 0, "message": ""}
+        
+        # Force sync projects
+        cloud_projects = supabase_service.get_projects()
+        if cloud_projects:
+            with open(PROJECTS_FILE, 'w') as f:
+                json.dump(cloud_projects, f, indent=2)
+            results["projects"] = len(cloud_projects)
+            print(f"[FORCE SYNC] Restored {len(cloud_projects)} projects from Supabase")
+        
+        # Force sync tasks
+        cloud_tasks = supabase_service.get_tasks()
+        if cloud_tasks:
+            with open(TASKS_FILE, 'w') as f:
+                json.dump(cloud_tasks, f, indent=2)
+            results["tasks"] = len(cloud_tasks)
+            print(f"[FORCE SYNC] Restored {len(cloud_tasks)} tasks from Supabase")
+        
+        results["message"] = f"Restored {results['projects']} projects and {results['tasks']} tasks from Supabase"
+        return results
+        
+    except Exception as e:
+        print(f"[FORCE SYNC ERROR] {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/send-reminders")
 def send_reminders(background_tasks: BackgroundTasks):
@@ -947,15 +963,31 @@ def update_task(task_id: str, task_update: dict):
 @app.delete("/tasks/{task_id}")
 def delete_task(task_id: str):
     """Delete a task (Admin only)"""
-    success = db.delete_task(task_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="Task not found or could not be deleted")
+    print(f"[DELETE_TASK] Deleting task: {task_id}")
     
-    print(f"[DELETE_TASK] Deleted task: {task_id}")
+    all_tasks = db.get_tasks()
+    task_to_delete = next((t for t in all_tasks if t.get('id') == task_id), None)
+    
+    if not task_to_delete:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    remaining_tasks = [t for t in all_tasks if t.get('id') != task_id]
+    
+    import os
+    tasks_file = os.path.join(os.path.dirname(__file__), "data", "tasks.json")
+    db._write_json(tasks_file, remaining_tasks)
+    
+    print(f"[DELETE_TASK] Deleted task: {task_to_delete.get('code', task_id)}")
     return {"status": "success", "deleted_task": task_id}
 
 @app.get("/debug/task/{task_id}")
-    print(f"[DEBUG] Checking task status in database: {task_id}")
+def debug_task(task_id: str):
+    """Debug endpoint to check current task status in database"""
+    import os
+    tasks_file = os.path.join(os.path.dirname(__file__), "data", "tasks.json")
+    print(f"[DEBUG] Reading tasks from: {tasks_file}")
+    print(f"[DEBUG] File exists: {os.path.exists(tasks_file)}")
+    
     tasks = db.get_tasks()
     task = next((t for t in tasks if t['id'] == task_id), None)
     if task:

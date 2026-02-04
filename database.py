@@ -1,221 +1,350 @@
 """
-Supabase Database Layer
-- Supabase is the MANDATORY SINGLE SOURCE OF TRUTH
-- Local JSON fallback removed for Vercel compatibility
+RELIABLE Database Layer - Supabase is the SINGLE SOURCE OF TRUTH
+- ALL reads go to Supabase (when enabled)
+- ALL writes go to Supabase SYNCHRONOUSLY (will fail loudly if it fails)
+- Local JSON is ONLY a fallback when Supabase is not configured
 """
+import json
 import os
 from typing import List, Dict, Optional
 import uuid
 from datetime import datetime
 
-# Import Supabase service
+# Try to import Supabase service
 try:
     from services.supabase_service import supabase_service
-    # Ensure it's enabled
-    if not supabase_service or not supabase_service.enabled:
-        print("[CRITICAL] Supabase is NOT enabled. Application will fail on Vercel.")
-        SUPABASE_ENABLED = False
-    else:
-        SUPABASE_ENABLED = True
+    SUPABASE_ENABLED = supabase_service.enabled if supabase_service else False
 except ImportError:
-    print("[CRITICAL] Could not import supabase_service.")
     supabase_service = None
     SUPABASE_ENABLED = False
 
-# Local data paths (Deprecated/Removed for write operations)
-# We keep these as strings for backward compatibility in imports if needed, 
-# but we will NOT write to them.
-DATA_DIR = "/tmp" # Use /tmp if local storage is absolutely needed for short-lived temp files
-TASKS_FILE = "" 
-PROJECTS_FILE = ""
-SCHEDULES_FILE = ""
-COMMENTS_FILE = ""
-CSMS_PB_FILE = ""
-RELATED_DOCS_FILE = ""
+print(f"[DB] ========================================")
+print(f"[DB] Supabase enabled: {SUPABASE_ENABLED}")
+if SUPABASE_ENABLED:
+    print(f"[DB] MODE: Supabase is SINGLE SOURCE OF TRUTH")
+    print(f"[DB] All reads/writes go directly to Supabase")
+else:
+    print(f"[DB] MODE: Local JSON fallback (Supabase not configured)")
+print(f"[DB] ========================================")
+
+# Local JSON storage paths (fallback only)
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+PROJECTS_FILE = os.path.join(DATA_DIR, "projects.json")
+TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
+SCHEDULES_FILE = os.path.join(DATA_DIR, "schedules.json")
+COMMENTS_FILE = os.path.join(DATA_DIR, "comments.json")
+CSMS_PB_FILE = os.path.join(DATA_DIR, "csms_pb.json")
+RELATED_DOCS_FILE = os.path.join(DATA_DIR, "related_docs.json")
 
 
 class Database:
     """
-    Supabase Database - Single source of truth.
-    Local JSON fallback has been removed.
+    RELIABLE Database - Supabase as single source of truth
+    - When Supabase enabled: ALL operations go to Supabase SYNCHRONOUSLY
+    - When Supabase disabled: Falls back to local JSON
     """
     
     def __init__(self):
+        # Only create local files if Supabase is NOT enabled
+        # Vercel has read-only filesystem, so we skip this when using Supabase
         if not SUPABASE_ENABLED:
-            print("[CRITICAL] Database initialized WITHOUT Supabase. All cloud operations will fail!")
-        else:
-            print("[OK] Database initialized with Supabase as single source of truth.")
+            try:
+                os.makedirs(DATA_DIR, exist_ok=True)
+                self._ensure_file(PROJECTS_FILE)
+                self._ensure_file(TASKS_FILE)
+            except OSError as e:
+                print(f"[DB] Warning: Could not create local data files: {e}")
+                print("[DB] This is expected on read-only filesystems (e.g., Vercel)")
+
+    def _ensure_file(self, filepath):
+        if not os.path.exists(filepath):
+            with open(filepath, 'w') as f:
+                json.dump([], f)
 
     def _read_json(self, filepath) -> List[Dict]:
-        return []
+        try:
+            with open(filepath, 'r') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, FileNotFoundError):
+            return []
 
     def _write_json(self, filepath, data: List[Dict]):
-        # Just log it once so we know something is still trying to write local files
-        print(f"[ERROR/VERCEL] Blocked direct write attempt to: {filepath}")
-        pass
+        with open(filepath, 'w') as f:
+            json.dump(data, f, indent=2)
 
     # ==================== PROJECTS ====================
     
     def get_projects(self) -> List[Dict]:
-        if not SUPABASE_ENABLED: return []
-        try:
+        """Get all projects from Supabase (or local fallback)"""
+        if SUPABASE_ENABLED:
             return supabase_service.get_projects()
-        except Exception as e:
-            print(f"[DB ERROR] get_projects failed: {e}")
-            return []
+        return self._read_json(PROJECTS_FILE)
 
     def get_project(self, project_id: str) -> Optional[Dict]:
-        if not SUPABASE_ENABLED: return None
-        try:
+        """Get single project by ID"""
+        if SUPABASE_ENABLED:
             return supabase_service.get_project(project_id)
-        except Exception as e:
-            print(f"[DB ERROR] get_project({project_id}) failed: {e}")
-            return None
+        projects = self.get_projects()
+        return next((p for p in projects if p['id'] == project_id), None)
 
     def create_project(self, project_data: Dict) -> Dict:
-        if not SUPABASE_ENABLED: return project_data
-        try:
-            print(f"[DB INFO] Creating project: {project_data.get('name')}")
-            return supabase_service.create_project(project_data)
-        except Exception as e:
-            print(f"[DB ERROR] create_project failed: {e}")
-            return project_data
+        """Create project - SYNCHRONOUS write to Supabase"""
+        new_project = {
+            "id": str(uuid.uuid4()),
+            "created_at": datetime.now().isoformat(),
+            **project_data
+        }
+        
+        if SUPABASE_ENABLED:
+            # SYNCHRONOUS - will raise exception if fails
+            result = supabase_service.create_project(new_project)
+            print(f"[DB] Project created in Supabase: {result.get('id')}")
+            return result
+        else:
+            # Local fallback
+            projects = self.get_projects()
+            projects.append(new_project)
+            self._write_json(PROJECTS_FILE, projects)
+            return new_project
 
     def update_project(self, project_id: str, updates: Dict) -> Optional[Dict]:
-        if not SUPABASE_ENABLED: return None
-        try:
-            print(f"[DB INFO] Updating project {project_id}")
-            return supabase_service.update_project(project_id, updates)
-        except Exception as e:
-            print(f"[DB ERROR] update_project({project_id}) failed: {e}")
+        """Update project - SYNCHRONOUS write to Supabase"""
+        if SUPABASE_ENABLED:
+            # SYNCHRONOUS - will raise exception if fails
+            result = supabase_service.update_project(project_id, updates)
+            print(f"[DB] Project updated in Supabase: {project_id}")
+            return result
+        else:
+            projects = self.get_projects()
+            for i, p in enumerate(projects):
+                if p['id'] == project_id:
+                    projects[i] = {**p, **updates}
+                    self._write_json(PROJECTS_FILE, projects)
+                    return projects[i]
             return None
 
     def delete_project(self, project_id: str) -> bool:
-        if not SUPABASE_ENABLED: return False
-        try:
-            print(f"[DB INFO] Deleting project {project_id}")
-            return supabase_service.delete_project(project_id)
-        except Exception as e:
-            print(f"[DB ERROR] delete_project({project_id}) failed: {e}")
-            return False
+        """Delete project - SYNCHRONOUS write to Supabase"""
+        if SUPABASE_ENABLED:
+            # SYNCHRONOUS - will raise exception if fails
+            result = supabase_service.delete_project(project_id)
+            print(f"[DB] Project deleted from Supabase: {project_id}")
+            return result
+        else:
+            projects = [p for p in self.get_projects() if p['id'] != project_id]
+            self._write_json(PROJECTS_FILE, projects)
+            return True
 
     # ==================== TASKS ====================
     
     def get_tasks(self, project_id: str = None) -> List[Dict]:
-        if not SUPABASE_ENABLED: return []
-        try:
+        """Get all tasks from Supabase (or local fallback)"""
+        if SUPABASE_ENABLED:
             return supabase_service.get_tasks(project_id)
-        except Exception as e:
-            print(f"[DB ERROR] get_tasks failed: {e}")
-            return []
+        tasks = self._read_json(TASKS_FILE)
+        return [t for t in tasks if t.get('project_id') == project_id] if project_id else tasks
 
     def create_task(self, task_data: Dict) -> Dict:
-        if not SUPABASE_ENABLED: return task_data
-        try:
-            return supabase_service.create_task(task_data)
-        except Exception as e:
-            print(f"[DB ERROR] create_task failed: {e}")
-            return task_data
+        """Create task - SYNCHRONOUS write to Supabase"""
+        new_task = {
+            "id": str(uuid.uuid4()),
+            "status": "Upcoming",
+            "created_at": datetime.now().isoformat(),
+            "attachments": [],
+            **task_data
+        }
+        
+        if SUPABASE_ENABLED:
+            # SYNCHRONOUS - will raise exception if fails
+            result = supabase_service.create_task(new_task)
+            print(f"[DB] Task created in Supabase: {result.get('id')}")
+            return result
+        else:
+            tasks = self.get_tasks()
+            tasks.append(new_task)
+            self._write_json(TASKS_FILE, tasks)
+            return new_task
     
     def batch_create_tasks(self, tasks_data: List[Dict]) -> List[Dict]:
-        if not SUPABASE_ENABLED: return tasks_data
-        try:
-            print(f"[DB INFO] Batch creating {len(tasks_data)} tasks")
-            return supabase_service.batch_create_tasks(tasks_data)
-        except Exception as e:
-            print(f"[DB ERROR] batch_create_tasks failed: {e}")
-            return tasks_data
+        """Create multiple tasks - SYNCHRONOUS batch write to Supabase"""
+        new_tasks = [
+            {
+                "id": str(uuid.uuid4()),
+                "status": "Upcoming",
+                "created_at": datetime.now().isoformat(),
+                "attachments": [],
+                **t
+            } 
+            for t in tasks_data
+        ]
+        
+        if SUPABASE_ENABLED:
+            # SYNCHRONOUS batch insert - will raise exception if fails
+            result = supabase_service.batch_create_tasks(new_tasks)
+            print(f"[DB] {len(result)} tasks created in Supabase (batch)")
+            return result
+        else:
+            tasks = self.get_tasks()
+            tasks.extend(new_tasks)
+            self._write_json(TASKS_FILE, tasks)
+            return new_tasks
 
     def update_task(self, task_id: str, updates: Dict) -> Optional[Dict]:
-        if not SUPABASE_ENABLED: return None
-        try:
-            return supabase_service.update_task(task_id, updates)
-        except Exception as e:
-            print(f"[DB ERROR] update_task({task_id}) failed: {e}")
+        """Update task - SYNCHRONOUS write to Supabase"""
+        if SUPABASE_ENABLED:
+            # SYNCHRONOUS - will raise exception if fails
+            result = supabase_service.update_task(task_id, updates)
+            print(f"[DB] Task updated in Supabase: {task_id}")
+            return result
+        else:
+            tasks = self.get_tasks()
+            for i, t in enumerate(tasks):
+                if t['id'] == task_id:
+                    tasks[i] = {**t, **updates}
+                    self._write_json(TASKS_FILE, tasks)
+                    return tasks[i]
             return None
 
     def delete_task(self, task_id: str) -> bool:
-        if not SUPABASE_ENABLED: return False
-        try:
-            return supabase_service.delete_task(task_id)
-        except Exception as e:
-            print(f"[DB ERROR] delete_task({task_id}) failed: {e}")
-            return False
+        """Delete task - SYNCHRONOUS write to Supabase"""
+        if SUPABASE_ENABLED:
+            # SYNCHRONOUS - will raise exception if fails
+            result = supabase_service.delete_task(task_id)
+            print(f"[DB] Task deleted from Supabase: {task_id}")
+            return result
+        else:
+            tasks = [t for t in self.get_tasks() if t['id'] != task_id]
+            self._write_json(TASKS_FILE, tasks)
+            return True
 
 
-# ==================== HELPER FUNCTIONS ====================
+# ==================== HELPER FUNCTIONS (for other data types) ====================
+# These also use Supabase when enabled
 
 def get_schedules() -> List[Dict]:
-    try:
-        if SUPABASE_ENABLED: return supabase_service.get_schedules()
-    except Exception as e: print(f"[DB ERROR] get_schedules: {e}")
-    return []
+    if SUPABASE_ENABLED:
+        return supabase_service.get_schedules()
+    return json.load(open(SCHEDULES_FILE)) if os.path.exists(SCHEDULES_FILE) else []
 
 def save_schedule(schedule: Dict):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.save_schedule(schedule)
-    except Exception as e: print(f"[DB ERROR] save_schedule: {e}")
+    """Save single schedule - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.save_schedule(schedule)
+    schedules = get_schedules()
+    schedules.append(schedule)
+    with open(SCHEDULES_FILE, 'w') as f:
+        json.dump(schedules, f, indent=2)
 
 def delete_schedule(schedule_id: str):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.delete_schedule(schedule_id)
-    except Exception as e: print(f"[DB ERROR] delete_schedule: {e}")
+    """Delete schedule - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.delete_schedule(schedule_id)
+    schedules = [s for s in get_schedules() if s.get('id') != schedule_id]
+    with open(SCHEDULES_FILE, 'w') as f:
+        json.dump(schedules, f, indent=2)
+
+def save_schedules(schedules: List[Dict]):
+    with open(SCHEDULES_FILE, 'w') as f:
+        json.dump(schedules, f, indent=2)
 
 def get_comments() -> List[Dict]:
-    try:
-        if SUPABASE_ENABLED: return supabase_service.get_comments()
-    except Exception as e: print(f"[DB ERROR] get_comments: {e}")
-    return []
+    if SUPABASE_ENABLED:
+        return supabase_service.get_comments()
+    return json.load(open(COMMENTS_FILE)) if os.path.exists(COMMENTS_FILE) else []
 
 def save_comment(comment: Dict):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.save_comment(comment)
-    except Exception as e: print(f"[DB ERROR] save_comment: {e}")
+    """Save single comment - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.save_comment(comment)
+    comments = get_comments()
+    comments.append(comment)
+    with open(COMMENTS_FILE, 'w') as f:
+        json.dump(comments, f, indent=2)
 
 def update_comment(comment_id: str, updates: Dict):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.update_comment(comment_id, updates)
-    except Exception as e: print(f"[DB ERROR] update_comment: {e}")
+    """Update comment - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.update_comment(comment_id, updates)
+    comments = get_comments()
+    for c in comments:
+        if c.get('id') == comment_id:
+            c.update(updates)
+    with open(COMMENTS_FILE, 'w') as f:
+        json.dump(comments, f, indent=2)
 
 def delete_comment(comment_id: str):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.delete_comment(comment_id)
-    except Exception as e: print(f"[DB ERROR] delete_comment: {e}")
+    """Delete comment - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.delete_comment(comment_id)
+    comments = [c for c in get_comments() if c.get('id') != comment_id]
+    with open(COMMENTS_FILE, 'w') as f:
+        json.dump(comments, f, indent=2)
+
+def save_comments(comments: List[Dict]):
+    with open(COMMENTS_FILE, 'w') as f:
+        json.dump(comments, f, indent=2)
 
 def get_csms_pb_records() -> List[Dict]:
-    try:
-        if SUPABASE_ENABLED: return supabase_service.get_csms_pb_records()
-    except Exception as e: print(f"[DB ERROR] get_csms_pb: {e}")
-    return []
+    if SUPABASE_ENABLED:
+        return supabase_service.get_csms_pb_records()
+    return json.load(open(CSMS_PB_FILE)) if os.path.exists(CSMS_PB_FILE) else []
 
 def save_csms_pb(pb: Dict):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.save_csms_pb(pb)
-    except Exception as e: print(f"[DB ERROR] save_csms_pb: {e}")
+    """Save single CSMS PB - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.save_csms_pb(pb)
+    records = get_csms_pb_records()
+    records.append(pb)
+    with open(CSMS_PB_FILE, 'w') as f:
+        json.dump(records, f, indent=2)
 
 def update_csms_pb(pb_id: str, updates: Dict):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.update_csms_pb(pb_id, updates)
-    except Exception as e: print(f"[DB ERROR] update_csms_pb: {e}")
+    """Update CSMS PB - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.update_csms_pb(pb_id, updates)
+    records = get_csms_pb_records()
+    for r in records:
+        if r.get('id') == pb_id:
+            r.update(updates)
+    with open(CSMS_PB_FILE, 'w') as f:
+        json.dump(records, f, indent=2)
 
 def delete_csms_pb(pb_id: str):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.delete_csms_pb(pb_id)
-    except Exception as e: print(f"[DB ERROR] delete_csms_pb: {e}")
+    """Delete CSMS PB - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.delete_csms_pb(pb_id)
+    records = [r for r in get_csms_pb_records() if r.get('id') != pb_id]
+    with open(CSMS_PB_FILE, 'w') as f:
+        json.dump(records, f, indent=2)
+
+def save_csms_pb_records(records: List[Dict]):
+    with open(CSMS_PB_FILE, 'w') as f:
+        json.dump(records, f, indent=2)
 
 def get_related_docs() -> List[Dict]:
-    try:
-        if SUPABASE_ENABLED: return supabase_service.get_related_docs()
-    except Exception as e: print(f"[DB ERROR] get_related_docs: {e}")
-    return []
+    if SUPABASE_ENABLED:
+        return supabase_service.get_related_docs()
+    return json.load(open(RELATED_DOCS_FILE)) if os.path.exists(RELATED_DOCS_FILE) else []
 
 def save_related_doc(doc: Dict):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.save_related_doc(doc)
-    except Exception as e: print(f"[DB ERROR] save_related_doc: {e}")
+    """Save single related doc - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.save_related_doc(doc)
+    docs = get_related_docs()
+    docs.append(doc)
+    with open(RELATED_DOCS_FILE, 'w') as f:
+        json.dump(docs, f, indent=2)
 
 def delete_related_doc(doc_id: str):
-    try:
-        if SUPABASE_ENABLED: return supabase_service.delete_related_doc(doc_id)
-    except Exception as e: print(f"[DB ERROR] delete_related_doc: {e}")
+    """Delete related doc - SYNCHRONOUS"""
+    if SUPABASE_ENABLED:
+        return supabase_service.delete_related_doc(doc_id)
+    docs = [d for d in get_related_docs() if d.get('id') != doc_id]
+    with open(RELATED_DOCS_FILE, 'w') as f:
+        json.dump(docs, f, indent=2)
+
+def save_related_docs(docs: List[Dict]):
+    with open(RELATED_DOCS_FILE, 'w') as f:
+        json.dump(docs, f, indent=2)
+
 
