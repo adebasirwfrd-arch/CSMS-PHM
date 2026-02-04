@@ -963,31 +963,15 @@ def update_task(task_id: str, task_update: dict):
 @app.delete("/tasks/{task_id}")
 def delete_task(task_id: str):
     """Delete a task (Admin only)"""
-    print(f"[DELETE_TASK] Deleting task: {task_id}")
+    success = db.delete_task(task_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Task not found or could not be deleted")
     
-    all_tasks = db.get_tasks()
-    task_to_delete = next((t for t in all_tasks if t.get('id') == task_id), None)
-    
-    if not task_to_delete:
-        raise HTTPException(status_code=404, detail="Task not found")
-    
-    remaining_tasks = [t for t in all_tasks if t.get('id') != task_id]
-    
-    import os
-    tasks_file = os.path.join(os.path.dirname(__file__), "data", "tasks.json")
-    db._write_json(tasks_file, remaining_tasks)
-    
-    print(f"[DELETE_TASK] Deleted task: {task_to_delete.get('code', task_id)}")
+    print(f"[DELETE_TASK] Deleted task: {task_id}")
     return {"status": "success", "deleted_task": task_id}
 
 @app.get("/debug/task/{task_id}")
-def debug_task(task_id: str):
-    """Debug endpoint to check current task status in database"""
-    import os
-    tasks_file = os.path.join(os.path.dirname(__file__), "data", "tasks.json")
-    print(f"[DEBUG] Reading tasks from: {tasks_file}")
-    print(f"[DEBUG] File exists: {os.path.exists(tasks_file)}")
-    
+    print(f"[DEBUG] Checking task status in database: {task_id}")
     tasks = db.get_tasks()
     task = next((t for t in tasks if t['id'] == task_id), None)
     if task:
