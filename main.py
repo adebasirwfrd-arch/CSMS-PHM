@@ -181,40 +181,10 @@ def debug_supabase():
         "message": "Check HF Secrets if supabase_url_set or supabase_key_set is False"
     }
 
-@app.post("/api/force-sync")
-def force_sync_from_supabase():
-    """Force restore all data from Supabase to local files - USE WITH CAUTION!"""
-    if not supabase_service or not supabase_service.enabled:
-        raise HTTPException(status_code=400, detail="Supabase not enabled")
-    
-    try:
-        from database import PROJECTS_FILE, TASKS_FILE
-        import json
-        
-        results = {"projects": 0, "tasks": 0, "message": ""}
-        
-        # Force sync projects
-        cloud_projects = supabase_service.get_projects()
-        if cloud_projects:
-            with open(PROJECTS_FILE, 'w') as f:
-                json.dump(cloud_projects, f, indent=2)
-            results["projects"] = len(cloud_projects)
-            print(f"[FORCE SYNC] Restored {len(cloud_projects)} projects from Supabase")
-        
-        # Force sync tasks
-        cloud_tasks = supabase_service.get_tasks()
-        if cloud_tasks:
-            with open(TASKS_FILE, 'w') as f:
-                json.dump(cloud_tasks, f, indent=2)
-            results["tasks"] = len(cloud_tasks)
-            print(f"[FORCE SYNC] Restored {len(cloud_tasks)} tasks from Supabase")
-        
-        results["message"] = f"Restored {results['projects']} projects and {results['tasks']} tasks from Supabase"
-        return results
-        
-    except Exception as e:
-        print(f"[FORCE SYNC ERROR] {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+@app.get("/api/health")
+def health_check():
+    """Health check endpoint for Vercel/Monitoring"""
+    return {"status": "ok", "database": "supabase" if SUPABASE_AVAILABLE else "not_configured"}
 
 @app.post("/api/send-reminders")
 def send_reminders(background_tasks: BackgroundTasks):
