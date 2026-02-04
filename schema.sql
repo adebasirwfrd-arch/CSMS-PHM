@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     start_date DATE,
     end_date DATE,
     attachments JSONB DEFAULT '[]'::jsonb, -- Stores array of {filename, file_id, ...}
+    score INTEGER DEFAULT 0, -- Performance score (0, 3, 6, 10)
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

@@ -43,6 +43,7 @@ except ImportError:
     SUPABASE_AVAILABLE = False
 
 from routers.reports import router as reports_router
+from services.scoring_service import ScoringService
 
 
 app = FastAPI()
@@ -86,6 +87,7 @@ app.add_middleware(
 
 db = Database()
 drive_service = GoogleDriveService()
+scoring_service = ScoringService(db)
 
 # Mount static files for assets (logo, etc.)
 static_dir = Path(__file__).parent / "static"
@@ -119,6 +121,7 @@ class TaskCreate(BaseModel):
     category: Optional[str] = None
     status: str = "Upcoming"
     description: Optional[str] = ""
+    score: Optional[int] = 0
 
 class ScheduleCreate(BaseModel):
     project_id: str
@@ -1020,6 +1023,23 @@ def update_task(task_id: str, task_update: dict):
         raise HTTPException(status_code=404, detail="Task not found")
     print(f"[UPDATE_TASK] Updated task: {updated}")
     return updated
+
+@app.get("/projects/{project_id}/scoring-report")
+def get_scoring_report(project_id: str):
+    """Download scoring report (Excel) for a project"""
+    project = db.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    tasks = db.get_tasks(project_id)
+    excel_io = scoring_service.generate_excel_report(project, tasks)
+    
+    filename = f"Scoring_Report_{project['name'].replace(' ', '_')}.xlsx"
+    return StreamingResponse(
+        excel_io,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
 
 @app.delete("/tasks/{task_id}")
 def delete_task(task_id: str):

@@ -149,6 +149,7 @@ class Database:
         new_task = {
             "id": str(uuid.uuid4()),
             "status": "Upcoming",
+            "score": 0,
             "created_at": datetime.now().isoformat(),
             "attachments": [],
             **task_data
@@ -171,6 +172,7 @@ class Database:
             {
                 "id": str(uuid.uuid4()),
                 "status": "Upcoming",
+                "score": 0,
                 "created_at": datetime.now().isoformat(),
                 "attachments": [],
                 **t

@@ -602,6 +602,36 @@
             color: white;
         }
 
+        .score-chips {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .score-chip {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            flex: 1;
+            text-align: center;
+        }
+
+        .score-chip:hover {
+            border-color: var(--text-muted);
+        }
+
+        .score-chip.active {
+            background: #E50914;
+            color: white;
+            border-color: #E50914;
+        }
+
         .date-input-wrap {
             position: relative;
         }
@@ -1028,8 +1058,7 @@
         <!-- Hero Banner with Logo -->
         <div
             style="background: linear-gradient(135deg, #C41E3A 0%, #9A1830 100%); border-radius: 16px; padding: 24px; margin-bottom: 20px; text-align: center;">
-            <img src="/static/phm_logo.jpeg" alt="PHM"
-                style="width: 180px; height: auto; margin-bottom: 12px;">
+            <img src="/static/phm_logo.jpeg" alt="PHM" style="width: 180px; height: auto; margin-bottom: 12px;">
             <h1 data-i18n="welcome" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">Welcome!</h1>
             <p data-i18n="projectManagement" style="color: rgba(255,255,255,0.8); font-size: 14px;">CSMS Project
                 Management System</p>
@@ -1998,8 +2027,7 @@
                     <!-- Assigned To Email -->
                     <div>
                         <input type="email" class="form-input" name="assigned_to_email"
-                    placeholder="Email (e.g. john@phm.co.id)" data-placeholder="emailPlaceholder"
-                            required>
+                            placeholder="Email (e.g. john@phm.co.id)" data-placeholder="emailPlaceholder" required>
                         <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;"
                             data-i18n="emailNotification">
                             An email notification will be sent to this address
@@ -4870,14 +4898,20 @@
 
                 document.getElementById('project-detail-title').textContent = project.name;
                 document.getElementById('project-detail-content').innerHTML = `
-                        <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                            <strong style="color: var(--text-secondary);">${t('status') || 'Status'}:</strong>
-                            <select onchange="updateProjectStatus('${project.id}', this.value)" 
-                                    style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-tertiary); color: white; font-size: 14px; font-weight: 600; cursor: pointer; outline: none;">
-                                <option value="Upcoming" ${project.status === 'Upcoming' ? 'selected' : ''}>${t('upcoming')}</option>
-                                <option value="In Progress" ${project.status === 'In Progress' ? 'selected' : ''}>${t('inProgress')}</option>
-                                <option value="Completed" ${project.status === 'Completed' ? 'selected' : ''}>${t('completed')}</option>
-                            </select>
+                        <div style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <strong style="color: var(--text-secondary);">${t('status') || 'Status'}:</strong>
+                                <select onchange="updateProjectStatus('${project.id}', this.value)" 
+                                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-tertiary); color: white; font-size: 14px; font-weight: 600; cursor: pointer; outline: none;">
+                                    <option value="Upcoming" ${project.status === 'Upcoming' ? 'selected' : ''}>${t('upcoming')}</option>
+                                    <option value="In Progress" ${project.status === 'In Progress' ? 'selected' : ''}>${t('inProgress')}</option>
+                                    <option value="Completed" ${project.status === 'Completed' ? 'selected' : ''}>${t('completed')}</option>
+                                </select>
+                            </div>
+                            
+                            <button onclick="downloadScoringReport('${project.id}')" class="btn btn-save" style="background: var(--weatherford-red); font-size: 12px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
+                                📊 Download Scoring Report
+                            </button>
                         </div>
                         ${(project.description || project.title) ? `<p style="color: var(--text-secondary); margin-bottom: 20px;">${project.description || project.title}</p>` : ''}
                         <p style="margin-bottom: 8px;"><strong>${t('well')}:</strong> ${project.well_name || project.well || 'N/A'}</p>
@@ -4942,6 +4976,17 @@
         }
     }
 
+    async function downloadScoringReport(projectId) {
+        showToast('Generating Scoring Report...', 'info');
+        try {
+            const url = `${API_BASE}/projects/${projectId}/scoring-report`;
+            window.open(url, '_blank');
+        } catch (error) {
+            console.error(error);
+            showToast('Failed to download report', 'error');
+        }
+    }
+
     function closeProjectDetailModal() {
         document.getElementById('project-detail-modal').classList.remove('active');
     }
@@ -4971,6 +5016,16 @@
                         <div class="status-chip ${task.status === 'Upcoming' ? 'active' : ''}" data-status="Upcoming" onclick="selectTaskStatus(this)">${t('upcoming')}</div>
                         <div class="status-chip ${task.status === 'In Progress' ? 'active' : ''}" data-status="In Progress" onclick="selectTaskStatus(this)">${t('inProgress')}</div>
                         <div class="status-chip ${task.status === 'Completed' ? 'active' : ''}" data-status="Completed" onclick="selectTaskStatus(this)">${t('completed')}</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Score</label>
+                    <div class="score-chips" id="task-score-chips">
+                        <div class="score-chip ${task.score === 0 ? 'active' : ''}" data-score="0" onclick="selectTaskScore(this)">0</div>
+                        <div class="score-chip ${task.score === 3 ? 'active' : ''}" data-score="3" onclick="selectTaskScore(this)">3</div>
+                        <div class="score-chip ${task.score === 6 ? 'active' : ''}" data-score="6" onclick="selectTaskScore(this)">6</div>
+                        <div class="score-chip ${task.score === 10 ? 'active' : ''}" data-score="10" onclick="selectTaskScore(this)">10</div>
                     </div>
                 </div>
                 
@@ -5015,6 +5070,13 @@
         currentTaskId = null;
     }
 
+    function selectTaskScore(el) {
+        // Remove active class from all siblings
+        el.parentElement.querySelectorAll('.score-chip').forEach(c => c.classList.remove('active'));
+        // Add active class to clicked element
+        el.classList.add('active');
+    }
+
 
     async function saveTaskChanges() {
         if (!currentTaskId) return;
@@ -5022,15 +5084,18 @@
         const activeChip = document.querySelector('#task-status-chips .status-chip.active');
         const status = activeChip ? activeChip.dataset.status : 'Upcoming';
 
+        const activeScoreChip = document.querySelector('#task-score-chips .score-chip.active');
+        const score = activeScoreChip ? parseInt(activeScoreChip.dataset.score) : 0;
+
         console.log('[SAVE] Task ID:', currentTaskId);
-        console.log('[SAVE] Active chip found:', activeChip);
         console.log('[SAVE] Status to save:', status);
+        console.log('[SAVE] Score to save:', score);
 
         try {
             const res = await fetch(`${API_BASE}/tasks/${currentTaskId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status })
+                body: JSON.stringify({ status, score })
             });
 
             console.log('[SAVE] Response status:', res.status);
