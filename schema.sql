@@ -88,7 +88,18 @@ CREATE TABLE IF NOT EXISTS related_docs (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 7. App Logs (for debugging)
+CREATE TABLE IF NOT EXISTS app_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    level TEXT, -- INFO, ERROR, WARN
+    service TEXT, -- API, DB, DRIVE, EMAIL
+    message TEXT,
+    details TEXT, -- Stack trace or JSON
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Enable Row Level Security (RLS) is generally good practice, 
 -- but for initial service account usage we often just need existing tables.
 -- If you access this from client-side JS directly, you'll need Policies.
 -- For this Python backend using Service Key (if used) or authenticated client, it should work.
+

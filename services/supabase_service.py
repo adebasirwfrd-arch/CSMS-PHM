@@ -369,5 +369,25 @@ class SupabaseService:
             print(f"[ERROR] Error deleting related doc: {e}")
             return False
 
+    # ==================== LOGGING ====================
+
+    def log_event(self, level: str, service: str, message: str, details: str = None) -> bool:
+        """Log an event to the app_logs table"""
+        if not self.enabled:
+            return False
+        try:
+            log_data = {
+                "level": level,
+                "service": service,
+                "message": message,
+                "details": details,
+                "created_at": datetime.now().isoformat()
+            }
+            self.client.table('app_logs').insert(log_data).execute()
+            return True
+        except Exception as e:
+            print(f"[ERROR] Failed to write log to Supabase: {e}")
+            return False
+
 # Global instance
 supabase_service = SupabaseService()

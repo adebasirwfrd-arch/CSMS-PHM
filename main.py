@@ -47,7 +47,33 @@ from routers.reports import router as reports_router
 
 app = FastAPI()
 
-print("[INFO] Starting CSMS Backend with Google Drive Fix v2 (Force Update)")
+# --- Logging Setup ---
+APP_LOGS = []
+MAX_APP_LOGS = 100
+
+def log_app_event(level: str, service: str, message: str, details: str = None):
+    """Log an event to memory and Supabase (if error)"""
+    log_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "level": level,
+        "service": service,
+        "message": message,
+        "details": details
+    }
+    APP_LOGS.insert(0, log_entry)
+    if len(APP_LOGS) > MAX_APP_LOGS:
+        APP_LOGS.pop()
+    
+    print(f"[{level}/{service}] {message}")
+    
+    # Persist Errors/Warnings to Supabase
+    if level in ["ERROR", "CRITICAL"] and supabase_service and supabase_service.enabled:
+        try:
+            supabase_service.log_event(level, service, message, details)
+        except:
+            pass
+
+log_app_event("INFO", "API", "Starting CSMS Backend with Debug Logs")
 
 # CORS
 app.add_middleware(
@@ -130,8 +156,19 @@ class CommentCreate(BaseModel):
 # Email Service Import
 from services.email_service import email_service
 
-# NOTE: All data functions (get_csms_pb_records, get_related_docs, etc.) are imported from database.py
+# --- Global Exception Handler ---
+from fastapi import Request
+from fastapi.responses import JSONResponse
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    error_msg = f"Unhandled error: {str(exc)}"
+    log_app_event("CRITICAL", "API", error_msg, traceback.format_exc())
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Internal Server Error", "detail": str(exc)},
+    )
 
 # Routes
 
@@ -213,8 +250,29 @@ def force_sync_from_supabase():
         return results
         
     except Exception as e:
-        print(f"[FORCE SYNC ERROR] {e}")
+        import traceback
+        log_app_event("ERROR", "API", f"Force sync failed: {str(e)}", traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/debug/logs")
+def get_app_logs(limit: int = 50, persistent: bool = False):
+    """Retrieve recent logs. If persistent=True, fetch from Supabase."""
+    if persistent and supabase_service and supabase_service.enabled:
+        try:
+            result = supabase_service.client.table('app_logs').select("*").order('created_at', desc=True).limit(limit).execute()
+            return result.data
+        except Exception as e:
+            return {"error": f"Failed to fetch from Supabase: {e}", "local_logs": APP_LOGS[:limit]}
+    
+    return APP_LOGS[:limit]
+
+@app.post("/api/debug/clear-logs")
+def clear_app_logs():
+    """Clear in-memory logs"""
+    global APP_LOGS
+    APP_LOGS = []
+    log_app_event("INFO", "API", "Logs cleared by user")
+    return {"status": "success", "message": "In-memory logs cleared"}
 
 @app.post("/api/send-reminders")
 def send_reminders(background_tasks: BackgroundTasks):
@@ -316,7 +374,7 @@ def send_reminders(background_tasks: BackgroundTasks):
             traceback.print_exc()
             continue
     
-    print(f"[REMINDER] Complete: sent {sent_count} reminder(s)")
+    log_app_event("INFO", "EMAIL", f"Sent {sent_count} reminder(s)")
     
     return {
         "message": f"Sent {sent_count} reminder(s)", 
@@ -332,6 +390,7 @@ def list_projects():
 
 @app.post("/projects")
 def create_project(project: ProjectCreate, background_tasks: BackgroundTasks):
+    log_app_event("INFO", "API", f"Creating new project: {project.name}")
     # 1. Create in DB (fast local write + background Supabase sync)
     new_project = db.create_project(project.dict())
     
@@ -365,19 +424,20 @@ def create_project(project: ProjectCreate, background_tasks: BackgroundTasks):
             days_until = (rig_down_date - datetime.now().date()).days
             
             if 0 <= days_until <= 2:
-                print(f"[AUTO-REMINDER] Project {new_project['name']} has rig down in {days_until} days, sending alert NOW...")
+                log_app_event("INFO", "EMAIL", f"Auto-reminder triggered for {new_project['name']}")
                 # Run reminder check immediately (not background) to ensure tasks are created
                 email_service.send_project_rig_down_alert(new_project, days_until, len(tasks_to_create), is_new_project=True)
         except Exception as e:
-            print(f"[AUTO-REMINDER] Error checking rig down date: {e}")
+            log_app_event("ERROR", "API", f"Auto-reminder failed: {e}")
     
     return new_project
 
 @app.patch("/projects/{project_id}")
 def update_project(project_id: str, updates: dict):
-    print(f"[UPDATE_PROJECT] Updating project {project_id} with: {updates}")
+    log_app_event("INFO", "API", f"Updating project {project_id}")
     result = db.update_project(project_id, updates)
     if not result:
+        log_app_event("WARN", "API", f"Project {project_id} not found for update")
         raise HTTPException(status_code=404, detail="Project not found")
     return result
 
@@ -405,11 +465,12 @@ def get_project_details(project_id: str):
 @app.delete("/projects/{project_id}")
 def delete_project(project_id: str):
     """Delete a project and all its tasks (Admin only)"""
-    print(f"[DELETE_PROJECT] Deleting project: {project_id}")
+    log_app_event("INFO", "API", f"Deleting project: {project_id}")
     
     # Get project to verify it exists
     project = db.get_project(project_id)
     if not project:
+        log_app_event("WARN", "API", f"Project {project_id} not found for deletion")
         raise HTTPException(status_code=404, detail="Project not found")
     
     # Delete all tasks for this project first
@@ -420,7 +481,7 @@ def delete_project(project_id: str):
     # Delete the project using database method (works with Supabase)
     db.delete_project(project_id)
     
-    print(f"[DELETE_PROJECT] Deleted project: {project['name']}")
+    log_app_event("INFO", "API", f"Deleted project: {project['name']}")
     return {"status": "success", "deleted_project": project_id}
 
 def compress_image_for_pdf(pil_image, max_width=1200, max_height=1600, quality=75):
