@@ -70,17 +70,22 @@ class SupabaseService:
             print("[SUPABASE] Not enabled, returning data as-is")
             return project_data
         try:
-            print("[SUPABASE] Inserting into projects table...")
-            result = self.client.table('projects').insert(project_data).execute()
-            print(f"[SUPABASE] Insert result: {result}")
-            if result.data:
-                print(f"[SUPABASE] SUCCESS! Created project: {result.data[0]}")
-                return result.data[0]
+            print(f"[SUPABASE] Attempting insert into 'projects'...")
+            response = self.client.table('projects').insert(project_data).execute()
+            
+            # Check for error in response (some versions of supabase-py return it)
+            if hasattr(response, 'error') and response.error:
+                print(f"[SUPABASE ERROR] API returned error: {response.error}")
+                return project_data
+                
+            if response.data:
+                print(f"[SUPABASE] SUCCESS! Project created: {response.data[0]['id']}")
+                return response.data[0]
             else:
-                print(f"[SUPABASE] WARNING: No data returned, result={result}")
+                print(f"[SUPABASE] WARNING: No data returned from insert. Response: {response}")
                 return project_data
         except Exception as e:
-            print(f"[ERROR] Error creating project: {e}")
+            print(f"[SUPABASE CRITICAL ERROR] Exception during insert: {type(e).__name__}: {e}")
             import traceback
             traceback.print_exc()
             return project_data

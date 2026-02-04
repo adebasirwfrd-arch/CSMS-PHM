@@ -117,15 +117,28 @@ class GoogleDriveService:
         print("[ERROR] All authentication methods failed!")
         return None
     
+    def _refresh_if_needed(self):
+        """Ensure token is fresh before any operation"""
+        if self.service and hasattr(self.service, '_http') and hasattr(self.service._http, 'credentials'):
+            creds = self.service._http.credentials
+            if creds and creds.expired and creds.refresh_token:
+                try:
+                    print("[INFO] Token expired during session, refreshing...")
+                    creds.refresh(Request())
+                    # The service doesn't necessarily need rebuilding if creds object is same,
+                    # but rebuilding ensures the new token is picked up by all internals.
+                    # However, usually just refreshing the creds object is enough for the discovery client.
+                    print("[OK] Token refreshed automatically")
+                except Exception as e:
+                    print(f"[ERROR] Auto-refresh failed: {e}")
+
     def find_or_create_folder(self, folder_name: str, parent_id: str = None, prefix_search: bool = False) -> str:
-        """Find existing folder or create new one by name. 
-           If prefix_search=True, matches folder starting with folder_name (and space).
-           e.g. searching for "2.1" finds "2.1 HSE Committee Meeting"
-        """
+        """Find existing folder or create new one by name."""
         if not self.enabled or not self.service:
             print("[WARN] Drive not enabled")
             return None
         
+        self._refresh_if_needed()
         try:
             parent_id = parent_id or self.folder_id
             
@@ -182,6 +195,8 @@ class GoogleDriveService:
         if not self.enabled or not self.service:
             print("[WARN] Drive not enabled for nested folder creation")
             return None
+        
+        self._refresh_if_needed()
         
         if not task_code:
             print("[WARN] No task code provided, falling back to project folder")
@@ -251,6 +266,8 @@ class GoogleDriveService:
             print("[WARN] Google Drive not enabled")
             return {"success": False, "file_id": None, "folder_path": None}
         
+        self._refresh_if_needed()
+        
         try:
             # Use nested folder structure based on task code
             if task_code:
@@ -292,19 +309,12 @@ class GoogleDriveService:
             return {"success": False, "file_id": None, "folder_path": None}
 
     def upload_file(self, filename: str, file_content: bytes, folder_name: str = None) -> str:
-        """Upload file to Google Drive and return file ID
-        
-        Args:
-            filename: Name of the file
-            file_content: Binary content of the file
-            folder_name: Optional subfolder name (creates under root CSMS folder)
-        
-        Returns:
-            File ID if successful, None if failed
-        """
+        """Upload file to Google Drive and return file ID"""
         if not self.enabled or not self.service:
             print("[WARN] Google Drive not enabled, can't upload file")
             return None
+        
+        self._refresh_if_needed()
         
         try:
             # Determine parent folder
@@ -395,6 +405,8 @@ class GoogleDriveService:
         """Download a file from Google Drive by ID"""
         if not self.enabled or not self.service:
             return None
+        
+        self._refresh_if_needed()
         
         try:
             from googleapiclient.http import MediaIoBaseDownload
