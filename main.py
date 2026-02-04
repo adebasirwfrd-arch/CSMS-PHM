@@ -47,7 +47,11 @@ from routers.reports import router as reports_router
 
 app = FastAPI()
 
-print("[INFO] Starting CSMS Backend with Google Drive Fix v2 (Force Update)")
+print("\n" + "="*50)
+print("[STARTUP] CSMS Backend Initializing...")
+print(f"[STARTUP] Mode: Supabase-Only (Vercel Compatible)")
+print(f"[STARTUP] Supabase Available: {SUPABASE_AVAILABLE}")
+print("="*50 + "\n")
 
 # CORS
 app.add_middleware(
@@ -58,8 +62,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-db = Database()
-drive_service = GoogleDriveService()
+print("[INFO] Initializing Database & Services...")
+try:
+    db = Database()
+    print("[OK] Database abstraction initialized")
+except Exception as e:
+    print(f"[CRITICAL] Database initialization FAILED: {e}")
+
+try:
+    drive_service = GoogleDriveService()
+    print(f"[OK] Google Drive Service status: {'Enabled' if drive_service.enabled else 'Disabled'}")
+except Exception as e:
+    print(f"[CRITICAL] Google Drive initialization FAILED: {e}")
 
 # Mount static files for assets (logo, etc.)
 static_dir = Path(__file__).parent / "static"
