@@ -279,9 +279,9 @@ def send_reminders(background_tasks: BackgroundTasks):
                 continue
             
             # Get PIC email(s) from project - support multiple emails (comma separated)
-        pic_email_str = project.get('pic_email') or project.get('assigned_to_email') or ''
-        if not pic_email_str:
-            pic_email_str = os.getenv('DEFAULT_REMINDER_EMAIL', 'csms-notify@phm.co.id')
+            pic_email_str = project.get('pic_email') or project.get('assigned_to_email') or ''
+            if not pic_email_str:
+                pic_email_str = os.getenv('DEFAULT_REMINDER_EMAIL', 'csms-notify@phm.co.id')
             
             # Split by comma and clean up
             pic_emails = [email.strip() for email in pic_email_str.split(',') if email.strip()]
