@@ -45,9 +45,16 @@ class Database:
     """
     
     def __init__(self):
-        os.makedirs(DATA_DIR, exist_ok=True)
-        self._ensure_file(PROJECTS_FILE)
-        self._ensure_file(TASKS_FILE)
+        # Only create local files if Supabase is NOT enabled
+        # Vercel has read-only filesystem, so we skip this when using Supabase
+        if not SUPABASE_ENABLED:
+            try:
+                os.makedirs(DATA_DIR, exist_ok=True)
+                self._ensure_file(PROJECTS_FILE)
+                self._ensure_file(TASKS_FILE)
+            except OSError as e:
+                print(f"[DB] Warning: Could not create local data files: {e}")
+                print("[DB] This is expected on read-only filesystems (e.g., Vercel)")
 
     def _ensure_file(self, filepath):
         if not os.path.exists(filepath):
