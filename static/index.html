@@ -115,7 +115,8 @@
             left: -300px;
             width: 280px;
             height: 100%;
-            background: var(--bg-secondary);
+            background: #FFFFFF;
+            color: #333333;
             z-index: 201;
             transition: left 0.3s ease, visibility 0.3s;
             display: flex;
@@ -138,7 +139,7 @@
         }
 
         .weatherford-logo {
-            background: var(--netflix-red);
+            background: transparent;
             padding: 10px 15px;
             border-radius: 4px;
             display: flex;
@@ -185,7 +186,7 @@
 
         .drawer-email {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #666666;
         }
 
         .drawer-nav {
@@ -198,14 +199,14 @@
             align-items: center;
             gap: 16px;
             padding: 16px 24px;
-            color: var(--text-primary);
+            color: var(--bg-primary);
             text-decoration: none;
             cursor: pointer;
             transition: background 0.2s;
         }
 
         .drawer-item:hover {
-            background: var(--bg-tertiary);
+            background: #f5f5f5;
         }
 
         .drawer-item.active {
@@ -1057,10 +1058,11 @@
     <section class="screen active" id="screen-home" style="overflow-y: auto; height: calc(100vh - 130px);">
         <!-- Hero Banner with Logo -->
         <div
-            style="background: linear-gradient(135deg, #C41E3A 0%, #9A1830 100%); border-radius: 16px; padding: 24px; margin-bottom: 20px; text-align: center;">
+            style="background: #FFFFFF; border-radius: 16px; padding: 24px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
             <img src="/static/phm_logo.jpeg" alt="PHM" style="width: 180px; height: auto; margin-bottom: 12px;">
-            <h1 data-i18n="welcome" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">Welcome!</h1>
-            <p data-i18n="projectManagement" style="color: rgba(255,255,255,0.8); font-size: 14px;">CSMS Project
+            <h1 data-i18n="welcome" style="font-size: 24px; font-weight: 700; margin-bottom: 4px; color: #333333;">
+                Welcome!</h1>
+            <p data-i18n="projectManagement" style="color: #666666; font-size: 14px;">CSMS Project
                 Management System</p>
         </div>
 
