@@ -850,7 +850,6 @@ def generate_project_report(project_id: str, mode: str = "download"):
                             pdf_data = drive_service.convert_office_to_pdf(file_id, filename)
                             
                             if pdf_data:
-                            if pdf_data:
                                 # Render the converted PDF
                                 try:
                                     import fitz
