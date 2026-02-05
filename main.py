@@ -854,6 +854,74 @@ def generate_project_report(project_id: str, mode: str = "download"):
                                 try:
                                     import fitz
                                     pdf_doc = fitz.open(stream=pdf_data, filetype='pdf')
+                                    total_pages = len(pdf_doc)
+                                    max_pages = min(20, total_pages)
+                                    
+                                    for page_num in range(max_pages):
+                                        if page_num > 0:
+                                            elements.append(PageBreak())
+                                            # Page continuation header
+                                            cont_header = Table(
+                                                [[f"{filename} - Page {page_num + 1} of {total_pages}"]],
+                                                colWidths=[6.5*inch]
+                                            )
+                                            cont_header.setStyle(TableStyle([
+                                                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#444444')),
+                                                ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
+                                                ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+                                                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                                                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                                ('TOPPADDING', (0, 0), (-1, -1), 6),
+                                                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+                                            ]))
+                                            elements.append(cont_header)
+                                            elements.append(Spacer(1, 0.1*inch))
+                                        
+                                        page = pdf_doc[page_num]
+                                        # Reduced DPI: Matrix(1.33, 1.33) = ~96 DPI vs Matrix(2, 2) = 144 DPI
+                                        mat = fitz.Matrix(1.33, 1.33)  # 96 DPI - good balance of quality/size
+                                        pix = page.get_pixmap(matrix=mat)
+                                        
+                                        # Convert to PIL and compress as JPEG
+                                        img_data = pix.tobytes("png")
+                                        img_buffer = io.BytesIO(img_data)
+                                        pil_img = PILImage.open(img_buffer)
+                                        
+                                        # Compress the rendered PDF page
+                                        compressed_buffer = compress_image_for_pdf(pil_img, max_width=1000, max_height=1400, quality=70)
+                                        pil_img = PILImage.open(compressed_buffer)
+                                        
+                                        max_width = 6.2 * inch
+                                        max_height = 8 * inch
+                                        img_width, img_height = pil_img.size
+                                        scale = min(max_width / img_width, max_height / img_height, 1)
+                                        final_width = img_width * scale
+                                        final_height = img_height * scale
+                                        
+                                        compressed_buffer.seek(0)
+                                        rl_img = RLImage(compressed_buffer, width=final_width, height=final_height)
+                                        
+                                        # Wrap in bordered table
+                                        img_table = Table([[rl_img]], colWidths=[final_width + 6])
+                                        img_table.setStyle(TableStyle([
+                                            ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#333333')),
+                                            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                                            ('TOPPADDING', (0, 0), (-1, -1), 3),
+                                            ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                                        ]))
+                                        elements.append(img_table)
+                                    
+                                    pdf_doc.close()
+                                    
+                                    if total_pages > max_pages:
+                                        elements.append(Paragraph(f"<i>[Showing first {max_pages} of {total_pages} pages]</i>", ParagraphStyle(
+                                            'PageNote', fontSize=9, textColor=colors.HexColor('#888888'), alignment=TA_CENTER, spaceBefore=10
+                                        )))
+                                except ImportError:
+                                    elements.append(Paragraph(f"<i>[PDF preview unavailable in lightweight mode]</i>", ParagraphStyle(
+                                        'FileNote', fontSize=10, textColor=colors.HexColor('#666666'), alignment=TA_CENTER, spaceBefore=50
+                                    )))
                                 total_pages = len(pdf_doc)
                                 max_pages = min(20, total_pages)
                                 
