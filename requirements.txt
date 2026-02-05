@@ -18,5 +18,4 @@ pdfplumber
 python-pptx
 python-multipart
 pymupdf
-pandas
 xlsxwriter

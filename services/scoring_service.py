@@ -1,5 +1,5 @@
 import io
-import pandas as pd
+import xlsxwriter
 from typing import List, Dict
 
 class ScoringService:
@@ -57,8 +57,8 @@ class ScoringService:
 
     def generate_excel_report(self, project: Dict, tasks: List[Dict]) -> io.BytesIO:
         output = io.BytesIO()
-        writer = pd.ExcelWriter(output, engine='xlsxwriter')
-        workbook = writer.book
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        worksheet = workbook.add_worksheet('Scoring')
         
         # Formats
         header_fmt = workbook.add_format({'bold': True, 'bg_color': '#D3D3D3', 'border': 1})
@@ -67,22 +67,41 @@ class ScoringService:
         item_fmt = workbook.add_format({'border': 1})
         score_fmt = workbook.add_format({'border': 1, 'align': 'center'})
         total_fmt = workbook.add_format({'bold': True, 'bg_color': '#C41E3A', 'font_color': 'white', 'border': 1})
-
-        rows = []
-        # Header Metadata
-        rows.append(["PROJECT SCORING REPORT", "", "", "", "", "", "", ""])
-        rows.append(["Project Name:", project.get('name', ''), "", "", "", "", "", ""])
-        rows.append(["Well Name:", project.get('well_name', project.get('well', '')), "", "", "", "", "", ""])
-        rows.append(["Contract No:", project.get('kontrak_no', ''), "", "", "", "", "", ""])
-        rows.append(["", "", "", "", "", "", "", ""])
         
-        # Columns
-        rows.append(["Item / Category", "A (0)", "B (3)", "C (6)", "D (10)", "Subtotal", "Factor", "Total"])
+        # Column definitions
+        worksheet.set_column('A:A', 50)
+        worksheet.set_column('B:E', 10)
+        worksheet.set_column('F:H', 15)
+
+        # Helper to write a row
+        current_row = 0
+        def write_row(data, format=None):
+            nonlocal current_row
+            for col, value in enumerate(data):
+                worksheet.write(current_row, col, value, format)
+            current_row += 1
+
+        # Header Metadata
+        write_row(["PROJECT SCORING REPORT", "", "", "", "", "", "", ""])
+        write_row(["Project Name:", project.get('name', ''), "", "", "", "", "", ""])
+        write_row(["Well Name:", project.get('well_name', project.get('well', '')), "", "", "", "", "", ""])
+        write_row(["Contract No:", project.get('kontrak_no', ''), "", "", "", "", "", ""])
+        write_row(["", "", "", "", "", "", "", ""])
+        
+        # Columns Header
+        headers = ["Item / Category", "A (0)", "B (3)", "C (6)", "D (10)", "Subtotal", "Factor", "Total"]
+        for col, h in enumerate(headers):
+            worksheet.write(current_row, col, h, header_fmt)
+        current_row += 1
         
         total_rating = 0
         
         for elemen in self.criteria:
-            rows.append([elemen["elemen"], "", "", "", "", "", "", ""])
+            # Elemen Header
+            worksheet.write(current_row, 0, elemen["elemen"], elemen_fmt)
+            for c in range(1, 8):
+                worksheet.write(current_row, c, "", elemen_fmt)
+            current_row += 1
             
             elemen_subtotal = 0
             for item in elemen["items"]:
@@ -97,31 +116,40 @@ class ScoringService:
                 elif score == 6: c = 1
                 elif score == 10: d = 1
                 
-                rows.append([
-                    f"{item['code']} {task.get('title', '') if task else ''}",
-                    a, b, c, d,
-                    score,
-                    round(item["factor"], 3),
-                    round(score * item["factor"], 2)
-                ])
+                # Write Item Row
+                # Item Label
+                worksheet.write(current_row, 0, f"{item['code']} {task.get('title', '') if task else ''}", item_fmt)
+                # Score Markers
+                worksheet.write(current_row, 1, a, score_fmt)
+                worksheet.write(current_row, 2, b, score_fmt)
+                worksheet.write(current_row, 3, c, score_fmt)
+                worksheet.write(current_row, 4, d, score_fmt)
+                # Calcs
+                worksheet.write(current_row, 5, score, item_fmt)
+                worksheet.write(current_row, 6, round(item["factor"], 3), item_fmt)
+                worksheet.write(current_row, 7, round(score * item["factor"], 2), item_fmt)
+                
                 elemen_subtotal += score * item["factor"]
+                current_row += 1
             
-            rows.append([f"SUBTOTAL {elemen['elemen'].split('–')[0].strip()}", "", "", "", "", "", "", round(elemen_subtotal, 2)])
+            # Subtotal Row
+            worksheet.write(current_row, 0, f"SUBTOTAL {elemen['elemen'].split('–')[0].strip()}", subtotal_fmt)
+            for c in range(1, 7):
+                worksheet.write(current_row, c, "", subtotal_fmt)
+            worksheet.write(current_row, 7, round(elemen_subtotal, 2), subtotal_fmt)
+            
             total_rating += elemen_subtotal
-            rows.append(["", "", "", "", "", "", "", ""])
+            current_row += 1
+            
+            # Spacer
+            write_row(["", "", "", "", "", "", "", ""])
 
-        rows.append(["TOTAL RATING (ELEMEN 1 – ELEMEN 8)", "", "", "", "", "", "", round(total_rating, 2)])
+        # Grand Total
+        worksheet.write(current_row, 0, "TOTAL RATING (ELEMEN 1 – ELEMEN 8)", total_fmt)
+        for c in range(1, 7):
+            worksheet.write(current_row, c, "", total_fmt)
+        worksheet.write(current_row, 7, round(total_rating, 2), total_fmt)
         
-        # Create DataFrame
-        df = pd.DataFrame(rows)
-        df.to_excel(writer, index=False, header=False, sheet_name='Scoring')
-        
-        # Adjust columns
-        worksheet = writer.sheets['Scoring']
-        worksheet.set_column('A:A', 50)
-        worksheet.set_column('B:E', 10)
-        worksheet.set_column('F:H', 15)
-        
-        writer.close()
+        workbook.close()
         output.seek(0)
         return output
