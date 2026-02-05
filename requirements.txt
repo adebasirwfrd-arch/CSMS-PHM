@@ -14,6 +14,5 @@ requests
 supabase
 
 pdfplumber
-python-multipart
-pymupdf
+pypdf
 xlsxwriter

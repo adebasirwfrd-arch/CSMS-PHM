@@ -765,8 +765,9 @@ def generate_project_report(project_id: str, mode: str = "download"):
                         elements.append(img_table)
                         
                     elif file_ext == 'pdf':
-                        # PDF - render pages with PyMuPDF
+                        # PDF - basic handling for Vercel (skip heavy rendering)
                         try:
+                            # Try fitz first (if installed locally)
                             import fitz
                             pdf_doc = fitz.open(stream=file_data, filetype='pdf')
                             total_pages = len(pdf_doc)
@@ -843,14 +844,17 @@ def generate_project_report(project_id: str, mode: str = "download"):
                     elif file_ext in ['xlsx', 'xls', 'docx', 'doc', 'pptx', 'ppt']:
                         # Office files - convert to PDF using Google Drive, then render
                         try:
-                            import fitz
+                            # import fitz
                             
                             # Convert Office file to PDF via Google Drive
                             pdf_data = drive_service.convert_office_to_pdf(file_id, filename)
                             
                             if pdf_data:
+                            if pdf_data:
                                 # Render the converted PDF
-                                pdf_doc = fitz.open(stream=pdf_data, filetype='pdf')
+                                try:
+                                    import fitz
+                                    pdf_doc = fitz.open(stream=pdf_data, filetype='pdf')
                                 total_pages = len(pdf_doc)
                                 max_pages = min(20, total_pages)
                                 
