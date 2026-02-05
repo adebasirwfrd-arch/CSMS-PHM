@@ -13,9 +13,7 @@ pillow
 requests
 supabase
 
-python-docx
 pdfplumber
-python-pptx
 python-multipart
 pymupdf
 xlsxwriter

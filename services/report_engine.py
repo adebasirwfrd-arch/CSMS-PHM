@@ -2,8 +2,8 @@
 import csv
 import pdfplumber
 import openpyxl
-from docx import Document
-from pptx import Presentation
+# from docx import Document
+# from pptx import Presentation
 import io
 import os
 import re
